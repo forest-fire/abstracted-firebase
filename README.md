@@ -2,38 +2,35 @@
 [![Coverage Status](https://coveralls.io/repos/github/forest-fre/abstracted-firebase/badge.svg?branch=master)](https://coveralls.io/github/forest-fre/abstracted-admin?branch=master)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-![ ](./docs/images/abstracted-admin.jpg)
-
-> A minimal abstraction over the Firebase ADMIN API
+> The underlying library powering `abstracted-admin` and `abstracted-client`
 
 ## Basic Usage
 
-Meant for backend nodejs micro-services which interact with Firebase's Admin API using a "service policy" to authenticate.
+It would be unusual to use this library directly, instead it is expected that you would choose one of the following:
 
-```js
-import DB from 'abstracted-admin';
-const db = new DB();
-// Get a list of records
-const users = await db.getValue<IUser[]>('users');
-// Push a new value onto a list
-const company: ICompany = {
-  name: "Acme",
-  employees: 500
-}
-db.push<ICompany>('/companies', company);
-```
+* [`abstracted-admin`](https://abstracted-admin.com) - if you're building micro-services at the backend and want to leverage the Firebase Admin API then you would use this
+* `abstracted-client` - if instead you're more interested in working in the client browser then this is the better choice
 
-### Authentication
+Both the aforementioned libraries use this library for a majority of their common functionality.
 
-All of the Authentication is done transparently as soon as requests are made to the database. In order for this library to achieve this it will need the following environment variables set:
+## License
 
-* `FIREBASE_SERVICE_ACCOUNT` - this should be a URI-Encoded string of the JSON data which you exported at the time you created a Service Account on Google.
-* `FIREBASE_DATA_ROOT_URL` - comes from the Firebase console and dictates which DB to connect to
+Copyright (c) 2018 LifeGadget Ltd
 
-### Mocking
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-This library supports simple redirecting of all operations to the `firemock` mocking library; see [related projects](docs/related.md)) and the ["Mocking" section](docs/mocking.md) of the docs here for more details. In cases where mocking is being used, authentication (and security rights for paths) are not supported and therefore the above ENV variables are not required.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-## Documentation
-
-[Gitbook](https://forest-fire.gitbooks.io/abstracted-admin/content/)
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
