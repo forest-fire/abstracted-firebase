@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/forest-fre/abstracted-firebase.svg?branch=master)](https://travis-ci.org/forest-fre/abstracted-admin.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/forest-fre/abstracted-firebase/badge.svg?branch=master)](https://coveralls.io/github/forest-fre/abstracted-admin?branch=master)
+[![Build Status](https://travis-ci.org/forest-fire/abstracted-firebase.svg?branch=master)](https://travis-ci.org/forest-fre/abstracted-admin.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/forest-fire/abstracted-firebase/badge.svg?branch=master)](https://coveralls.io/github/forest-fre/abstracted-admin?branch=master)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 > The underlying library powering `abstracted-admin` and `abstracted-client`
@@ -8,8 +8,8 @@
 
 It would be unusual to use this library directly, instead it is expected that you would choose one of the following:
 
-* [`abstracted-admin`](https://abstracted-admin.com) - if you're building micro-services at the backend and want to leverage the Firebase Admin API then you would use this
-* `abstracted-client` - if instead you're more interested in working in the client browser then this is the better choice
+* [`abstracted-admin`](https://abstracted-admin.com) - if you're building a backend service and want to leverage the Firebase Admin API
+* `abstracted-client` - if instead you're more interested in working in the client browser then this is the right choice
 
 Both the aforementioned libraries use this library for a majority of their common functionality.
 

@@ -1,11 +1,11 @@
-import { DB } from "./db";
-export default DB;
+import { AbstractDB } from "./db";
+export default AbstractDB;
 export {
-  DB,
+  AbstractDB,
   IFirebaseConfig,
   IFirebaseListener,
   FirebaseBoolean,
-  Snapshot,
+  DataSnapshot,
   Query,
   Reference
 } from "./db";

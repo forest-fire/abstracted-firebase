@@ -1,13 +1,19 @@
 {
   "name": "abstracted-admin",
   "version": "0.7.3",
-  "description":
-    "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
+  "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
   "author": "Ken Snyder <ken@ken.net>",
-  "keywords": ["firebase", "typescript", "nodejs", "utility"],
-  "files": ["lib"],
+  "keywords": [
+    "firebase",
+    "typescript",
+    "nodejs",
+    "utility"
+  ],
+  "files": [
+    "lib"
+  ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -15,15 +21,13 @@
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "build": "ts-node ./scripts/build.ts",
     "test": "ts-node ./scripts/test.ts",
-    "coverage":
-      "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
+    "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
     "watch": "npm run build -- --watch",
     "deploy": "ts-node ./scripts/deploy.ts ",
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
     "common-types": "^1.5.1",
-    "firebase-admin": "^5.7.0",
     "lodash.first": "^3.0.0",
     "lodash.last": "^3.0.0",
     "moment": "^2.20.1",
@@ -36,10 +40,12 @@
     "firemock": "^0.14.5"
   },
   "devDependencies": {
+    "@firebase/database": "^0.1.6",
     "@types/chai": "^3.0.0",
     "@types/chalk": "^0.4.31",
     "@types/chance": "^0.7.34",
     "@types/faker": "^4.1.0",
+    "@types/firebase": "^3.2.1",
     "@types/js-yaml": "^3.9.0",
     "@types/lodash.first": "^3.0.3",
     "@types/lodash.last": "^3.0.3",
@@ -48,9 +54,10 @@
     "@types/rimraf": "^2.0.1",
     "@types/shelljs": "^0.7.4",
     "chai": "^3.0.0",
-    "coveralls": "^2.0.0",
     "chance": "^1.0.13",
+    "coveralls": "^2.0.0",
     "faker": "^4.1.0",
+    "firebase-admin": "^5.7.0",
     "firemock": "^0.14.5",
     "gitbook-plugin-favicon": "^0.0.2",
     "js-yaml": "^3.9.1",
@@ -67,10 +74,18 @@
     "node": ">=4.0.0"
   },
   "nyc": {
-    "include": ["src/**/*.ts"],
-    "exclude": ["lib"],
-    "extension": [".ts"],
-    "require": ["ts-node/register"],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "lib"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
     "reporter": [],
     "all": true
   }

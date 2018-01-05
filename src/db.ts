@@ -1,4 +1,7 @@
-import * as firebase from "firebase-admin";
+// tslint:disable-next-line:no-implicit-dependencies
+import * as admin from "firebase-admin";
+// tslint:disable-next-line:no-implicit-dependencies
+import * as client from "@firebase/database";
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
@@ -7,69 +10,72 @@ import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, Reference, resetDatabase } from "firemock";
 
+export type Reference = admin.database.Reference | client.Reference;
+export type Query = admin.database.Query | client.Query;
+export type Database = admin.database.Database | client.Database;
+export type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
+
 export enum FirebaseBoolean {
   true = 1,
   false = 0
 }
 
-export type Snapshot = firebase.database.DataSnapshot;
-export type Query = firebase.database.Query;
-export type Reference = firebase.database.Reference;
 export type DebuggingCallback = (message: string) => void;
 export interface IFirebaseConfig {
   debugging?: boolean | DebuggingCallback;
   mocking?: boolean;
 }
-
 export interface IFirebaseListener {
   id: string;
-  cb: (db: DB) => void;
+  cb: (db: IAbstractedFirebase) => void;
 }
 
-export class DB {
-  private static isConnected: boolean = false;
-  private static isAuthorized: boolean = false;
-  private static connection: firebase.database.Database;
-  public auth: firebase.auth.Auth;
-  private mocking: boolean = false;
-  private _mock: Mock;
-  private _waitingForConnection: Array<() => void> = [];
-  private _onConnected: IFirebaseListener[] = [];
-  private _onDisconnected: IFirebaseListener[] = [];
-  private _debugging: boolean = false;
-  private _mocking: boolean = false;
-  private _allowMocking: boolean = false;
+export interface IAbstractedFirebase {
+  isConnected: boolean;
+  ref(path: string): client.Reference | admin.database.Reference;
+  allowMocking(): void;
+  resetMockDb(): void;
+  waitForConnection(): Promise<void | {}>;
+  set<T = any>(path: string, value: T): Promise<void>;
+  update<T = any>(path: string, value: Partial<T>): Promise<void>;
+  remove<T = any>(path: string, ignoreMissing?: boolean): Promise<void>;
+  getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
+  getValue<T = any>(path: string): Promise<T>;
+  getRecord<T = any>(
+    path: string | SerializedQuery,
+    idProp?: string
+  ): Promise<T>;
+  getList<T = any[]>(
+    path: string | SerializedQuery,
+    idProp?: string
+  ): Promise<T[]>;
+  getSortedList<T = any[]>(query: any, idProp?: string): Promise<T[]>;
+  push<T = any>(path: string, value: T): Promise<any>;
+  exists(path: string): Promise<boolean>;
+}
+
+export abstract class AbstractDB<Firebase> implements IAbstractedFirebase {
+  protected static isConnected: boolean = false;
+  protected static isAuthorized: boolean = false;
+  protected static connection: Database;
+  protected mocking: boolean = false;
+  protected _mock: Mock;
+  protected _waitingForConnection: Array<() => void> = [];
+  protected _onConnected: IFirebaseListener[] = [];
+  protected _onDisconnected: IFirebaseListener[] = [];
+  protected _debugging: boolean = false;
+  protected _mocking: boolean = false;
+  protected _allowMocking: boolean = false;
 
   constructor(config: IFirebaseConfig = {}) {
-    if (config.mocking) {
-      this._mocking = true;
-    } else {
-      this.connect(config.debugging);
-      DB.connection = firebase.database();
-      firebase.database().goOnline();
-      firebase
-        .database()
-        .ref(".info/connected")
-        .on("value", snap => {
-          DB.isConnected = snap.val();
-          // cycle through temporary clients
-          this._waitingForConnection.forEach(cb => cb());
-          this._waitingForConnection = [];
-          // call active listeners
-          if (DB.isConnected) {
-            this._onConnected.forEach(listener => listener.cb(this));
-          } else {
-            this._onDisconnected.forEach(listener => listener.cb(this));
-          }
-        });
-    }
+    //
   }
 
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string) {
     return this._mocking
       ? (this.mock.ref(path) as Reference)
-      : (DB.connection.ref(path) as firebase.database.Reference);
+      : (AbstractDB.connection.ref(path) as Reference);
   }
 
   /**
@@ -102,7 +108,7 @@ export class DB {
   }
 
   public async waitForConnection() {
-    if (DB.isConnected) {
+    if (AbstractDB.isConnected) {
       return Promise.resolve();
     }
     return new Promise(resolve => {
@@ -114,7 +120,7 @@ export class DB {
   }
 
   public get isConnected() {
-    return DB.isConnected;
+    return AbstractDB.isConnected;
   }
 
   /** set a "value" in the database at a given path */
@@ -142,7 +148,7 @@ export class DB {
 
   public async getSnapshot(
     path: string | SerializedQuery
-  ): Promise<firebase.database.DataSnapshot> {
+  ): Promise<DataSnapshot> {
     return typeof path === "string"
       ? this.ref(slashNotation(path)).once("value")
       : path.setDB(this).execute();
@@ -227,55 +233,5 @@ export class DB {
       code: `firebase/${name}`,
       message: message + e.message || e
     });
-  }
-
-  private connect(debugging: boolean | DebuggingCallback = false): void {
-    if (!DB.isAuthorized) {
-      const serviceAcctEncoded = process.env["FIREBASE_SERVICE_ACCOUNT"];
-      if (!serviceAcctEncoded) {
-        throw new Error(
-          "Problem loading the credientials for Firebase admin API. Please ensure FIREBASE_SERVICE_ACCOUNT is set with base64 encoded version of Firebase private key."
-        );
-      }
-
-      const serviceAccount: firebase.ServiceAccount = JSON.parse(
-        Buffer.from(
-          process.env["FIREBASE_SERVICE_ACCOUNT"],
-          "base64"
-        ).toString()
-      );
-      console.log(
-        `Connecting to Firebase: [${process.env["FIREBASE_DATA_ROOT_URL"]}]`
-      );
-
-      try {
-        firebase.initializeApp({
-          credential: firebase.credential.cert(serviceAccount),
-          databaseURL: process.env["FIREBASE_DATA_ROOT_URL"]
-        });
-        DB.isAuthorized = true;
-      } catch (err) {
-        if (
-          err.message.indexOf("The default Firebase app already exists.") !== -1
-        ) {
-          console.warn(
-            "DB was already logged in, however flag had not been set!"
-          );
-          DB.isConnected = true;
-        } else {
-          DB.isConnected = false;
-          console.warn("Problem connecting to Firebase", err);
-          throw new Error(err);
-        }
-      }
-    }
-
-    if (debugging) {
-      firebase.database.enableLogging(
-        typeof debugging === "function"
-          ? (message: string) => debugging(message)
-          : (message: string) => console.log("[FIREBASE]", message)
-      );
-    }
   }
 }
