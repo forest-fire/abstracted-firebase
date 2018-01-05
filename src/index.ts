@@ -1,7 +1,7 @@
-import { AbstractDB } from "./db";
-export default AbstractDB;
+import { RealTimeDB } from "./db";
+export default RealTimeDB;
 export {
-  AbstractDB,
+  RealTimeDB,
   IFirebaseConfig,
   IFirebaseListener,
   FirebaseBoolean,

@@ -54,7 +54,7 @@ export interface IAbstractedFirebase {
   exists(path: string): Promise<boolean>;
 }
 
-export abstract class AbstractDB<Firebase> implements IAbstractedFirebase {
+export abstract class RealTimeDB implements IAbstractedFirebase {
   protected static isConnected: boolean = false;
   protected static isAuthorized: boolean = false;
   protected static connection: Database;
@@ -75,7 +75,7 @@ export abstract class AbstractDB<Firebase> implements IAbstractedFirebase {
   public ref(path: string) {
     return this._mocking
       ? (this.mock.ref(path) as Reference)
-      : (AbstractDB.connection.ref(path) as Reference);
+      : (RealTimeDB.connection.ref(path) as Reference);
   }
 
   /**
@@ -108,7 +108,7 @@ export abstract class AbstractDB<Firebase> implements IAbstractedFirebase {
   }
 
   public async waitForConnection() {
-    if (AbstractDB.isConnected) {
+    if (RealTimeDB.isConnected) {
       return Promise.resolve();
     }
     return new Promise(resolve => {
@@ -120,7 +120,7 @@ export abstract class AbstractDB<Firebase> implements IAbstractedFirebase {
   }
 
   public get isConnected() {
-    return AbstractDB.isConnected;
+    return RealTimeDB.isConnected;
   }
 
   /** set a "value" in the database at a given path */
