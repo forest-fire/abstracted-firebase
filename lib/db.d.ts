@@ -17,26 +17,9 @@ export interface IFirebaseConfig {
 }
 export interface IFirebaseListener {
     id: string;
-    cb: (db: IAbstractedFirebase) => void;
+    cb: (db: RealTimeDB) => void;
 }
-export interface IAbstractedFirebase {
-    isConnected: boolean;
-    ref(path: string): client.Reference | admin.database.Reference;
-    allowMocking(): void;
-    resetMockDb(): void;
-    waitForConnection(): Promise<void | {}>;
-    set<T = any>(path: string, value: T): Promise<void>;
-    update<T = any>(path: string, value: Partial<T>): Promise<void>;
-    remove<T = any>(path: string, ignoreMissing?: boolean): Promise<void>;
-    getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
-    getValue<T = any>(path: string): Promise<T>;
-    getRecord<T = any>(path: string | SerializedQuery, idProp?: string): Promise<T>;
-    getList<T = any[]>(path: string | SerializedQuery, idProp?: string): Promise<T[]>;
-    getSortedList<T = any[]>(query: any, idProp?: string): Promise<T[]>;
-    push<T = any>(path: string, value: T): Promise<any>;
-    exists(path: string): Promise<boolean>;
-}
-export declare abstract class RealTimeDB implements IAbstractedFirebase {
+export declare abstract class RealTimeDB {
     protected static isConnected: boolean;
     protected static isAuthorized: boolean;
     protected static connection: Database;
@@ -65,5 +48,5 @@ export declare abstract class RealTimeDB implements IAbstractedFirebase {
     getSortedList<T = any[]>(query: any, idProp?: string): Promise<T[]>;
     push<T = any>(path: string, value: T): Promise<any>;
     exists(path: string): Promise<boolean>;
-    private handleError(e, name, message?);
+    protected handleError(e: any, name: string, message?: string): Promise<never>;
 }

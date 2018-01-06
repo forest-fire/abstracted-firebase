@@ -1,13 +1,19 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.0.2",
-  "description":
-    "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
+  "version": "0.0.3",
+  "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
   "author": "Ken Snyder <ken@ken.net>",
-  "keywords": ["firebase", "typescript", "nodejs", "utility"],
-  "files": ["lib"],
+  "keywords": [
+    "firebase",
+    "typescript",
+    "nodejs",
+    "utility"
+  ],
+  "files": [
+    "lib"
+  ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -15,8 +21,7 @@
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "build": "ts-node ./scripts/build.ts",
     "test": "ts-node ./scripts/test.ts",
-    "coverage":
-      "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
+    "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
     "watch": "npm run build -- --watch",
     "deploy": "ts-node ./scripts/deploy.ts ",
     "watch:test": "npm run test -- --watch"
@@ -35,6 +40,7 @@
     "firemock": "^0.14.5"
   },
   "devDependencies": {
+    "@firebase/app": "^0.1.0",
     "@firebase/app-types": "^0.1.0",
     "@firebase/database": "^0.1.6",
     "@types/chai": "^3.0.0",
@@ -70,10 +76,18 @@
     "node": ">=4.0.0"
   },
   "nyc": {
-    "include": ["src/**/*.ts"],
-    "exclude": ["lib"],
-    "extension": [".ts"],
-    "require": ["ts-node/register"],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "lib"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
     "reporter": [],
     "all": true
   }
