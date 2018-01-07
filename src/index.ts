@@ -7,5 +7,6 @@ export {
   FirebaseBoolean,
   DataSnapshot,
   Query,
-  Reference
+  Reference,
+  DebuggingCallback
 } from "./db";
