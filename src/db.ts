@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import * as admin from "firebase-admin";
 // tslint:disable-next-line:no-implicit-dependencies
-import * as client from "@firebase/database";
+import * as client from "@firebase/database-types";
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
@@ -12,7 +12,7 @@ import { Mock, Reference, resetDatabase } from "firemock";
 
 export type Reference = admin.database.Reference | client.Reference;
 export type Query = admin.database.Query | client.Query;
-export type Database = admin.database.Database | client.Database;
+export type Database = admin.database.Database | client.FirebaseDatabase;
 export type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
 
 export enum FirebaseBoolean {
