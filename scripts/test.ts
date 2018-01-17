@@ -3,53 +3,30 @@ import chalk from "chalk";
 import { exec } from "shelljs";
 import * as rm from "rimraf";
 import * as process from "process";
+import * as program from "commander";
 import "../test/testing/test-console";
 import { stdout, stderr } from "test-console";
 
-function prepOutput(output: string) {
-  return output.replace(/\t\r\n/, "").replace("undefined", "");
-}
+function getScope(files?: string[]): string {
+  let fileScope: string;
 
-function getExecutionStage(): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const inspect = stdout.inspect();
-    exec(`npm get stage`, (code, output) => {
-      inspect.restore();
+  if (!files || files[0] === "all") {
+    console.log(
+      chalk.white("no specific files specified so all files being tested")
+    );
+    fileScope = "--recursive test/**/*-spec.ts";
+  } else {
+    const shapeFileName = (fn: string) => {
+      const prefix = fn.slice(0, 5) === "test/" ? "" : "test/";
+      const postfix = fn.slice(-5) === "-spec" ? "" : "-spec";
 
-      const result = prepOutput(output).trim();
-      resolve(result ? result : "test");
-    });
-  });
-}
+      return prefix + fn + postfix + ".ts";
+    };
 
-function getScope(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let fileScope: string;
+    fileScope = files.map(f => shapeFileName(f)).join(" ");
+  }
 
-    exec(`npm get files`, (code, out) => {
-      if (!out || out === "undefined\n") {
-        console.log(
-          chalk.white(
-            'no files specified with "--files=file.ts" option so all files being tested'
-          )
-        );
-        fileScope = "--recursive test/**/*-spec.ts";
-      } else {
-        const prefix = out.slice(0, 5) === "test/" ? "" : "test/";
-        const postfix = out.slice(-5) === "-spec" ? "" : "-spec";
-        out = out.split(".")[0].replace(/\W/, "");
-
-        fileScope = prefix + out + postfix + ".ts";
-      }
-
-      console.log(
-        chalk.green(
-          `${chalk.bold("mocha")} --compilers ts:ts-node/register  ${fileScope}`
-        )
-      );
-      resolve(fileScope);
-    });
-  });
+  return fileScope;
 }
 
 /**
@@ -58,24 +35,50 @@ function getScope(): Promise<string> {
  * may represent unintentional stale tests
  */
 function cleanJSTests() {
-  rm.sync("test/**/*.js");
+  return new Promise((resolve, reject) => {
+    rm("test/**/*.js", e => {
+      if (e) {
+        reject(e);
+      } else {
+        resolve();
+      }
+    });
+  });
 }
 
 function executeTests(stg: string, fileScope: string): void {
+  console.log(
+    chalk.green(
+      `${chalk.bold("mocha")} --compilers ts:ts-node/register  ${fileScope}`
+    )
+  );
   process.env.AWS_STAGE = stg;
   process.env.TS_NODE_COMPILER_OPTIONS = '{ "noImplicitAny": false }';
-  exec(
-    `mocha --compilers ts:ts-node/register ` +
-      `--compilerOptions --require ts-node/register ` +
-      fileScope
-  );
+  exec(`mocha --require ts-node/register ` + fileScope);
 }
 
-let stage: string;
-let scope: string;
+function lint() {
+  console.log(chalk.yellow(`Linting source files`));
+  return exec(`tslint ./src/**/*.ts`);
+}
 
-getExecutionStage()
-  .then(stg => Promise.resolve((stage = stg)))
-  .then(() => getScope())
-  .then(sc => Promise.resolve((scope = sc)))
-  .then(() => executeTests(stage, scope));
+program
+  .arguments("[files...]")
+  .description("Run mocha tests with ts-node")
+  .option(
+    "-s, --stage [env]",
+    "Environment to use",
+    /^(dev|test|stage|prod)^/,
+    "test"
+  )
+  .option("--skip-lint", "Skip the linting checks")
+  .action(async files => {
+    await cleanJSTests();
+    const stage = program.stage;
+    const scope = getScope(files);
+    if (!program.skipLint) {
+      await lint();
+    }
+    await executeTests(stage, scope);
+  })
+  .parse(process.argv);

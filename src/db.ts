@@ -1,6 +1,7 @@
-// tslint:disable-next-line:no-implicit-dependencies
+// tslint:disable:no-submodule-imports
+// tslint:disable:no-implicit-dependencies
+import FirebaseApp = require("firebase/app");
 import * as admin from "firebase-admin";
-// tslint:disable-next-line:no-implicit-dependencies
 import * as client from "@firebase/database-types";
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
@@ -9,6 +10,7 @@ import * as moment from "moment";
 import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, Reference, resetDatabase } from "firemock";
+// import { FirebaseApp } from "@firebase/app-types";
 
 export type Reference = admin.database.Reference | client.Reference;
 export type Query = admin.database.Query | client.Query;
@@ -44,7 +46,10 @@ export abstract class RealTimeDB {
   protected _allowMocking: boolean = false;
 
   constructor(config: IFirebaseConfig = {}) {
-    //
+    if (config.mocking) {
+      this._mocking = true;
+      this._mock = new Mock();
+    }
   }
 
   /** Get a DB reference for a given path in Firebase */

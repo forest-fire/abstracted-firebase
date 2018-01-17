@@ -8,5 +8,6 @@ export {
   DataSnapshot,
   Query,
   Reference,
+  Database,
   DebuggingCallback
 } from "./db";

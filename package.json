@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description":
     "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
@@ -32,10 +32,11 @@
   "peerDependencies": {
     "chance": "^1.0.13",
     "faker": "^4.1.0",
+    "@firebase/app": "^0.1.6",
     "firemock": "^0.14.5"
   },
   "devDependencies": {
-    "@firebase/app": "^0.1.0",
+    "@firebase/app": "^0.1.6",
     "@firebase/app-types": "^0.1.0",
     "@firebase/database": "^0.1.6",
     "@types/chai": "^3.0.0",
