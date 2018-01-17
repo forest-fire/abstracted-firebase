@@ -32,18 +32,13 @@
   "peerDependencies": {
     "chance": "^1.0.13",
     "faker": "^4.1.0",
-    "@firebase/app": "^0.1.6",
     "firemock": "^0.14.5"
   },
   "devDependencies": {
-    "@firebase/app": "^0.1.6",
-    "@firebase/app-types": "^0.1.0",
-    "@firebase/database": "^0.1.6",
     "@types/chai": "^3.0.0",
     "@types/chalk": "^0.4.31",
     "@types/chance": "^0.7.34",
     "@types/faker": "^4.1.0",
-    "@types/firebase": "^3.2.1",
     "@types/js-yaml": "^3.9.0",
     "@types/lodash.first": "^3.0.3",
     "@types/lodash.last": "^3.0.3",
