@@ -1,10 +1,10 @@
 import * as admin from "firebase-admin";
-import * as client from "@firebase/database-types";
+import * as client from "@firebase/database";
 import { SerializedQuery } from "serialized-query";
 import { Mock, Reference } from "firemock";
 export declare type Reference = admin.database.Reference | client.Reference;
 export declare type Query = admin.database.Query | client.Query;
-export declare type Database = admin.database.Database | client.FirebaseDatabase;
+export declare type Database = admin.database.Database | client.Database;
 export declare type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
 export declare enum FirebaseBoolean {
     true = 1,

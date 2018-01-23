@@ -1,8 +1,8 @@
 // tslint:disable:no-submodule-imports
 // tslint:disable:no-implicit-dependencies
-import FirebaseApp = require("firebase/app");
 import * as admin from "firebase-admin";
-import * as client from "@firebase/database-types";
+import * as client from "@firebase/database";
+
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
@@ -10,11 +10,10 @@ import * as moment from "moment";
 import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, Reference, resetDatabase } from "firemock";
-// import { FirebaseApp } from "@firebase/app-types";
 
 export type Reference = admin.database.Reference | client.Reference;
 export type Query = admin.database.Query | client.Query;
-export type Database = admin.database.Database | client.FirebaseDatabase;
+export type Database = admin.database.Database | client.Database;
 export type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
 
 export enum FirebaseBoolean {
