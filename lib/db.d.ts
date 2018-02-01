@@ -1,11 +1,7 @@
-import * as admin from "firebase-admin";
-import * as client from "@firebase/database";
 import { SerializedQuery } from "serialized-query";
-import { Mock, Reference } from "firemock";
-export declare type Reference = admin.database.Reference | client.Reference;
-export declare type Query = admin.database.Query | client.Query;
-export declare type Database = admin.database.Database | client.Database;
-export declare type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
+import { Mock } from "firemock";
+import { rtdb } from "firebase-api-surface";
+export declare type FirebaseEvent = "child_added" | "child_removed" | "child_changed" | "child_moved" | "value";
 export declare enum FirebaseBoolean {
     true = 1,
     false = 0,
@@ -22,7 +18,7 @@ export interface IFirebaseListener {
 export declare abstract class RealTimeDB {
     protected static isConnected: boolean;
     protected static isAuthorized: boolean;
-    protected static connection: Database;
+    protected static connection: rtdb.IFirebaseDatabase;
     protected mocking: boolean;
     protected _mock: Mock;
     protected _waitingForConnection: Array<() => void>;
@@ -32,21 +28,21 @@ export declare abstract class RealTimeDB {
     protected _mocking: boolean;
     protected _allowMocking: boolean;
     constructor(config?: IFirebaseConfig);
-    ref(path: string): Reference<any>;
+    ref(path: string): rtdb.IReference;
     allowMocking(): void;
     readonly mock: Mock;
     resetMockDb(): void;
     waitForConnection(): Promise<void | {}>;
     readonly isConnected: boolean;
     set<T = any>(path: string, value: T): Promise<void>;
-    update<T = any>(path: string, value: Partial<T>): Promise<void>;
+    update<T = any>(path: string, value: Partial<T>): Promise<any>;
     remove<T = any>(path: string, ignoreMissing?: boolean): Promise<void>;
-    getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
+    getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot>;
     getValue<T = any>(path: string): Promise<T>;
     getRecord<T = any>(path: string | SerializedQuery, idProp?: string): Promise<T>;
     getList<T = any[]>(path: string | SerializedQuery, idProp?: string): Promise<T[]>;
     getSortedList<T = any[]>(query: any, idProp?: string): Promise<T[]>;
-    push<T = any>(path: string, value: T): Promise<any>;
+    push<T = any>(path: string, value: T): Promise<void>;
     exists(path: string): Promise<boolean>;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
 }

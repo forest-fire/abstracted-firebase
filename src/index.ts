@@ -5,9 +5,8 @@ export {
   IFirebaseConfig,
   IFirebaseListener,
   FirebaseBoolean,
-  DataSnapshot,
-  Query,
-  Reference,
-  Database,
-  DebuggingCallback
+  DebuggingCallback,
+  FirebaseEvent
 } from "./db";
+
+export { rtdb, auth } from "firebase-api-surface";
