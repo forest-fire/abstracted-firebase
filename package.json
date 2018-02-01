@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description":
     "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "common-types": "^1.5.1",
-    "firebase-api-surface": "^0.7.2",
     "lodash.first": "^3.0.0",
     "lodash.last": "^3.0.0",
     "moment": "^2.20.1",
@@ -33,7 +32,7 @@
   "peerDependencies": {
     "chance": "^1.0.13",
     "faker": "^4.1.0",
-    "firemock": "^0.15.4"
+    "firemock": "^0.15.5"
   },
   "devDependencies": {
     "@types/chai": "^3.0.0",
@@ -51,8 +50,8 @@
     "chance": "^1.0.13",
     "coveralls": "^2.0.0",
     "faker": "^4.1.0",
-    "firebase-admin": "^5.8.1",
-    "firemock": "^0.15.4",
+    "firebase-api-surface": "^0.7.2",
+    "firemock": "^0.15.5",
     "gitbook-plugin-favicon": "^0.0.2",
     "js-yaml": "^3.9.1",
     "mocha": "^3.0.0",
