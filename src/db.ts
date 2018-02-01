@@ -5,8 +5,7 @@ import * as moment from "moment";
 import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, resetDatabase, Reference } from "firemock";
-import { rtdb } from "firebase-api-surface";
-import { IReference } from "../../firebase-api-surface/lib/storage";
+import { app, rtdb } from "firebase-api-surface";
 
 export type FirebaseEvent =
   | "child_added"
