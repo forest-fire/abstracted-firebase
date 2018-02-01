@@ -1,20 +1,19 @@
-// tslint:disable:no-submodule-imports
-// tslint:disable:no-implicit-dependencies
-import * as admin from "firebase-admin";
-import * as client from "@firebase/database";
-
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import * as moment from "moment";
 import * as process from "process";
 import { slashNotation } from "./util";
-import { Mock, Reference, resetDatabase } from "firemock";
+import { Mock, resetDatabase, Reference } from "firemock";
+import { rtdb } from "firebase-api-surface";
+import { IReference } from "../../firebase-api-surface/lib/storage";
 
-export type Reference = admin.database.Reference | client.Reference;
-export type Query = admin.database.Query | client.Query;
-export type Database = admin.database.Database | client.Database;
-export type DataSnapshot = admin.database.DataSnapshot | client.DataSnapshot;
+export type FirebaseEvent =
+  | "child_added"
+  | "child_removed"
+  | "child_changed"
+  | "child_moved"
+  | "value";
 
 export enum FirebaseBoolean {
   true = 1,
@@ -34,7 +33,7 @@ export interface IFirebaseListener {
 export abstract class RealTimeDB {
   protected static isConnected: boolean = false;
   protected static isAuthorized: boolean = false;
-  protected static connection: Database;
+  protected static connection: rtdb.IFirebaseDatabase;
   protected mocking: boolean = false;
   protected _mock: Mock;
   protected _waitingForConnection: Array<() => void> = [];
@@ -52,10 +51,10 @@ export abstract class RealTimeDB {
   }
 
   /** Get a DB reference for a given path in Firebase */
-  public ref(path: string) {
+  public ref(path: string): rtdb.IReference {
     return this._mocking
-      ? (this.mock.ref(path) as Reference)
-      : (RealTimeDB.connection.ref(path) as Reference);
+      ? (this.mock.ref(path) as rtdb.IReference)
+      : (RealTimeDB.connection.ref(path) as rtdb.IReference);
   }
 
   /**
@@ -104,13 +103,15 @@ export abstract class RealTimeDB {
   }
 
   /** set a "value" in the database at a given path */
-  public async set<T = any>(path: string, value: T) {
+  public async set<T = any>(path: string, value: T): Promise<void> {
     return this.ref(path)
       .set(value)
-      .catch(e => this.handleError(e, "set", `setting value @ "${path}"`));
+      .catch((e: any) =>
+        this.handleError(e, "set", `setting value @ "${path}"`)
+      );
   }
 
-  public async update<T = any>(path: string, value: Partial<T>) {
+  public async update<T = any>(path: string, value: Partial<T>): Promise<any> {
     return this.ref(path).update(value);
   }
 
@@ -126,15 +127,16 @@ export abstract class RealTimeDB {
     });
   }
 
+  /** returns the firebase snapshot at a given path in the database */
   public async getSnapshot(
     path: string | SerializedQuery
-  ): Promise<DataSnapshot> {
+  ): Promise<rtdb.IDataSnapshot> {
     return typeof path === "string"
       ? this.ref(slashNotation(path)).once("value")
       : path.setDB(this).execute();
   }
 
-  /** returns the value at the given path in the database */
+  /** returns the JS value at a given path in the database */
   public async getValue<T = any>(path: string): Promise<T> {
     const snap = await this.getSnapshot(path);
     return snap.val() as T;
@@ -199,7 +201,7 @@ export abstract class RealTimeDB {
    * of the form of "/{path}/{pushkey}/{value}"
    */
   public async push<T = any>(path: string, value: T) {
-    return this.ref(path).push(value);
+    this.ref(path).push(value);
   }
 
   /** validates the existance of a path in the database */
