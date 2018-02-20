@@ -1,6 +1,6 @@
 // tslint:disable:no-implicit-dependencies
 import chalk from "chalk";
-import { exec } from "shelljs";
+import { exec, asyncExec } from "async-shelljs";
 import * as rm from "rimraf";
 import * as process from "process";
 import "../test/testing/test-console";
@@ -16,26 +16,22 @@ function prepOutput(output: string) {
 async function getScope(): Promise<string> {
   let scope: string;
 
-  return new Promise<string>(resolve => {
-    const inspect = stdout.inspect();
-    exec(`npm get files`, (code, output) => {
-      inspect.restore();
-      const result = prepOutput(output);
+  // return new Promise<string>(resolve => {
+  const inspect = stdout.inspect();
+  const result = prepOutput(await asyncExec(`npm get files`));
+  inspect.restore();
+  if (!result) {
+    console.log(
+      chalk.grey(
+        'no files specified with "--files=*" option so all files under src directory will be built\n'
+      )
+    );
+    scope = "";
+  } else {
+    scope = result;
+  }
 
-      if (!result) {
-        console.log(
-          chalk.grey(
-            'no files specified with "--files=*" option so all files under src directory will be built\n'
-          )
-        );
-        scope = "";
-      } else {
-        scope = result;
-      }
-
-      resolve(scope);
-    });
-  });
+  return scope;
 }
 
 async function clearLib() {
