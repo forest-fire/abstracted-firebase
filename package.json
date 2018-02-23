@@ -1,8 +1,7 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.2.2",
-  "description":
-    "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
+  "version": "0.3.0",
+  "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
   "author": "Ken Snyder <ken@ken.net>",
@@ -22,21 +21,21 @@
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
-    "common-types": "^1.5.1",
+    "common-types": "^1.5.4",
+    "firebase-api-surface": "^0.7.11",
     "lodash.first": "^3.0.0",
     "lodash.last": "^3.0.0",
     "moment": "^2.20.1",
-    "serialized-query": "^0.2.8",
+    "serialized-query": "^0.2.9",
     "typed-conversions": "^0.7.3"
   },
   "peerDependencies": {
     "chance": "^1.0.13",
     "faker": "^4.1.0",
-    "firemock": "^0.15.5"
+    "firemock": "^0.15.8"
   },
   "devDependencies": {
-    "@types/chai": "^3.0.0",
-    "@types/chalk": "^0.4.31",
+    "@types/chai": "^4.1.0",
     "@types/chance": "^0.7.34",
     "@types/faker": "^4.1.0",
     "@types/js-yaml": "^3.9.0",
@@ -45,21 +44,19 @@
     "@types/mocha": "^2.0.0",
     "@types/node": "^6.0.0",
     "@types/rimraf": "^2.0.1",
-    "@types/shelljs": "^0.7.4",
-    "chai": "^3.0.0",
+    "async-shelljs": "^0.1.2",
+    "chai": "^4.1.0",
     "chance": "^1.0.13",
-    "coveralls": "^2.0.0",
+    "coveralls": "^3.0.0",
     "faker": "^4.1.0",
-    "firebase-api-surface": "^0.7.2",
-    "firemock": "^0.15.5",
+    "firemock": "^0.15.8",
     "gitbook-plugin-favicon": "^0.0.2",
-    "js-yaml": "^3.9.1",
-    "mocha": "^3.0.0",
-    "nyc": "^10.0.0",
+    "js-yaml": "^3.10.0",
+    "mocha": "^5.0.0",
+    "nyc": "^11.4.0",
     "rimraf": "^2.6.2",
-    "shelljs": "^0.7.8",
-    "test-console": "^1.0.0",
-    "ts-node": "^3.0.0",
+    "test-console": "^1.1.0",
+    "ts-node": "^4.1.0",
     "tslint": "^5.9.1",
     "typescript": "^2.8.0-dev.20180127"
   },
