@@ -33,7 +33,7 @@ export abstract class RealTimeDB {
   protected static isConnected: boolean = false;
   protected static isAuthorized: boolean = false;
   protected static connection: rtdb.IFirebaseDatabase;
-  protected mocking: boolean = false;
+  // protected mocking: boolean = false;
   protected _mock: Mock;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
