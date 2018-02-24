@@ -29,7 +29,7 @@ export interface IFirebaseListener {
   cb: (db: RealTimeDB) => void;
 }
 
-export abstract class RealTimeDB {
+export abstract class RealTimeDB<T = any> {
   protected static isConnected: boolean = false;
   protected static isAuthorized: boolean = false;
   protected static connection: rtdb.IFirebaseDatabase;
@@ -49,7 +49,7 @@ export abstract class RealTimeDB {
   }
 
   public get query() {
-    return SerializedQuery.path;
+    return new SerializedQuery<T>("/");
   }
 
   /** Get a DB reference for a given path in Firebase */
@@ -103,17 +103,17 @@ export abstract class RealTimeDB {
   }
 
   /** set a "value" in the database at a given path */
-  public async set<T = any>(path: string, value: T): Promise<void> {
+  public async set<K = T>(path: string, value: K): Promise<void> {
     return this.ref(path)
       .set(value)
       .catch((e: any) => this.handleError(e, "set", `setting value @ "${path}"`));
   }
 
-  public async update<T = any>(path: string, value: Partial<T>): Promise<any> {
+  public async update<K = T>(path: string, value: Partial<K>): Promise<any> {
     return this.ref(path).update(value);
   }
 
-  public async remove<T = any>(path: string, ignoreMissing = false) {
+  public async remove<K = T>(path: string, ignoreMissing = false) {
     const ref = this.ref(path);
 
     return ref.remove().catch((e: any) => {
@@ -133,9 +133,9 @@ export abstract class RealTimeDB {
   }
 
   /** returns the JS value at a given path in the database */
-  public async getValue<T = any>(path: string): Promise<T> {
+  public async getValue<K = T>(path: string): Promise<K> {
     const snap = await this.getSnapshot(path);
-    return snap.val() as T;
+    return snap.val() as K;
   }
 
   /**
@@ -143,7 +143,7 @@ export abstract class RealTimeDB {
    * and converts it to a JS object where the snapshot's key
    * is included as part of the record (as 'id' by default)
    */
-  public async getRecord<T = any>(path: string | SerializedQuery, idProp = "id"): Promise<T> {
+  public async getRecord<K = T>(path: string | SerializedQuery<K>, idProp = "id"): Promise<K> {
     return this.getSnapshot(path).then(snap => {
       let object = snap.val();
 
@@ -160,9 +160,9 @@ export abstract class RealTimeDB {
    * @param path the path in the database to
    * @param idProp
    */
-  public async getList<T = any[]>(path: string | SerializedQuery, idProp = "id"): Promise<T[]> {
+  public async getList<K = T>(path: string | SerializedQuery<K>, idProp = "id"): Promise<K[]> {
     return this.getSnapshot(path).then(snap => {
-      return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
+      return snap.val() ? convert.snapshotToArray<K>(snap, idProp) : [];
     });
   }
 
@@ -175,9 +175,9 @@ export abstract class RealTimeDB {
    * @param query Firebase "query ref"
    * @param idProp what property name should the Firebase key be converted to (default is "id")
    */
-  public async getSortedList<T = any[]>(query: any, idProp = "id"): Promise<T[]> {
+  public async getSortedList<K = T>(query: any, idProp = "id"): Promise<K[]> {
     return this.getSnapshot(query).then(snap => {
-      return convert.snapshotToArray<T>(snap, idProp);
+      return convert.snapshotToArray<K>(snap, idProp);
     });
   }
 
@@ -187,7 +187,7 @@ export abstract class RealTimeDB {
    * to ensure the value is placed into a Dictionary/Hash structure
    * of the form of "/{path}/{pushkey}/{value}"
    */
-  public async push<T = any>(path: string, value: T) {
+  public async push<K = T>(path: string, value: K) {
     this.ref(path).push(value);
   }
 
