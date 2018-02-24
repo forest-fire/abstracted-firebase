@@ -19,7 +19,6 @@ export declare abstract class RealTimeDB {
     protected static isConnected: boolean;
     protected static isAuthorized: boolean;
     protected static connection: rtdb.IFirebaseDatabase;
-    protected mocking: boolean;
     protected _mock: Mock;
     protected _waitingForConnection: Array<() => void>;
     protected _onConnected: IFirebaseListener[];
@@ -28,6 +27,7 @@ export declare abstract class RealTimeDB {
     protected _mocking: boolean;
     protected _allowMocking: boolean;
     constructor(config?: IFirebaseConfig);
+    readonly query: typeof SerializedQuery.path;
     ref(path: string): rtdb.IReference;
     allowMocking(): void;
     readonly mock: Mock;
