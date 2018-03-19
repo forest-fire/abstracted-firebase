@@ -15,7 +15,7 @@ export interface IFirebaseListener {
     id: string;
     cb: (db: RealTimeDB) => void;
 }
-export declare abstract class RealTimeDB<T = any> {
+export declare abstract class RealTimeDB {
     protected static isConnected: boolean;
     protected static isAuthorized: boolean;
     protected static connection: rtdb.IFirebaseDatabase;
@@ -27,22 +27,22 @@ export declare abstract class RealTimeDB<T = any> {
     protected _mocking: boolean;
     protected _allowMocking: boolean;
     constructor(config?: IFirebaseConfig);
-    readonly query: SerializedQuery<T>;
+    query<T = any>(path: string): SerializedQuery<T>;
     ref(path: string): rtdb.IReference;
     allowMocking(): void;
     readonly mock: Mock;
     resetMockDb(): void;
     waitForConnection(): Promise<void | {}>;
     readonly isConnected: boolean;
-    set<K = T>(path: string, value: K): Promise<void>;
-    update<K = T>(path: string, value: Partial<K>): Promise<any>;
-    remove<K = T>(path: string, ignoreMissing?: boolean): Promise<void>;
+    set<T = T>(path: string, value: T): Promise<void>;
+    update<T = T>(path: string, value: Partial<T>): Promise<any>;
+    remove<T = T>(path: string, ignoreMissing?: boolean): Promise<void>;
     getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot>;
-    getValue<K = T>(path: string): Promise<K>;
-    getRecord<K = T>(path: string | SerializedQuery<K>, idProp?: string): Promise<K>;
-    getList<K = T>(path: string | SerializedQuery<K>, idProp?: string): Promise<K[]>;
-    getSortedList<K = T>(query: any, idProp?: string): Promise<K[]>;
-    push<K = T>(path: string, value: K): Promise<void>;
+    getValue<T = T>(path: string): Promise<T>;
+    getRecord<T = T>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
+    getList<T = T>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
+    getSortedList<T = T>(query: any, idProp?: string): Promise<T[]>;
+    push<T = T>(path: string, value: T): Promise<void>;
     exists(path: string): Promise<boolean>;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
 }

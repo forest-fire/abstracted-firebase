@@ -104,13 +104,28 @@ export abstract class RealTimeDB {
 
   /** set a "value" in the database at a given path */
   public async set<T = T>(path: string, value: T): Promise<void> {
-    return this.ref(path)
-      .set(value)
-      .catch((e: any) => this.handleError(e, "set", `setting value @ "${path}"`));
+    try {
+      return this.ref(path).set(value);
+    } catch (e) {
+      if (e.name === "Error") {
+        e.name = "AbstractedFirebaseSetError";
+      }
+      if (e.message.indexOf("First argument path specified exceeds the maximum depth") !== -1) {
+        e.name = "AbstractedFirebaseSetDepthError";
+      }
+      throw e;
+    }
   }
 
   public async update<T = T>(path: string, value: Partial<T>): Promise<any> {
-    return this.ref(path).update(value);
+    try {
+      return this.ref(path).update(value);
+    } catch (e) {
+      if (e.name === "Error") {
+        e.name = "AbstractedFirebaseUpdateError";
+      }
+      throw e;
+    }
   }
 
   public async remove<T = T>(path: string, ignoreMissing = false) {
