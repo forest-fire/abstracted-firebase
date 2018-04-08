@@ -890,7 +890,7 @@ commander@^2.12.1:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
 
-common-types@^1.1.0, common-types@^1.5.2:
+common-types@^1.1.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.5.2.tgz#36be29dcae6be5e57175690d0ca3ce282b96a0d0"
   dependencies:
@@ -1390,27 +1390,16 @@ firebase-api-surface@^0.7.11:
     "@firebase/util" "^0.1.7"
     common-types "^1.5.4"
 
-firebase-api-surface@^0.7.9:
-  version "0.7.9"
-  resolved "https://registry.yarnpkg.com/firebase-api-surface/-/firebase-api-surface-0.7.9.tgz#d109e672b7281739f353af440633aca22ce67c31"
-  dependencies:
-    "@firebase/app-types" "^0.1.1"
-    "@firebase/auth-types" "^0.1.1"
-    "@firebase/database-types" "^0.1.1"
-    "@firebase/firestore-types" "^0.2.1"
-    "@firebase/messaging-types" "^0.1.1"
-    "@firebase/util" "^0.1.7"
-
 firebase-key@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.1.tgz#5f1fe462c011c7f944f2f0f489c838dd1ed162ef"
 
-firemock@^0.15.8:
-  version "0.15.8"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.15.8.tgz#d5de97b59e26b4d8650c826628100da01d6dc2bf"
+firemock@^0.15.11:
+  version "0.15.11"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.15.11.tgz#05c9288ddb095c5a616c86d621021b3033306b43"
   dependencies:
-    common-types "^1.5.2"
-    firebase-api-surface "^0.7.9"
+    common-types "^1.5.4"
+    firebase-api-surface "^0.7.11"
     firebase-key "^2.0.1"
     gitbook-plugin-favicon "^0.0.2"
     lodash.difference "^4.5.0"
