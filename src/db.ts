@@ -6,6 +6,13 @@ import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, resetDatabase, Reference } from "firemock";
 import { app, rtdb } from "firebase-api-surface";
+import FileDepthExceeded from "./errors/FileDepthExceeded";
+import UndefinedAssignment from "./errors/UndefinedAssignment";
+
+export interface IPathSetter<T = any> {
+  path: string;
+  value: T;
+}
 
 export type FirebaseEvent =
   | "child_added"
@@ -107,22 +114,96 @@ export abstract class RealTimeDB {
     try {
       return this.ref(path).set(value);
     } catch (e) {
+      if (
+        e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1
+      ) {
+        console.log("FILE DEPTH EXCEEDED");
+        throw new FileDepthExceeded(e);
+      }
+
       if (e.name === "Error") {
         e.name = "AbstractedFirebaseSetError";
       }
-      if (e.message.indexOf("First argument path specified exceeds the maximum depth") !== -1) {
-        e.name = "AbstractedFirebaseSetDepthError";
+      if (e.message.indexOf("First argument contains undefined in property") !== -1) {
+        e.name = "FirebaseUndefinedValueAssignment";
+        throw new UndefinedAssignment(e);
       }
       throw e;
     }
   }
 
-  public async update<T = T>(path: string, value: Partial<T>): Promise<any> {
+  /**
+   * Equivalent to Firebase's traditional "multi-path updates" which are
+   * in behaviour are really "multi-path SETs". Calling this function provides
+   * access to simplified API for adding and executing this operation.
+   *
+   * @param paths an array of path and value updates
+   */
+  public multiPathSet() {
+    const mps: IPathSetter[] = [];
+    const ref = this.ref.bind(this);
+    let callback: (err: any, pathSetters: IPathSetter[]) => void;
+    const api = {
+      /** The base reference path which all paths will be relative to */
+      basePath: "/",
+      /** Add in a new path and value to be included in the operation */
+      add<X = any>(pathValue: IPathSetter<X>) {
+        const exists = new Set(api.paths);
+        if (pathValue.path.indexOf("/") === -1) {
+          pathValue.path = "/" + pathValue.path;
+        }
+        if (exists.has(pathValue.path)) {
+          const e: any = new Error(`You have attempted to add the path "${pathValue.path}" twice.`);
+          e.code = "duplicate-path";
+          throw e;
+        }
+        mps.push(pathValue);
+        return api;
+      },
+      get paths() {
+        return mps.map(i => i.path);
+      },
+      /** receive a call back on conclusion of the firebase operation */
+      callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {
+        callback = cb;
+        return;
+      },
+      async execute() {
+        const updateHash: IDictionary = {};
+        mps.map(item => {
+          updateHash[item.path] = item.value;
+        });
+
+        return ref(api.basePath)
+          .update(updateHash)
+          .then(() => {
+            if (callback) {
+              callback(null, mps);
+              return;
+            }
+          })
+          .catch((e: any) => {
+            if (callback) {
+              callback(e, mps);
+            }
+
+            throw e;
+          });
+      }
+    };
+
+    return api;
+  }
+
+  public async update<T = any>(path: string, value: Partial<T>): Promise<any> {
     try {
       return this.ref(path).update(value);
     } catch (e) {
       if (e.name === "Error") {
         e.name = "AbstractedFirebaseUpdateError";
+      }
+      if (e.message.indexOf("First argument path specified exceeds the maximum depth") !== -1) {
+        e.name = "AbstractedFirebaseUpdateDepthError";
       }
       throw e;
     }

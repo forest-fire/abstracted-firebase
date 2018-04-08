@@ -1,6 +1,10 @@
 import { SerializedQuery } from "serialized-query";
 import { Mock } from "firemock";
 import { rtdb } from "firebase-api-surface";
+export interface IPathSetter<T = any> {
+    path: string;
+    value: T;
+}
 export declare type FirebaseEvent = "child_added" | "child_removed" | "child_changed" | "child_moved" | "value";
 export declare enum FirebaseBoolean {
     true = 1,
@@ -35,7 +39,14 @@ export declare abstract class RealTimeDB {
     waitForConnection(): Promise<void | {}>;
     readonly isConnected: boolean;
     set<T = T>(path: string, value: T): Promise<void>;
-    update<T = T>(path: string, value: Partial<T>): Promise<any>;
+    multiPathSet(): {
+        basePath: string;
+        add<X = any>(pathValue: IPathSetter<X>): any;
+        readonly paths: string[];
+        callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
+        execute(): Promise<any>;
+    };
+    update<T = any>(path: string, value: Partial<T>): Promise<any>;
     remove<T = T>(path: string, ignoreMissing?: boolean): Promise<void>;
     getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot>;
     getValue<T = T>(path: string): Promise<T>;
