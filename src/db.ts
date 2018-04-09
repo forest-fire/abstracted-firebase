@@ -209,7 +209,7 @@ export abstract class RealTimeDB {
     }
   }
 
-  public async remove<T = T>(path: string, ignoreMissing = false) {
+  public async remove<T = any>(path: string, ignoreMissing = false) {
     const ref = this.ref(path);
 
     return ref.remove().catch((e: any) => {
@@ -229,7 +229,7 @@ export abstract class RealTimeDB {
   }
 
   /** returns the JS value at a given path in the database */
-  public async getValue<T = T>(path: string): Promise<T> {
+  public async getValue<T = any>(path: string): Promise<T> {
     const snap = await this.getSnapshot(path);
     return snap.val() as T;
   }
@@ -239,7 +239,7 @@ export abstract class RealTimeDB {
    * and converts it to a JS object where the snapshot's key
    * is included as part of the record (as 'id' by default)
    */
-  public async getRecord<T = T>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T> {
+  public async getRecord<T = any>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T> {
     return this.getSnapshot(path).then(snap => {
       let object = snap.val();
 
@@ -252,11 +252,12 @@ export abstract class RealTimeDB {
   }
 
   /**
+   * Get a list of a given type
    *
    * @param path the path in the database to
    * @param idProp
    */
-  public async getList<T = T>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T[]> {
+  public async getList<T = any>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T[]> {
     return this.getSnapshot(path).then(snap => {
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
     });
@@ -271,7 +272,7 @@ export abstract class RealTimeDB {
    * @param query Firebase "query ref"
    * @param idProp what property name should the Firebase key be converted to (default is "id")
    */
-  public async getSortedList<T = T>(query: any, idProp = "id"): Promise<T[]> {
+  public async getSortedList<T = any>(query: any, idProp = "id"): Promise<T[]> {
     return this.getSnapshot(query).then(snap => {
       return convert.snapshotToArray<T>(snap, idProp);
     });
@@ -283,7 +284,7 @@ export abstract class RealTimeDB {
    * to ensure the value is placed into a Dictionary/Hash structure
    * of the form of "/{path}/{pushkey}/{value}"
    */
-  public async push<T = T>(path: string, value: T) {
+  public async push<T = any>(path: string, value: T) {
     this.ref(path).push(value);
   }
 
