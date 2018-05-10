@@ -39,21 +39,22 @@ export declare abstract class RealTimeDB {
     waitForConnection(): Promise<void | {}>;
     readonly isConnected: boolean;
     set<T = T>(path: string, value: T): Promise<void>;
-    multiPathSet(): {
-        basePath: string;
+    multiPathSet(base?: string): {
+        _basePath: string;
+        basePath(path?: string): string | any;
         add<X = any>(pathValue: IPathSetter<X>): any;
         readonly paths: string[];
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
         execute(): Promise<any>;
     };
     update<T = any>(path: string, value: Partial<T>): Promise<any>;
-    remove<T = T>(path: string, ignoreMissing?: boolean): Promise<void>;
+    remove<T = any>(path: string, ignoreMissing?: boolean): Promise<void>;
     getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot>;
-    getValue<T = T>(path: string): Promise<T>;
-    getRecord<T = T>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
-    getList<T = T>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
-    getSortedList<T = T>(query: any, idProp?: string): Promise<T[]>;
-    push<T = T>(path: string, value: T): Promise<void>;
+    getValue<T = any>(path: string): Promise<T>;
+    getRecord<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
+    getList<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
+    getSortedList<T = any>(query: any, idProp?: string): Promise<T[]>;
+    push<T = any>(path: string, value: T): Promise<void>;
     exists(path: string): Promise<boolean>;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
 }
