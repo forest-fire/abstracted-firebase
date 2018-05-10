@@ -236,6 +236,12 @@ function () {
           });
         },
 
+        get fullPaths() {
+          return mps.map(function (i) {
+            return [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
+          });
+        },
+
         callback: function callback(cb) {
           _callback = cb;
           return;
@@ -243,10 +249,15 @@ function () {
         execute: function execute() {
           return __awaiter(this, void 0, void 0, function* () {
             var updateHash = {};
-            mps.map(function (item) {
+            var fullyQualifiedPaths = mps.map(function (i) {
+              return Object.assign({}, i, {
+                path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
+              });
+            });
+            fullyQualifiedPaths.map(function (item) {
               updateHash[item.path] = item.value;
             });
-            return ref(api.basePath).update(updateHash).then(function () {
+            return ref().update(updateHash).then(function () {
               if (_callback) {
                 _callback(null, mps);
 

@@ -175,8 +175,13 @@ export abstract class RealTimeDB {
         mps.push(pathValue);
         return api;
       },
+      /** the relative paths from the base which will be updated upon execution */
       get paths() {
         return mps.map(i => i.path);
+      },
+      /** the absolute paths (including the base offset) which will be updated upon execution */
+      get fullPaths() {
+        return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
       },
       /** receive a call back on conclusion of the firebase operation */
       callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {
@@ -185,11 +190,15 @@ export abstract class RealTimeDB {
       },
       async execute() {
         const updateHash: IDictionary = {};
-        mps.map(item => {
+        const fullyQualifiedPaths = mps.map(i => ({
+          ...i,
+          path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
+        }));
+        fullyQualifiedPaths.map(item => {
           updateHash[item.path] = item.value;
         });
 
-        return ref(api.basePath)
+        return ref()
           .update(updateHash)
           .then(() => {
             if (callback) {
