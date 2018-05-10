@@ -44,6 +44,7 @@ export declare abstract class RealTimeDB {
         basePath(path?: string): string | any;
         add<X = any>(pathValue: IPathSetter<X>): any;
         readonly paths: string[];
+        readonly fullPaths: string[];
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
         execute(): Promise<any>;
     };
