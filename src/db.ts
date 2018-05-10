@@ -77,7 +77,9 @@ export abstract class RealTimeDB {
 
   public get mock() {
     if (!this._mocking && !this._allowMocking) {
-      throw new Error("You can not mock the database without setting mocking in the constructor");
+      throw new Error(
+        "You can not mock the database without setting mocking in the constructor"
+      );
     }
 
     if (!this._mock) {
@@ -115,7 +117,9 @@ export abstract class RealTimeDB {
       return this.ref(path).set(value);
     } catch (e) {
       if (
-        e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1
+        e.message.indexOf(
+          "path specified exceeds the maximum depth that can be written"
+        ) !== -1
       ) {
         console.log("FILE DEPTH EXCEEDED");
         throw new FileDepthExceeded(e);
@@ -139,13 +143,22 @@ export abstract class RealTimeDB {
    *
    * @param paths an array of path and value updates
    */
-  public multiPathSet() {
+  public multiPathSet(base?: string) {
     const mps: IPathSetter[] = [];
     const ref = this.ref.bind(this);
     let callback: (err: any, pathSetters: IPathSetter[]) => void;
     const api = {
       /** The base reference path which all paths will be relative to */
-      basePath: "/",
+      _basePath: base || "/",
+      // a fluent API setter/getter for _basePath
+      basePath(path?: string) {
+        if (path === undefined) {
+          return api._basePath;
+        }
+
+        api._basePath = path;
+        return api;
+      },
       /** Add in a new path and value to be included in the operation */
       add<X = any>(pathValue: IPathSetter<X>) {
         const exists = new Set(api.paths);
@@ -153,7 +166,9 @@ export abstract class RealTimeDB {
           pathValue.path = "/" + pathValue.path;
         }
         if (exists.has(pathValue.path)) {
-          const e: any = new Error(`You have attempted to add the path "${pathValue.path}" twice.`);
+          const e: any = new Error(
+            `You have attempted to add the path "${pathValue.path}" twice.`
+          );
           e.code = "duplicate-path";
           throw e;
         }
@@ -202,14 +217,17 @@ export abstract class RealTimeDB {
       if (e.name === "Error") {
         e.name = "AbstractedFirebaseUpdateError";
       }
-      if (e.message.indexOf("First argument path specified exceeds the maximum depth") !== -1) {
+      if (
+        e.message.indexOf("First argument path specified exceeds the maximum depth") !==
+        -1
+      ) {
         e.name = "AbstractedFirebaseUpdateDepthError";
       }
       throw e;
     }
   }
 
-  public async remove<T = T>(path: string, ignoreMissing = false) {
+  public async remove<T = any>(path: string, ignoreMissing = false) {
     const ref = this.ref(path);
 
     return ref.remove().catch((e: any) => {
@@ -229,7 +247,7 @@ export abstract class RealTimeDB {
   }
 
   /** returns the JS value at a given path in the database */
-  public async getValue<T = T>(path: string): Promise<T> {
+  public async getValue<T = any>(path: string): Promise<T> {
     const snap = await this.getSnapshot(path);
     return snap.val() as T;
   }
@@ -239,7 +257,10 @@ export abstract class RealTimeDB {
    * and converts it to a JS object where the snapshot's key
    * is included as part of the record (as 'id' by default)
    */
-  public async getRecord<T = T>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T> {
+  public async getRecord<T = any>(
+    path: string | SerializedQuery<T>,
+    idProp = "id"
+  ): Promise<T> {
     return this.getSnapshot(path).then(snap => {
       let object = snap.val();
 
@@ -252,11 +273,15 @@ export abstract class RealTimeDB {
   }
 
   /**
+   * Get a list of a given type
    *
    * @param path the path in the database to
    * @param idProp
    */
-  public async getList<T = T>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T[]> {
+  public async getList<T = any>(
+    path: string | SerializedQuery<T>,
+    idProp = "id"
+  ): Promise<T[]> {
     return this.getSnapshot(path).then(snap => {
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
     });
@@ -271,7 +296,7 @@ export abstract class RealTimeDB {
    * @param query Firebase "query ref"
    * @param idProp what property name should the Firebase key be converted to (default is "id")
    */
-  public async getSortedList<T = T>(query: any, idProp = "id"): Promise<T[]> {
+  public async getSortedList<T = any>(query: any, idProp = "id"): Promise<T[]> {
     return this.getSnapshot(query).then(snap => {
       return convert.snapshotToArray<T>(snap, idProp);
     });
@@ -283,7 +308,7 @@ export abstract class RealTimeDB {
    * to ensure the value is placed into a Dictionary/Hash structure
    * of the form of "/{path}/{pushkey}/{value}"
    */
-  public async push<T = T>(path: string, value: T) {
+  public async push<T = any>(path: string, value: T) {
     this.ref(path).push(value);
   }
 
