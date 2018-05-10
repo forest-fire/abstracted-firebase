@@ -7,7 +7,7 @@
   "repository": "https://github.com/forest-fire/abstracted-firebase",
   "author": "Ken Snyder <ken@ken.net>",
   "keywords": ["firebase", "typescript", "utility"],
-  "files": ["lib"],
+  "files": ["lib", "dist"],
   "main": "lib/index.js",
   "module": "dist/abstracted-firebase.es.js",
   "browser": "dist/abstracted-firebase.min.js",
