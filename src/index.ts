@@ -1,5 +1,6 @@
 import { RealTimeDB } from "./db";
-export default RealTimeDB;
+import FileDepthExceeded from "./errors/FileDepthExceeded";
+import UndefinedAssignment from "./errors/UndefinedAssignment";
 export {
   RealTimeDB,
   IFirebaseConfig,
@@ -10,3 +11,4 @@ export {
 } from "./db";
 
 export { rtdb, auth } from "firebase-api-surface";
+export { FileDepthExceeded, UndefinedAssignment };

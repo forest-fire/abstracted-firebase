@@ -1,8 +1,6 @@
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
-import * as moment from "moment";
-import * as process from "process";
 import { slashNotation } from "./util";
 import { Mock, resetDatabase, Reference } from "firemock";
 import { app, rtdb } from "firebase-api-surface";
