@@ -14,8 +14,8 @@
     "lib",
     "dist"
   ],
-  "main": "lib/index.js",
-  "module": "dist/abstracted-firebase.es.js",
+  "module": "lib/index.js",
+  "main": "dist/abstracted-firebase.cjs.js",
   "browser": "dist/abstracted-firebase.min.js",
   "typings": "lib/index.d.ts",
   "scripts": {
