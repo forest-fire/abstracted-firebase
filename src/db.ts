@@ -1,13 +1,12 @@
 import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
-import * as moment from "moment";
-import * as process from "process";
 import { slashNotation } from "./util";
-import { Mock, resetDatabase, Reference } from "firemock";
-import { app, rtdb } from "firebase-api-surface";
+// import { Mock, resetDatabase } from "firemock";
+import { rtdb } from "firebase-api-surface";
 import FileDepthExceeded from "./errors/FileDepthExceeded";
 import UndefinedAssignment from "./errors/UndefinedAssignment";
+import { Z_VERSION_ERROR } from "zlib";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -40,7 +39,9 @@ export abstract class RealTimeDB {
   protected static isConnected: boolean = false;
   protected static isAuthorized: boolean = false;
   protected static connection: rtdb.IFirebaseDatabase;
-  protected _mock: Mock;
+  // tslint:disable-next-line:whitespace
+  protected _mock: import("firemock").Mock;
+  protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
   protected _onDisconnected: IFirebaseListener[] = [];
@@ -50,8 +51,7 @@ export abstract class RealTimeDB {
 
   constructor(config: IFirebaseConfig = {}) {
     if (config.mocking) {
-      this._mocking = true;
-      this._mock = new Mock();
+      this.getFireMock();
     }
   }
 
@@ -82,17 +82,17 @@ export abstract class RealTimeDB {
       );
     }
 
-    if (!this._mock) {
-      this._mock = new Mock();
-      resetDatabase();
-    }
+    // if (!this._mock) {
+    //   this._mock = new Mock();
+    //   this._resetMockDb();
+    // }
 
     return this._mock;
   }
 
   /** clears all "connections" and state from the database */
   public resetMockDb() {
-    resetDatabase();
+    this._resetMockDb();
   }
 
   public async waitForConnection() {
@@ -332,5 +332,18 @@ export abstract class RealTimeDB {
       code: `firebase/${name}`,
       message: message + e.message || e
     });
+  }
+
+  private async getFireMock() {
+    try {
+      const FireMock = await import("firemock");
+      this._mock = new FireMock.Mock();
+      this._mock.db.resetDatabase();
+      this._mocking = true;
+      return FireMock;
+    } catch (e) {
+      console.error(`There was an error asynchronously loading Firemock library`, e);
+      this._mocking = false;
+    }
   }
 }

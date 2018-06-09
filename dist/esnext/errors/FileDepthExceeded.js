@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class FirebaseDepthExceeded extends Error {
+export default class FirebaseDepthExceeded extends Error {
     constructor(e) {
         super(e.message);
         this.stack = e.stack;
@@ -9,4 +7,3 @@ class FirebaseDepthExceeded extends Error {
         }
     }
 }
-exports.default = FirebaseDepthExceeded;

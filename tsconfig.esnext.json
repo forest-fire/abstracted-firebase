@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "es2017",
     "noImplicitAny": true,
-    "outDir": "./lib",
+    "outDir": "./dist/esnext",
     "preserveConstEnums": true,
-    "removeComments": true,
+    "removeComments": false,
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src/**/*"],
