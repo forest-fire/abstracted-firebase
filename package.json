@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.5.5",
+  "version": "0.7.0",
   "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -14,14 +14,14 @@
     "lib",
     "dist"
   ],
-  "module": "lib/index.js",
+  "module": "dist/esnext/index.js",
   "main": "dist/abstracted-firebase.cjs.js",
-  "browser": "dist/abstracted-firebase.min.js",
+  "browser": "dist/abstracted-firebase.umd.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
-    "build": "ts-node ./scripts/build.ts",
+    "build": "tslint src/**/*.ts && tsc -P tsconfig.esnext.json && rollup -c rollup.umd.config.js && rollup -c rollup.cjs.config.js",
     "test": "ts-node ./scripts/test.ts",
     "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
     "watch": "npm run build -- --watch",
@@ -29,26 +29,21 @@
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
-    "common-types": "^1.7.35",
-    "firebase-api-surface": "^0.7.12",
-    "lodash.first": "^3.0.0",
-    "lodash.last": "^3.0.0",
-    "moment": "^2.20.1",
+    "common-types": "^1.7.36",
+    "firebase-api-surface": "^0.8.0",
+    "lodash": "^4.17.10",
     "serialized-query": "^0.3.8",
-    "typed-conversions": "^0.7.3"
+    "typed-conversions": "^0.8.3"
   },
   "peerDependencies": {
-    "chance": "^1.0.16",
-    "faker": "^4.1.0",
-    "firemock": "^0.16.0"
+    "firemock": "^0.17.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
     "@types/chance": "^0.7.34",
     "@types/faker": "^4.1.0",
     "@types/js-yaml": "^3.9.0",
-    "@types/lodash.first": "^3.0.3",
-    "@types/lodash.last": "^3.0.3",
+    "@types/lodash": "^4.14.0",
     "@types/mocha": "^5.2.1",
     "@types/node": "^8.0.0",
     "@types/rimraf": "^2.0.1",
@@ -58,8 +53,7 @@
     "chance": "^1.0.16",
     "coveralls": "^3.0.0",
     "faker": "^4.1.0",
-    "firemock": "^0.16.0",
-    "gitbook-plugin-favicon": "^0.0.2",
+    "firemock": "^0.17.0",
     "js-yaml": "^3.10.0",
     "mocha": "^5.0.0",
     "nyc": "^11.4.0",
@@ -70,7 +64,7 @@
     "typescript": "^3.0.0-dev.20180606"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "nyc": {
     "include": [

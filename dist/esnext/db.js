@@ -1,42 +1,14 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var convert = require('typed-conversions');
-var serializedQuery = require('serialized-query');
-var firebaseApiSurface = require('firebase-api-surface');
-
-class FirebaseDepthExceeded extends Error {
-    constructor(e) {
-        super(e.message);
-        this.stack = e.stack;
-        if (e.name === "Error") {
-            e.name = "AbstractedFirebase";
-        }
-    }
-}
-
-class UndefinedAssignment extends Error {
-    constructor(e) {
-        super(e.message);
-        this.stack = e.stack;
-        if (e.name === "Error") {
-            e.name = "AbstractedFirebase";
-        }
-    }
-}
-
-function slashNotation(path) {
-    return path.substr(0, 5) === ".info"
-        ? path.substr(0, 5) + path.substring(5).replace(/\./g, "/")
-        : path.replace(/\./g, "/");
-}
-
+import * as convert from "typed-conversions";
+import { SerializedQuery } from "serialized-query";
+import { slashNotation } from "./util";
+import FileDepthExceeded from "./errors/FileDepthExceeded";
+import UndefinedAssignment from "./errors/UndefinedAssignment";
+export var FirebaseBoolean;
 (function (FirebaseBoolean) {
     FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
     FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
-})(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
-class RealTimeDB {
+})(FirebaseBoolean || (FirebaseBoolean = {}));
+export class RealTimeDB {
     constructor(config = {}) {
         this._waitingForConnection = [];
         this._onConnected = [];
@@ -49,7 +21,7 @@ class RealTimeDB {
         }
     }
     query(path) {
-        return serializedQuery.SerializedQuery.path(path);
+        return SerializedQuery.path(path);
     }
     /** Get a DB reference for a given path in Firebase */
     ref(path) {
@@ -101,7 +73,7 @@ class RealTimeDB {
         catch (e) {
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                 console.log("FILE DEPTH EXCEEDED");
-                throw new FirebaseDepthExceeded(e);
+                throw new FileDepthExceeded(e);
             }
             if (e.name === "Error") {
                 e.name = "AbstractedFirebaseSetError";
@@ -282,7 +254,7 @@ class RealTimeDB {
     }
     async getFireMock() {
         try {
-            const FireMock = await Promise.resolve(require("firemock"));
+            const FireMock = await import("firemock");
             this._mock = new FireMock.Mock();
             this._mock.db.resetDatabase();
             this._mocking = true;
@@ -296,8 +268,3 @@ class RealTimeDB {
 }
 RealTimeDB.isConnected = false;
 RealTimeDB.isAuthorized = false;
-
-exports.rtdb = firebaseApiSurface.rtdb;
-exports.FileDepthExceeded = FirebaseDepthExceeded;
-exports.UndefinedAssignment = UndefinedAssignment;
-exports.RealTimeDB = RealTimeDB;

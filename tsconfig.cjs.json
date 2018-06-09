@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "target": "es2017",
     "noImplicitAny": true,
-    "outDir": "./lib",
+    "outDir": "./dist/cjs",
     "preserveConstEnums": true,
     "removeComments": true,
     "typeRoots": ["./node_modules/@types"]

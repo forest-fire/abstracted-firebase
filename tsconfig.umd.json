@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "module": "commonjs",
+    "module": "umd",
     "moduleResolution": "node",
     "target": "es2017",
     "noImplicitAny": true,
-    "outDir": "./lib",
+    "outDir": "./dist/umd",
     "preserveConstEnums": true,
     "removeComments": true,
     "typeRoots": ["./node_modules/@types"]

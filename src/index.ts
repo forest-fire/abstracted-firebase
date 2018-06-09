@@ -1,4 +1,3 @@
-import { RealTimeDB } from "./db";
 import FileDepthExceeded from "./errors/FileDepthExceeded";
 import UndefinedAssignment from "./errors/UndefinedAssignment";
 export {
@@ -10,5 +9,5 @@ export {
   FirebaseEvent
 } from "./db";
 
-export { rtdb, auth } from "firebase-api-surface";
+export { rtdb } from "firebase-api-surface";
 export { FileDepthExceeded, UndefinedAssignment };
