@@ -2,11 +2,9 @@ import { IDictionary } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
-// import { Mock, resetDatabase } from "firemock";
 import { rtdb } from "firebase-api-surface";
 import FileDepthExceeded from "./errors/FileDepthExceeded";
 import UndefinedAssignment from "./errors/UndefinedAssignment";
-import { Z_VERSION_ERROR } from "zlib";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -36,9 +34,8 @@ export interface IFirebaseListener {
 }
 
 export abstract class RealTimeDB {
-  protected static isConnected: boolean = false;
-  protected static isAuthorized: boolean = false;
-  protected static connection: rtdb.IFirebaseDatabase;
+  protected _isConnected: boolean = false;
+  protected _database: rtdb.IFirebaseDatabase;
   // tslint:disable-next-line:whitespace
   protected _mock: import("firemock").Mock;
   protected _resetMockDb: () => void;
@@ -59,11 +56,13 @@ export abstract class RealTimeDB {
     return SerializedQuery.path<T>(path);
   }
 
+  public abstract get isAuthorized(): boolean;
+
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string): rtdb.IReference {
     return this._mocking
       ? (this.mock.ref(path) as rtdb.IReference)
-      : (RealTimeDB.connection.ref(path) as rtdb.IReference);
+      : (this._database.ref(path) as rtdb.IReference);
   }
 
   /**
@@ -82,11 +81,6 @@ export abstract class RealTimeDB {
       );
     }
 
-    // if (!this._mock) {
-    //   this._mock = new Mock();
-    //   this._resetMockDb();
-    // }
-
     return this._mock;
   }
 
@@ -96,7 +90,7 @@ export abstract class RealTimeDB {
   }
 
   public async waitForConnection() {
-    if (RealTimeDB.isConnected) {
+    if (this.isConnected) {
       return Promise.resolve();
     }
     return new Promise(resolve => {
@@ -108,7 +102,7 @@ export abstract class RealTimeDB {
   }
 
   public get isConnected() {
-    return RealTimeDB.isConnected;
+    return this._isConnected;
   }
 
   /** set a "value" in the database at a given path */
@@ -336,6 +330,7 @@ export abstract class RealTimeDB {
 
   private async getFireMock() {
     try {
+      // tslint:disable-next-line:no-implicit-dependencies
       const FireMock = await import("firemock");
       this._mock = new FireMock.Mock();
       this._mock.db.resetDatabase();

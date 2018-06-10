@@ -10,6 +10,8 @@ export var FirebaseBoolean;
 })(FirebaseBoolean || (FirebaseBoolean = {}));
 export class RealTimeDB {
     constructor(config = {}) {
+        this._isConnected = false;
+        this._isAuthorized = false;
         this._waitingForConnection = [];
         this._onConnected = [];
         this._onDisconnected = [];
@@ -27,7 +29,7 @@ export class RealTimeDB {
     ref(path) {
         return this._mocking
             ? this.mock.ref(path)
-            : RealTimeDB.connection.ref(path);
+            : this._database.ref(path);
     }
     /**
      * Typically mocking functionality is disabled if mocking is not on
@@ -41,10 +43,6 @@ export class RealTimeDB {
         if (!this._mocking && !this._allowMocking) {
             throw new Error("You can not mock the database without setting mocking in the constructor");
         }
-        // if (!this._mock) {
-        //   this._mock = new Mock();
-        //   this._resetMockDb();
-        // }
         return this._mock;
     }
     /** clears all "connections" and state from the database */
@@ -52,7 +50,7 @@ export class RealTimeDB {
         this._resetMockDb();
     }
     async waitForConnection() {
-        if (RealTimeDB.isConnected) {
+        if (this.isConnected) {
             return Promise.resolve();
         }
         return new Promise(resolve => {
@@ -63,7 +61,7 @@ export class RealTimeDB {
         });
     }
     get isConnected() {
-        return RealTimeDB.isConnected;
+        return this._isConnected;
     }
     /** set a "value" in the database at a given path */
     async set(path, value) {
@@ -254,6 +252,7 @@ export class RealTimeDB {
     }
     async getFireMock() {
         try {
+            // tslint:disable-next-line:no-implicit-dependencies
             const FireMock = await import("firemock");
             this._mock = new FireMock.Mock();
             this._mock.db.resetDatabase();
@@ -266,5 +265,3 @@ export class RealTimeDB {
         }
     }
 }
-RealTimeDB.isConnected = false;
-RealTimeDB.isAuthorized = false;

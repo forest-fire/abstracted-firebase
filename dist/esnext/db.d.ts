@@ -19,9 +19,9 @@ export interface IFirebaseListener {
     cb: (db: RealTimeDB) => void;
 }
 export declare abstract class RealTimeDB {
-    protected static isConnected: boolean;
-    protected static isAuthorized: boolean;
-    protected static connection: rtdb.IFirebaseDatabase;
+    protected _isConnected: boolean;
+    protected _isAuthorized: boolean;
+    protected _database: rtdb.IFirebaseDatabase;
     protected _mock: import("firemock").Mock;
     protected _resetMockDb: () => void;
     protected _waitingForConnection: Array<() => void>;
@@ -40,7 +40,7 @@ export declare abstract class RealTimeDB {
      * where the mock functionality is still useful for building a base state.
      */
     allowMocking(): void;
-    readonly mock: import("firemock/lib/mock").default;
+    readonly mock: import("firemock/dist/esnext/mock").default;
     /** clears all "connections" and state from the database */
     resetMockDb(): void;
     waitForConnection(): Promise<void | {}>;
