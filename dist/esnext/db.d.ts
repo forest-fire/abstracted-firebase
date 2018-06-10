@@ -20,7 +20,6 @@ export interface IFirebaseListener {
 }
 export declare abstract class RealTimeDB {
     protected _isConnected: boolean;
-    protected _isAuthorized: boolean;
     protected _database: rtdb.IFirebaseDatabase;
     protected _mock: import("firemock").Mock;
     protected _resetMockDb: () => void;
