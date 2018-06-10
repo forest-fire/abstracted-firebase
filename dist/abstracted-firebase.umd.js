@@ -1,8 +1,10 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('typed-conversions'), require('serialized-query'), require('firebase-api-surface')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'typed-conversions', 'serialized-query', 'firebase-api-surface'], factory) :
-    (factory((global.AbstractedFirebase = {}),global.convert,global.serializedQuery,global.firebaseApiSurface));
-}(this, (function (exports,convert,serializedQuery,firebaseApiSurface) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('common-types'), require('typed-conversions'), require('serialized-query'), require('wait-in-parallel'), require('firebase-api-surface')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'common-types', 'typed-conversions', 'serialized-query', 'wait-in-parallel', 'firebase-api-surface'], factory) :
+    (factory((global.AbstractedFirebase = {}),global.commonTypes,global.convert,global.serializedQuery,global.Parallel,global.firebaseApiSurface));
+}(this, (function (exports,commonTypes,convert,serializedQuery,Parallel,firebaseApiSurface) { 'use strict';
+
+    Parallel = Parallel && Parallel.hasOwnProperty('default') ? Parallel['default'] : Parallel;
 
     class FirebaseDepthExceeded extends Error {
         constructor(e) {
@@ -29,25 +31,45 @@
             ? path.substr(0, 5) + path.substring(5).replace(/\./g, "/")
             : path.replace(/\./g, "/");
     }
+    function _getFirebaseType(context, kind) {
+        if (!this.app) {
+            const e = new Error(`You must first connect before using the ${kind}() API`);
+            e.name = "NotAllowed";
+            throw e;
+        }
+        const property = `_${kind}`;
+        if (!context[property]) {
+            context[property] = this.app.storage();
+        }
+        return context[property];
+    }
 
     (function (FirebaseBoolean) {
         FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
         FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
     })(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
+    /** time by which the dynamically loaded mock library should be loaded */
+    const MOCK_LOADING_TIMEOUT = 2000;
     class RealTimeDB {
-        constructor(config = {}) {
+        constructor() {
+            this.CONNECTION_TIMEOUT = 5000;
             this._isConnected = false;
+            this._mockLoadingState = "not-applicable";
             this._waitingForConnection = [];
             this._onConnected = [];
             this._onDisconnected = [];
             this._debugging = false;
             this._mocking = false;
             this._allowMocking = false;
+        }
+        initialize(config = {}) {
             if (config.mocking) {
                 this._mocking = true;
-                this.getFireMock().then(() => {
-                    console.log("mocking db established");
-                });
+                this.getFireMock();
+            }
+            else {
+                this._mocking = false;
+                this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
             }
         }
         query(path) {
@@ -59,18 +81,15 @@
                 ? this.mock.ref(path)
                 : this._database.ref(path);
         }
-        /**
-         * Typically mocking functionality is disabled if mocking is not on
-         * but there are cases -- particular in testing against a real DB --
-         * where the mock functionality is still useful for building a base state.
-         */
-        allowMocking() {
-            this._allowMocking = true;
-        }
         get mock() {
             if (!this._mocking && !this._allowMocking) {
                 const e = new Error("You can not mock the database without setting mocking in the constructor");
                 e.name = "AbstractedFirebase::NotAllowed";
+                throw e;
+            }
+            if (this._mockLoadingState === "loading") {
+                const e = new Error(`Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`);
+                e.name = "AbstractedFirebase::AsyncError";
                 throw e;
             }
             if (!this._mock) {
@@ -80,20 +99,39 @@
             }
             return this._mock;
         }
-        /** clears all "connections" and state from the database */
-        resetMockDb() {
-            this._resetMockDb();
-        }
         async waitForConnection() {
-            if (this.isConnected) {
-                return Promise.resolve();
+            if (this._mocking) {
+                // MOCKING
+                if (this._mockLoadingState === "loaded") {
+                    return;
+                }
+                const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
+                while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
+                    await commonTypes.wait(1);
+                }
+                return;
             }
-            return new Promise(resolve => {
-                const cb = () => {
-                    resolve();
+            else {
+                // NON-MOCKING
+                if (this.isConnected) {
+                    return;
+                }
+                const connectionEvent = async () => {
+                    this._eventManager.once("connection", (state) => {
+                        if (state) {
+                            return;
+                        }
+                        else {
+                            throw Error(`While waiting for connection received a disconnect message`);
+                        }
+                    });
                 };
-                this._waitingForConnection.push(cb);
-            });
+                const p = new Parallel();
+                p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
+                await p.isDone();
+                this._isConnected = true;
+                return this;
+            }
         }
         get isConnected() {
             return this._isConnected;
@@ -287,18 +325,20 @@
         }
         async getFireMock() {
             try {
+                this._mockLoadingState = "loading";
                 // tslint:disable-next-line:no-implicit-dependencies
                 const FireMock = await import("firemock");
+                this._mockLoadingState = "loaded";
                 this._mock = new FireMock.Mock();
-                this._mock.db.resetDatabase();
+                this._isConnected = true;
                 this._mocking = true;
-                return FireMock;
             }
             catch (e) {
-                console.error(`There was an error asynchronously loading Firemock library.`, e.message);
-                console.log(`The stack trace was:\n`, e.stack);
-                console.info(`\nNo error thrown but no mocking functionality is available!`);
-                this._mocking = false;
+                console.error(`There was an error asynchronously loading Firemock library.`);
+                if (e.stack) {
+                    console.log(`The stack trace was:\n`, e.stack);
+                }
+                throw e;
             }
         }
     }
@@ -307,6 +347,7 @@
     exports.FileDepthExceeded = FirebaseDepthExceeded;
     exports.UndefinedAssignment = UndefinedAssignment;
     exports.RealTimeDB = RealTimeDB;
+    exports._getFirebaseType = _getFirebaseType;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
