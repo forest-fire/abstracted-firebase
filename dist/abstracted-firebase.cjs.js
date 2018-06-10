@@ -46,6 +46,7 @@ class RealTimeDB {
         this._mocking = false;
         this._allowMocking = false;
         if (config.mocking) {
+            this._mocking = true;
             this.getFireMock();
         }
     }
