@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('typed-conversions'), require('serialized-query'), require('firebase-api-surface')) :
     typeof define === 'function' && define.amd ? define(['exports', 'typed-conversions', 'serialized-query', 'firebase-api-surface'], factory) :
-    (factory((global['abstracted-firebase'] = {}),global.convert,global.serializedQuery,global.firebaseApiSurface));
+    (factory((global.AbstractedFirebase = {}),global.convert,global.serializedQuery,global.firebaseApiSurface));
 }(this, (function (exports,convert,serializedQuery,firebaseApiSurface) { 'use strict';
 
     class FirebaseDepthExceeded extends Error {
@@ -36,6 +36,8 @@
     })(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
     class RealTimeDB {
         constructor(config = {}) {
+            this._isConnected = false;
+            this._isAuthorized = false;
             this._waitingForConnection = [];
             this._onConnected = [];
             this._onDisconnected = [];
@@ -53,7 +55,7 @@
         ref(path) {
             return this._mocking
                 ? this.mock.ref(path)
-                : RealTimeDB.connection.ref(path);
+                : this._database.ref(path);
         }
         /**
          * Typically mocking functionality is disabled if mocking is not on
@@ -67,10 +69,6 @@
             if (!this._mocking && !this._allowMocking) {
                 throw new Error("You can not mock the database without setting mocking in the constructor");
             }
-            // if (!this._mock) {
-            //   this._mock = new Mock();
-            //   this._resetMockDb();
-            // }
             return this._mock;
         }
         /** clears all "connections" and state from the database */
@@ -78,7 +76,7 @@
             this._resetMockDb();
         }
         async waitForConnection() {
-            if (RealTimeDB.isConnected) {
+            if (this.isConnected) {
                 return Promise.resolve();
             }
             return new Promise(resolve => {
@@ -89,7 +87,7 @@
             });
         }
         get isConnected() {
-            return RealTimeDB.isConnected;
+            return this._isConnected;
         }
         /** set a "value" in the database at a given path */
         async set(path, value) {
@@ -280,6 +278,7 @@
         }
         async getFireMock() {
             try {
+                // tslint:disable-next-line:no-implicit-dependencies
                 const FireMock = await import("firemock");
                 this._mock = new FireMock.Mock();
                 this._mock.db.resetDatabase();
@@ -292,8 +291,6 @@
             }
         }
     }
-    RealTimeDB.isConnected = false;
-    RealTimeDB.isAuthorized = false;
 
     exports.rtdb = firebaseApiSurface.rtdb;
     exports.FileDepthExceeded = FirebaseDepthExceeded;
@@ -303,3 +300,4 @@
     Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=abstracted-firebase.umd.js.map

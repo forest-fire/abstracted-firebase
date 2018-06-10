@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.6.0",
+  "version": "0.10.0",
   "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -11,17 +11,16 @@
     "utility"
   ],
   "files": [
-    "lib",
     "dist"
   ],
   "module": "dist/esnext/index.js",
   "main": "dist/abstracted-firebase.cjs.js",
   "browser": "dist/abstracted-firebase.umd.js",
-  "typings": "lib/index.d.ts",
+  "typings": "dist/esnext/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
-    "build": "tslint src/**/*.ts && tsc -P tsconfig.esnext.json && rollup -c rollup.umd.config.js && rollup -c rollup.cjs.config.js",
+    "build": "tslint src/**/*.ts && tsc -P tsconfig.esnext.json && rollup -c rollup.config.js",
     "test": "ts-node ./scripts/test.ts",
     "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
     "watch": "npm run build -- --watch",
@@ -30,13 +29,10 @@
   },
   "dependencies": {
     "common-types": "^1.7.36",
-    "firebase-api-surface": "^0.8.0",
+    "firebase-api-surface": "^0.8.3",
     "lodash": "^4.17.10",
     "serialized-query": "^0.3.8",
     "typed-conversions": "^0.8.3"
-  },
-  "peerDependencies": {
-    "firemock": "^0.17.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
@@ -47,16 +43,15 @@
     "@types/mocha": "^5.2.1",
     "@types/node": "^8.0.0",
     "@types/rimraf": "^2.0.1",
-    "abstracted-admin": "^0.9.8",
     "async-shelljs": "^0.1.2",
     "chai": "^4.1.0",
     "chance": "^1.0.16",
     "coveralls": "^3.0.0",
     "faker": "^4.1.0",
-    "firemock": "^0.17.0",
-    "js-yaml": "^3.10.0",
-    "mocha": "^5.0.0",
-    "nyc": "^11.4.0",
+    "firemock": "^0.17.2",
+    "js-yaml": "^3.12.0",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "rimraf": "^2.6.2",
     "test-console": "^1.1.0",
     "ts-node": "^6.1.0",
