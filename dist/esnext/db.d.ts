@@ -106,5 +106,5 @@ export declare abstract class RealTimeDB {
     /** validates the existance of a path in the database */
     exists(path: string): Promise<boolean>;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
-    private getFireMock;
+    protected getFireMock(): Promise<typeof import("firemock")>;
 }
