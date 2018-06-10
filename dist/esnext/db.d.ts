@@ -29,7 +29,6 @@ export declare abstract class RealTimeDB {
     protected _debugging: boolean;
     protected _mocking: boolean;
     protected _allowMocking: boolean;
-    constructor(config?: IFirebaseConfig);
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
     ref(path: string): rtdb.IReference;
@@ -105,6 +104,14 @@ export declare abstract class RealTimeDB {
     push<T = any>(path: string, value: T): Promise<void>;
     /** validates the existance of a path in the database */
     exists(path: string): Promise<boolean>;
+    /**
+     * initialize
+     *
+     * Allows the core module to initialize the object after the
+     * client or admin modules constructors are called
+     *
+     */
+    protected initialize(config?: IFirebaseConfig): void;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
     protected getFireMock(): Promise<typeof import("firemock")>;
 }

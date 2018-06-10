@@ -35,7 +35,7 @@
         FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
     })(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
     class RealTimeDB {
-        constructor(config = {}) {
+        constructor() {
             this._isConnected = false;
             this._waitingForConnection = [];
             this._onConnected = [];
@@ -43,12 +43,6 @@
             this._debugging = false;
             this._mocking = false;
             this._allowMocking = false;
-            if (config.mocking) {
-                this._mocking = true;
-                this.getFireMock().then(() => {
-                    console.log("mocking db established");
-                });
-            }
         }
         query(path) {
             return serializedQuery.SerializedQuery.path(path);
@@ -277,6 +271,21 @@
         /** validates the existance of a path in the database */
         async exists(path) {
             return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
+        }
+        /**
+         * initialize
+         *
+         * Allows the core module to initialize the object after the
+         * client or admin modules constructors are called
+         *
+         */
+        initialize(config = {}) {
+            if (config.mocking) {
+                this._mocking = true;
+                this.getFireMock().then(() => {
+                    console.log("mocking db established");
+                });
+            }
         }
         handleError(e, name, message = "") {
             console.error(`Error ${message}:`, e);
