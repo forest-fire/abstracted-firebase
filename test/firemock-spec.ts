@@ -27,7 +27,7 @@ describe("FireMock", () => {
     expect(foo).to.equal("bar");
   });
 
-  it("Asking client for a mock DB gives back a Mock object", async () => {
+  it.only("Asking fakeDB for a mock DB gives back a Mock object", async () => {
     const mockDb = new FakeDB({ mocking: true });
     await mockDb.waitForConnection();
     expect(mockDb.mock).to.be.instanceOf(Mock);

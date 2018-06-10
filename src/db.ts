@@ -5,6 +5,7 @@ import { slashNotation } from "./util";
 import { rtdb } from "firebase-api-surface";
 import FileDepthExceeded from "./errors/FileDepthExceeded";
 import UndefinedAssignment from "./errors/UndefinedAssignment";
+import Parallel from "wait-in-parallel";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -37,10 +38,18 @@ export interface IFirebaseListener {
   cb: (db: RealTimeDB) => void;
 }
 
+export interface IEmitter {
+  emit: (event: string | symbol, ...args: any[]) => boolean;
+  on: (event: string, value: any) => void;
+  once: (event: string, value: any) => void;
+}
+
 export abstract class RealTimeDB {
+  public CONNECTION_TIMEOUT = 5000;
+
+  protected abstract _eventManager: IEmitter;
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
-  protected _database: rtdb.IFirebaseDatabase;
   // tslint:disable-next-line:whitespace
   protected _mock: import("firemock").Mock;
   protected _resetMockDb: () => void;
@@ -51,10 +60,20 @@ export abstract class RealTimeDB {
   protected _mocking: boolean = false;
   protected _allowMocking: boolean = false;
 
-  constructor(config: IFirebaseConfig = {}) {
+  protected app: any;
+  protected _database: rtdb.IFirebaseDatabase;
+  protected abstract _firestore: any;
+  protected abstract _storage: any;
+  protected abstract _messaging: any;
+  protected abstract _auth: any;
+
+  public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {
       this._mocking = true;
       this.getFireMock();
+    } else {
+      this._mocking = false;
+      this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
     }
   }
 
@@ -67,15 +86,6 @@ export abstract class RealTimeDB {
     return this._mocking
       ? (this.mock.ref(path) as rtdb.IReference)
       : (this._database.ref(path) as rtdb.IReference);
-  }
-
-  /**
-   * Typically mocking functionality is disabled if mocking is not on
-   * but there are cases -- particular in testing against a real DB --
-   * where the mock functionality is still useful for building a base state.
-   */
-  public allowMocking() {
-    this._allowMocking = true;
   }
 
   public get mock() {
@@ -103,14 +113,12 @@ export abstract class RealTimeDB {
     return this._mock;
   }
 
-  /** clears all "connections" and state from the database */
-  public resetMockDb() {
-    this._resetMockDb();
-  }
-
   public async waitForConnection() {
     if (this._mocking) {
       // MOCKING
+      if (this._mockLoadingState === "loaded") {
+        return;
+      }
       const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
       while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
         await wait(1);
@@ -122,12 +130,23 @@ export abstract class RealTimeDB {
       if (this.isConnected) {
         return;
       }
-      return new Promise(resolve => {
-        const cb = () => {
-          resolve();
-        };
-        this._waitingForConnection.push(cb);
-      });
+
+      const connectionEvent = async () => {
+        this._eventManager.once("connection", (state: boolean) => {
+          if (state) {
+            return;
+          } else {
+            throw Error(`While waiting for connection received a disconnect message`);
+          }
+        });
+      };
+
+      const p = new Parallel();
+      p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
+      await p.isDone();
+      this._isConnected = true;
+
+      return this;
     }
   }
 
@@ -350,6 +369,9 @@ export abstract class RealTimeDB {
     return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
   }
 
+  protected abstract connectToFirebase(config: any): Promise<void>;
+  protected abstract listenForConnectionStatus(): void;
+
   protected handleError(e: any, name: string, message = "") {
     console.error(`Error ${message}:`, e);
     return Promise.reject({
@@ -365,6 +387,7 @@ export abstract class RealTimeDB {
       const FireMock = await import("firemock");
       this._mockLoadingState = "loaded";
       this._mock = new FireMock.Mock();
+      this._isConnected = true;
       this._mocking = true;
     } catch (e) {
       console.error(`There was an error asynchronously loading Firemock library.`);

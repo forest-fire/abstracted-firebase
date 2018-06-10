@@ -21,10 +21,16 @@ export interface IFirebaseListener {
     id: string;
     cb: (db: RealTimeDB) => void;
 }
+export interface IEmitter {
+    emit: (event: string | symbol, ...args: any[]) => boolean;
+    on: (event: string, value: any) => void;
+    once: (event: string, value: any) => void;
+}
 export declare abstract class RealTimeDB {
+    CONNECTION_TIMEOUT: number;
+    protected abstract _eventManager: IEmitter;
     protected _isConnected: boolean;
     protected _mockLoadingState: IMockLoadingState;
-    protected _database: rtdb.IFirebaseDatabase;
     protected _mock: import("firemock").Mock;
     protected _resetMockDb: () => void;
     protected _waitingForConnection: Array<() => void>;
@@ -33,20 +39,18 @@ export declare abstract class RealTimeDB {
     protected _debugging: boolean;
     protected _mocking: boolean;
     protected _allowMocking: boolean;
-    constructor(config?: IFirebaseConfig);
+    protected app: any;
+    protected _database: rtdb.IFirebaseDatabase;
+    protected abstract _firestore: any;
+    protected abstract _storage: any;
+    protected abstract _messaging: any;
+    protected abstract _auth: any;
+    initialize(config?: IFirebaseConfig): void;
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
     ref(path: string): rtdb.IReference;
-    /**
-     * Typically mocking functionality is disabled if mocking is not on
-     * but there are cases -- particular in testing against a real DB --
-     * where the mock functionality is still useful for building a base state.
-     */
-    allowMocking(): void;
     readonly mock: import("firemock/dist/esnext/mock").default;
-    /** clears all "connections" and state from the database */
-    resetMockDb(): void;
-    waitForConnection(): Promise<{}>;
+    waitForConnection(): Promise<this>;
     readonly isConnected: boolean;
     /** set a "value" in the database at a given path */
     set<T = T>(path: string, value: T): Promise<void>;
@@ -109,6 +113,8 @@ export declare abstract class RealTimeDB {
     push<T = any>(path: string, value: T): Promise<void>;
     /** validates the existance of a path in the database */
     exists(path: string): Promise<boolean>;
+    protected abstract connectToFirebase(config: any): Promise<void>;
+    protected abstract listenForConnectionStatus(): void;
     protected handleError(e: any, name: string, message?: string): Promise<never>;
     protected getFireMock(): Promise<void>;
 }

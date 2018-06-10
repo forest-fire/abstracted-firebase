@@ -4,6 +4,7 @@ import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
 import FileDepthExceeded from "./errors/FileDepthExceeded";
 import UndefinedAssignment from "./errors/UndefinedAssignment";
+import Parallel from "wait-in-parallel";
 export var FirebaseBoolean;
 (function (FirebaseBoolean) {
     FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
@@ -12,7 +13,8 @@ export var FirebaseBoolean;
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
-    constructor(config = {}) {
+    constructor() {
+        this.CONNECTION_TIMEOUT = 5000;
         this._isConnected = false;
         this._mockLoadingState = "not-applicable";
         this._waitingForConnection = [];
@@ -21,9 +23,15 @@ export class RealTimeDB {
         this._debugging = false;
         this._mocking = false;
         this._allowMocking = false;
+    }
+    initialize(config = {}) {
         if (config.mocking) {
             this._mocking = true;
             this.getFireMock();
+        }
+        else {
+            this._mocking = false;
+            this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
         }
     }
     query(path) {
@@ -34,14 +42,6 @@ export class RealTimeDB {
         return this._mocking
             ? this.mock.ref(path)
             : this._database.ref(path);
-    }
-    /**
-     * Typically mocking functionality is disabled if mocking is not on
-     * but there are cases -- particular in testing against a real DB --
-     * where the mock functionality is still useful for building a base state.
-     */
-    allowMocking() {
-        this._allowMocking = true;
     }
     get mock() {
         if (!this._mocking && !this._allowMocking) {
@@ -61,13 +61,12 @@ export class RealTimeDB {
         }
         return this._mock;
     }
-    /** clears all "connections" and state from the database */
-    resetMockDb() {
-        this._resetMockDb();
-    }
     async waitForConnection() {
         if (this._mocking) {
             // MOCKING
+            if (this._mockLoadingState === "loaded") {
+                return;
+            }
             const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
             while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
                 await wait(1);
@@ -79,12 +78,21 @@ export class RealTimeDB {
             if (this.isConnected) {
                 return;
             }
-            return new Promise(resolve => {
-                const cb = () => {
-                    resolve();
-                };
-                this._waitingForConnection.push(cb);
-            });
+            const connectionEvent = async () => {
+                this._eventManager.once("connection", (state) => {
+                    if (state) {
+                        return;
+                    }
+                    else {
+                        throw Error(`While waiting for connection received a disconnect message`);
+                    }
+                });
+            };
+            const p = new Parallel();
+            p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
+            await p.isDone();
+            this._isConnected = true;
+            return this;
         }
     }
     get isConnected() {
@@ -284,6 +292,7 @@ export class RealTimeDB {
             const FireMock = await import("firemock");
             this._mockLoadingState = "loaded";
             this._mock = new FireMock.Mock();
+            this._isConnected = true;
             this._mocking = true;
         }
         catch (e) {
