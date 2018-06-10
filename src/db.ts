@@ -35,7 +35,6 @@ export interface IFirebaseListener {
 
 export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
-  protected _isAuthorized: boolean = false;
   protected _database: rtdb.IFirebaseDatabase;
   // tslint:disable-next-line:whitespace
   protected _mock: import("firemock").Mock;
@@ -56,6 +55,8 @@ export abstract class RealTimeDB {
   public query<T = any>(path: string) {
     return SerializedQuery.path<T>(path);
   }
+
+  public abstract get isAuthorized(): boolean;
 
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string): rtdb.IReference {
