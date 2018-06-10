@@ -48,6 +48,7 @@ export abstract class RealTimeDB {
 
   constructor(config: IFirebaseConfig = {}) {
     if (config.mocking) {
+      this._mocking = true;
       this.getFireMock();
     }
   }
