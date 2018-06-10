@@ -1,4 +1,4 @@
-import { IDictionary } from "common-types";
+import { IDictionary, wait } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -23,6 +23,10 @@ export enum FirebaseBoolean {
   false = 0
 }
 
+export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
+/** time by which the dynamically loaded mock library should be loaded */
+export const MOCK_LOADING_TIMEOUT = 2000;
+
 export type DebuggingCallback = (message: string) => void;
 export interface IFirebaseConfig {
   debugging?: boolean | DebuggingCallback;
@@ -35,6 +39,7 @@ export interface IFirebaseListener {
 
 export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
+  protected _mockLoadingState: IMockLoadingState = "not-applicable";
   protected _database: rtdb.IFirebaseDatabase;
   // tslint:disable-next-line:whitespace
   protected _mock: import("firemock").Mock;
@@ -45,6 +50,13 @@ export abstract class RealTimeDB {
   protected _debugging: boolean = false;
   protected _mocking: boolean = false;
   protected _allowMocking: boolean = false;
+
+  constructor(config: IFirebaseConfig = {}) {
+    if (config.mocking) {
+      this._mocking = true;
+      this.getFireMock();
+    }
+  }
 
   public query<T = any>(path: string) {
     return SerializedQuery.path<T>(path);
@@ -74,6 +86,13 @@ export abstract class RealTimeDB {
       e.name = "AbstractedFirebase::NotAllowed";
       throw e;
     }
+    if (this._mockLoadingState === "loading") {
+      const e = new Error(
+        `Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`
+      );
+      e.name = "AbstractedFirebase::AsyncError";
+      throw e;
+    }
 
     if (!this._mock) {
       const e = new Error(`Attempting to use mock getter but _mock is not set!`);
@@ -90,15 +109,26 @@ export abstract class RealTimeDB {
   }
 
   public async waitForConnection() {
-    if (this.isConnected) {
-      return Promise.resolve();
+    if (this._mocking) {
+      // MOCKING
+      const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
+      while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
+        await wait(1);
+      }
+
+      return;
+    } else {
+      // NON-MOCKING
+      if (this.isConnected) {
+        return;
+      }
+      return new Promise(resolve => {
+        const cb = () => {
+          resolve();
+        };
+        this._waitingForConnection.push(cb);
+      });
     }
-    return new Promise(resolve => {
-      const cb = () => {
-        resolve();
-      };
-      this._waitingForConnection.push(cb);
-    });
   }
 
   public get isConnected() {
@@ -320,22 +350,6 @@ export abstract class RealTimeDB {
     return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
   }
 
-  /**
-   * initialize
-   *
-   * Allows the core module to initialize the object after the
-   * client or admin modules constructors are called
-   *
-   */
-  protected initialize(config: IFirebaseConfig = {}) {
-    if (config.mocking) {
-      this._mocking = true;
-      this.getFireMock().then(() => {
-        console.log("mocking db established");
-      });
-    }
-  }
-
   protected handleError(e: any, name: string, message = "") {
     console.error(`Error ${message}:`, e);
     return Promise.reject({
@@ -346,23 +360,18 @@ export abstract class RealTimeDB {
 
   protected async getFireMock() {
     try {
+      this._mockLoadingState = "loading";
       // tslint:disable-next-line:no-implicit-dependencies
       const FireMock = await import("firemock");
+      this._mockLoadingState = "loaded";
       this._mock = new FireMock.Mock();
-
-      this._mock.db.resetDatabase();
       this._mocking = true;
-
-      return FireMock;
     } catch (e) {
-      console.error(
-        `There was an error asynchronously loading Firemock library.`,
-        e.message
-      );
-      console.log(`The stack trace was:\n`, e.stack);
-      console.info(`\nNo error thrown but no mocking functionality is available!`);
-
-      this._mocking = false;
+      console.error(`There was an error asynchronously loading Firemock library.`);
+      if (e.stack) {
+        console.log(`The stack trace was:\n`, e.stack);
+      }
+      throw e;
     }
   }
 }
