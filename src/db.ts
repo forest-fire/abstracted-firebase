@@ -56,8 +56,6 @@ export abstract class RealTimeDB {
     return SerializedQuery.path<T>(path);
   }
 
-  public abstract get isAuthorized(): boolean;
-
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string): rtdb.IReference {
     return this._mocking
@@ -337,7 +335,13 @@ export abstract class RealTimeDB {
       this._mocking = true;
       return FireMock;
     } catch (e) {
-      console.error(`There was an error asynchronously loading Firemock library`, e);
+      console.error(
+        `There was an error asynchronously loading Firemock library.`,
+        e.message
+      );
+      console.log(`The stack trace was:\n`, e.stack);
+      console.info(`\nNo error thrown but no mocking functionality is available!`);
+
       this._mocking = false;
     }
   }

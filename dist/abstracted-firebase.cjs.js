@@ -39,7 +39,6 @@ function slashNotation(path) {
 class RealTimeDB {
     constructor(config = {}) {
         this._isConnected = false;
-        this._isAuthorized = false;
         this._waitingForConnection = [];
         this._onConnected = [];
         this._onDisconnected = [];
@@ -288,7 +287,9 @@ class RealTimeDB {
             return FireMock;
         }
         catch (e) {
-            console.error(`There was an error asynchronously loading Firemock library`, e);
+            console.error(`There was an error asynchronously loading Firemock library.`, e.message);
+            console.log(`The stack trace was:\n`, e.stack);
+            console.info(`\nNo error thrown but no mocking functionality is available!`);
             this._mocking = false;
         }
     }
