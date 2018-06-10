@@ -46,13 +46,6 @@ export abstract class RealTimeDB {
   protected _mocking: boolean = false;
   protected _allowMocking: boolean = false;
 
-  constructor(config: IFirebaseConfig = {}) {
-    if (config.mocking) {
-      this._mocking = true;
-      this.getFireMock();
-    }
-  }
-
   public query<T = any>(path: string) {
     return SerializedQuery.path<T>(path);
   }
@@ -75,9 +68,17 @@ export abstract class RealTimeDB {
 
   public get mock() {
     if (!this._mocking && !this._allowMocking) {
-      throw new Error(
+      const e = new Error(
         "You can not mock the database without setting mocking in the constructor"
       );
+      e.name = "AbstractedFirebase::NotAllowed";
+      throw e;
+    }
+
+    if (!this._mock) {
+      const e = new Error(`Attempting to use mock getter but _mock is not set!`);
+      e.name = "AbstractedFirebase::NotAllowed";
+      throw e;
     }
 
     return this._mock;
@@ -319,6 +320,22 @@ export abstract class RealTimeDB {
     return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
   }
 
+  /**
+   * initialize
+   *
+   * Allows the core module to initialize the object after the
+   * client or admin modules constructors are called
+   *
+   */
+  protected initialize(config: IFirebaseConfig = {}) {
+    if (config.mocking) {
+      this._mocking = true;
+      this.getFireMock().then(() => {
+        console.log("mocking db established");
+      });
+    }
+  }
+
   protected handleError(e: any, name: string, message = "") {
     console.error(`Error ${message}:`, e);
     return Promise.reject({
@@ -327,13 +344,15 @@ export abstract class RealTimeDB {
     });
   }
 
-  private async getFireMock() {
+  protected async getFireMock() {
     try {
       // tslint:disable-next-line:no-implicit-dependencies
       const FireMock = await import("firemock");
       this._mock = new FireMock.Mock();
+
       this._mock.db.resetDatabase();
       this._mocking = true;
+
       return FireMock;
     } catch (e) {
       console.error(

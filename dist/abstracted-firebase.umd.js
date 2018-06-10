@@ -45,7 +45,9 @@
             this._allowMocking = false;
             if (config.mocking) {
                 this._mocking = true;
-                this.getFireMock();
+                this.getFireMock().then(() => {
+                    console.log("mocking db established");
+                });
             }
         }
         query(path) {
@@ -67,7 +69,14 @@
         }
         get mock() {
             if (!this._mocking && !this._allowMocking) {
-                throw new Error("You can not mock the database without setting mocking in the constructor");
+                const e = new Error("You can not mock the database without setting mocking in the constructor");
+                e.name = "AbstractedFirebase::NotAllowed";
+                throw e;
+            }
+            if (!this._mock) {
+                const e = new Error(`Attempting to use mock getter but _mock is not set!`);
+                e.name = "AbstractedFirebase::NotAllowed";
+                throw e;
             }
             return this._mock;
         }
