@@ -1,14 +1,7 @@
 import { RealTimeDB, IFirebaseConfig } from "../../src/index";
 
 export class FakeDB extends RealTimeDB {
-  protected _eventManager = {
-    on: (evt: string, value: any) => {
-      //
-    },
-    emit: () => {
-      //
-    }
-  };
+  protected _eventManager: any;
   protected _auth: any;
   protected _firestore: any;
   protected _storage: any;

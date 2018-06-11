@@ -7,7 +7,7 @@ export { FileDepthExceeded, UndefinedAssignment };
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export declare type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
-export declare type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
+export declare type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
     apiKey: string;
     authDomain: string;
@@ -19,7 +19,6 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
     serviceAccount: string;
     databaseUrl: string;
-    mocking?: false;
 }
 export interface IAbstractedFirebaseConfig {
     /** set debugging override from logging config */
