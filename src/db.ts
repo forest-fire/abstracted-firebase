@@ -45,7 +45,13 @@ export interface IEmitter {
 }
 
 export abstract class RealTimeDB {
+  /** how many miliseconds before the attempt to connect to DB is timed out */
   public CONNECTION_TIMEOUT = 5000;
+  /** Logs debugging information to the console */
+  public enableDatabaseLogging: (
+    logger?: boolean | ((a: string) => any),
+    persistent?: boolean
+  ) => any;
 
   protected abstract _eventManager: IEmitter;
   protected _isConnected: boolean = false;

@@ -14,6 +14,7 @@ export var FirebaseBoolean;
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
     constructor() {
+        /** how many miliseconds before the attempt to connect to DB is timed out */
         this.CONNECTION_TIMEOUT = 5000;
         this._isConnected = false;
         this._mockLoadingState = "not-applicable";

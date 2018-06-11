@@ -10,7 +10,7 @@ export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 
 export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
-export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
+export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
   apiKey: string;
   authDomain: string;
@@ -23,7 +23,6 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
   serviceAccount: string;
   databaseUrl: string;
-  mocking?: false;
 }
 
 export interface IAbstractedFirebaseConfig {
