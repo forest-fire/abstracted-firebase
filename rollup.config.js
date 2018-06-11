@@ -11,7 +11,14 @@ export default {
       file: "dist/abstracted-firebase.umd.js",
       format: "umd",
       name: "AbstractedFirebase",
-      sourcemap: true
+      sourcemap: true,
+      globals: {
+        "firebase-api-surface": "firebase-api-surface",
+        "typed-conversions": "convert",
+        "wait-in-parallel": "Parallel",
+        "common-types": "common-types",
+        "serialized-query": "serialized-query"
+      }
     }
   ],
   external: ["firebase-api-surface", "typed-conversions", "serialized-query"]

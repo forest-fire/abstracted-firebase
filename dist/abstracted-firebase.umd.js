@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('common-types'), require('typed-conversions'), require('serialized-query'), require('wait-in-parallel'), require('firebase-api-surface')) :
     typeof define === 'function' && define.amd ? define(['exports', 'common-types', 'typed-conversions', 'serialized-query', 'wait-in-parallel', 'firebase-api-surface'], factory) :
-    (factory((global.AbstractedFirebase = {}),global.commonTypes,global.convert,global.serializedQuery,global.Parallel,global.firebaseApiSurface));
+    (factory((global.AbstractedFirebase = {}),global['common-types'],global.convert,global['serialized-query'],global.Parallel,global['firebase-api-surface']));
 }(this, (function (exports,commonTypes,convert,serializedQuery,Parallel,firebaseApiSurface) { 'use strict';
 
     Parallel = Parallel && Parallel.hasOwnProperty('default') ? Parallel['default'] : Parallel;
