@@ -94,6 +94,10 @@ export abstract class RealTimeDB {
       : (this._database.ref(path) as rtdb.IReference);
   }
 
+  public get isMockDb() {
+    return this._mocking;
+  }
+
   public get mock() {
     if (!this._mocking && !this._allowMocking) {
       const e = new Error(
