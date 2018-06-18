@@ -236,6 +236,9 @@ export abstract class RealTimeDB {
       get fullPaths() {
         return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
       },
+      get payload() {
+        return mps;
+      },
       /** receive a call back on conclusion of the firebase operation */
       callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {
         callback = cb;

@@ -52,6 +52,7 @@ export declare abstract class RealTimeDB {
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
     ref(path: string): rtdb.IReference;
+    readonly isMockDb: boolean;
     readonly mock: import("firemock/dist/esnext/mock").default;
     waitForConnection(): Promise<this>;
     readonly isConnected: boolean;
@@ -74,6 +75,7 @@ export declare abstract class RealTimeDB {
         readonly paths: string[];
         /** the absolute paths (including the base offset) which will be updated upon execution */
         readonly fullPaths: string[];
+        readonly payload: IPathSetter<any>[];
         /** receive a call back on conclusion of the firebase operation */
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
         execute(): Promise<any>;

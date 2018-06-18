@@ -17,7 +17,8 @@ export default {
         "typed-conversions": "convert",
         "wait-in-parallel": "Parallel",
         "common-types": "common-types",
-        "serialized-query": "serialized-query"
+        "serialized-query": "serialized-query",
+        "abstracted-firebase": "abstractedFirebase"
       }
     }
   ],

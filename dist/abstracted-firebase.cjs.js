@@ -86,6 +86,9 @@ class RealTimeDB {
             ? this.mock.ref(path)
             : this._database.ref(path);
     }
+    get isMockDb() {
+        return this._mocking;
+    }
     get mock() {
         if (!this._mocking && !this._allowMocking) {
             const e = new Error("You can not mock the database without setting mocking in the constructor");
@@ -204,6 +207,9 @@ class RealTimeDB {
             /** the absolute paths (including the base offset) which will be updated upon execution */
             get fullPaths() {
                 return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
+            },
+            get payload() {
+                return mps;
             },
             /** receive a call back on conclusion of the firebase operation */
             callback(cb) {
