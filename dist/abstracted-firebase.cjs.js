@@ -1,8 +1,12 @@
-import { wait } from 'common-types';
-import { Parallel } from 'wait-in-parallel';
-import { snapshotToArray } from 'typed-conversions';
-import { SerializedQuery } from 'serialized-query';
-export { rtdb } from 'firebase-api-surface';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var commonTypes = require('common-types');
+var waitInParallel = require('wait-in-parallel');
+var convert = require('typed-conversions');
+var serializedQuery = require('serialized-query');
+var firebaseApiSurface = require('firebase-api-surface');
 
 function slashNotation(path) {
     return path.substr(0, 5) === ".info"
@@ -42,11 +46,10 @@ class UndefinedAssignment extends Error {
     }
 }
 
-var FirebaseBoolean;
 (function (FirebaseBoolean) {
     FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
     FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
-})(FirebaseBoolean || (FirebaseBoolean = {}));
+})(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
 /** time by which the dynamically loaded mock library should be loaded */
 const MOCK_LOADING_TIMEOUT = 2000;
 class RealTimeDB {
@@ -73,7 +76,7 @@ class RealTimeDB {
         }
     }
     query(path) {
-        return SerializedQuery.path(path);
+        return serializedQuery.SerializedQuery.path(path);
     }
     /** Get a DB reference for a given path in Firebase */
     ref(path) {
@@ -110,7 +113,7 @@ class RealTimeDB {
             }
             const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
             while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
-                await wait(1);
+                await commonTypes.wait(1);
             }
             return;
         }
@@ -129,7 +132,7 @@ class RealTimeDB {
                     }
                 });
             };
-            const p = new Parallel();
+            const p = new waitInParallel.Parallel();
             p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
             await p.isDone();
             this._isConnected = true;
@@ -292,7 +295,7 @@ class RealTimeDB {
      */
     async getList(path, idProp = "id") {
         return this.getSnapshot(path).then(snap => {
-            return snap.val() ? snapshotToArray(snap, idProp) : [];
+            return snap.val() ? convert.snapshotToArray(snap, idProp) : [];
         });
     }
     /**
@@ -306,7 +309,7 @@ class RealTimeDB {
      */
     async getSortedList(query, idProp = "id") {
         return this.getSnapshot(query).then(snap => {
-            return snapshotToArray(snap, idProp);
+            return convert.snapshotToArray(snap, idProp);
         });
     }
     /**
@@ -333,7 +336,7 @@ class RealTimeDB {
         try {
             this._mockLoadingState = "loading";
             // tslint:disable-next-line:no-implicit-dependencies
-            const FireMock = await import("firemock");
+            const FireMock = await Promise.resolve(require("firemock"));
             this._mockLoadingState = "loaded";
             this._mock = new FireMock.Mock();
             this._isConnected = true;
@@ -349,5 +352,9 @@ class RealTimeDB {
     }
 }
 
-export { RealTimeDB, FirebaseBoolean, FileDepthExceeded, UndefinedAssignment, _getFirebaseType };
-//# sourceMappingURL=abstracted-firebase.es.js.map
+exports.rtdb = firebaseApiSurface.rtdb;
+exports.RealTimeDB = RealTimeDB;
+exports.FileDepthExceeded = FileDepthExceeded;
+exports.UndefinedAssignment = UndefinedAssignment;
+exports._getFirebaseType = _getFirebaseType;
+//# sourceMappingURL=abstracted-firebase.cjs.js.map

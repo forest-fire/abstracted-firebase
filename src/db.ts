@@ -6,6 +6,8 @@ import { slashNotation } from "./util";
 import { rtdb } from "firebase-api-surface";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
+// tslint:disable-next-line:no-implicit-dependencies
+import { Mock } from "firemock";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -57,7 +59,7 @@ export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
-  protected _mock: import("firemock").Mock;
+  protected _mock: Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];

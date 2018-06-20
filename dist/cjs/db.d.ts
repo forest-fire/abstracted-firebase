@@ -1,5 +1,6 @@
 import { SerializedQuery } from "serialized-query";
 import { rtdb } from "firebase-api-surface";
+import { Mock } from "firemock";
 export interface IPathSetter<T = any> {
     path: string;
     value: T;
@@ -34,7 +35,7 @@ export declare abstract class RealTimeDB {
     protected abstract _eventManager: IEmitter;
     protected _isConnected: boolean;
     protected _mockLoadingState: IMockLoadingState;
-    protected _mock: import("firemock").Mock;
+    protected _mock: Mock;
     protected _resetMockDb: () => void;
     protected _waitingForConnection: Array<() => void>;
     protected _onConnected: IFirebaseListener[];
@@ -53,7 +54,7 @@ export declare abstract class RealTimeDB {
     /** Get a DB reference for a given path in Firebase */
     ref(path: string): rtdb.IReference;
     readonly isMockDb: boolean;
-    readonly mock: import("../../../../../../Users/ken/mine/forest-fire/abstracted-firebase/node_modules/firemock/dist/mock").default;
+    readonly mock: Mock;
     waitForConnection(): Promise<this>;
     readonly isConnected: boolean;
     /** set a "value" in the database at a given path */

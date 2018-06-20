@@ -29,7 +29,13 @@ export default {
       }
     }
   ],
-  external: ["firebase-api-surface", "typed-conversions", "serialized-query"],
+  external: [
+    "firebase-api-surface",
+    "typed-conversions",
+    "serialized-query",
+    "common-types",
+    "wait-in-parallel"
+  ],
   plugins: [
     typescript({
       tsconfig: "tsconfig.esnext.json"
