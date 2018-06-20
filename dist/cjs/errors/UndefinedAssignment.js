@@ -1,4 +1,6 @@
-export class FileDepthExceeded extends Error {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class UndefinedAssignment extends Error {
     constructor(e) {
         super(e.message);
         this.stack = e.stack;
@@ -7,3 +9,4 @@ export class FileDepthExceeded extends Error {
         }
     }
 }
+exports.UndefinedAssignment = UndefinedAssignment;

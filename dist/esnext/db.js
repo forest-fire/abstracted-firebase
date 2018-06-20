@@ -1,10 +1,10 @@
 import { wait } from "common-types";
+import { Parallel } from "wait-in-parallel";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
-import FileDepthExceeded from "./errors/FileDepthExceeded";
-import UndefinedAssignment from "./errors/UndefinedAssignment";
-import Parallel from "wait-in-parallel";
+import { FileDepthExceeded } from "./errors/FileDepthExceeded";
+import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export var FirebaseBoolean;
 (function (FirebaseBoolean) {
     FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";

@@ -1,55 +1,29 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('common-types'), require('typed-conversions'), require('serialized-query'), require('wait-in-parallel'), require('firebase-api-surface')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'common-types', 'typed-conversions', 'serialized-query', 'wait-in-parallel', 'firebase-api-surface'], factory) :
-    (factory((global.AbstractedFirebase = {}),global['common-types'],global.convert,global['serialized-query'],global.Parallel,global['firebase-api-surface']));
-}(this, (function (exports,commonTypes,convert,serializedQuery,Parallel,firebaseApiSurface) { 'use strict';
-
-    Parallel = Parallel && Parallel.hasOwnProperty('default') ? Parallel['default'] : Parallel;
-
-    class FirebaseDepthExceeded extends Error {
-        constructor(e) {
-            super(e.message);
-            this.stack = e.stack;
-            if (e.name === "Error") {
-                e.name = "AbstractedFirebase";
-            }
-        }
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
     }
-
-    class UndefinedAssignment extends Error {
-        constructor(e) {
-            super(e.message);
-            this.stack = e.stack;
-            if (e.name === "Error") {
-                e.name = "AbstractedFirebase";
-            }
-        }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "common-types", "wait-in-parallel", "typed-conversions", "serialized-query", "./util", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment"], factory);
     }
-
-    function slashNotation(path) {
-        return path.substr(0, 5) === ".info"
-            ? path.substr(0, 5) + path.substring(5).replace(/\./g, "/")
-            : path.replace(/\./g, "/");
-    }
-    function _getFirebaseType(context, kind) {
-        if (!this.app) {
-            const e = new Error(`You must first connect before using the ${kind}() API`);
-            e.name = "NotAllowed";
-            throw e;
-        }
-        const property = `_${kind}`;
-        if (!context[property]) {
-            context[property] = this.app.storage();
-        }
-        return context[property];
-    }
-
+})(function (require, exports) {
+    "use strict";
+    var __syncRequire = typeof module === "object" && typeof module.exports === "object";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const common_types_1 = require("common-types");
+    const wait_in_parallel_1 = require("wait-in-parallel");
+    const convert = require("typed-conversions");
+    const serialized_query_1 = require("serialized-query");
+    const util_1 = require("./util");
+    const FileDepthExceeded_1 = require("./errors/FileDepthExceeded");
+    const UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
+    var FirebaseBoolean;
     (function (FirebaseBoolean) {
         FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
         FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
-    })(exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
+    })(FirebaseBoolean = exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
     /** time by which the dynamically loaded mock library should be loaded */
-    const MOCK_LOADING_TIMEOUT = 2000;
+    exports.MOCK_LOADING_TIMEOUT = 2000;
     class RealTimeDB {
         constructor() {
             /** how many miliseconds before the attempt to connect to DB is timed out */
@@ -74,7 +48,7 @@
             }
         }
         query(path) {
-            return serializedQuery.SerializedQuery.path(path);
+            return serialized_query_1.SerializedQuery.path(path);
         }
         /** Get a DB reference for a given path in Firebase */
         ref(path) {
@@ -109,9 +83,9 @@
                 if (this._mockLoadingState === "loaded") {
                     return;
                 }
-                const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
+                const timeout = new Date().getTime() + exports.MOCK_LOADING_TIMEOUT;
                 while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
-                    await commonTypes.wait(1);
+                    await common_types_1.wait(1);
                 }
                 return;
             }
@@ -130,7 +104,7 @@
                         }
                     });
                 };
-                const p = new Parallel();
+                const p = new wait_in_parallel_1.Parallel();
                 p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
                 await p.isDone();
                 this._isConnected = true;
@@ -148,14 +122,14 @@
             catch (e) {
                 if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                     console.log("FILE DEPTH EXCEEDED");
-                    throw new FirebaseDepthExceeded(e);
+                    throw new FileDepthExceeded_1.FileDepthExceeded(e);
                 }
                 if (e.name === "Error") {
                     e.name = "AbstractedFirebaseSetError";
                 }
                 if (e.message.indexOf("First argument contains undefined in property") !== -1) {
                     e.name = "FirebaseUndefinedValueAssignment";
-                    throw new UndefinedAssignment(e);
+                    throw new UndefinedAssignment_1.UndefinedAssignment(e);
                 }
                 throw e;
             }
@@ -263,7 +237,7 @@
         /** returns the firebase snapshot at a given path in the database */
         async getSnapshot(path) {
             return typeof path === "string"
-                ? this.ref(slashNotation(path)).once("value")
+                ? this.ref(util_1.slashNotation(path)).once("value")
                 : path.setDB(this).execute();
         }
         /** returns the JS value at a given path in the database */
@@ -334,7 +308,7 @@
             try {
                 this._mockLoadingState = "loading";
                 // tslint:disable-next-line:no-implicit-dependencies
-                const FireMock = await import("firemock");
+                const FireMock = await (__syncRequire ? Promise.resolve().then(() => require("firemock")) : new Promise((resolve_1, reject_1) => { require(["firemock"], resolve_1, reject_1); }));
                 this._mockLoadingState = "loaded";
                 this._mock = new FireMock.Mock();
                 this._isConnected = true;
@@ -349,14 +323,5 @@
             }
         }
     }
-
-    exports.rtdb = firebaseApiSurface.rtdb;
-    exports.FileDepthExceeded = FirebaseDepthExceeded;
-    exports.UndefinedAssignment = UndefinedAssignment;
     exports.RealTimeDB = RealTimeDB;
-    exports._getFirebaseType = _getFirebaseType;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-//# sourceMappingURL=abstracted-firebase.umd.js.map
+});

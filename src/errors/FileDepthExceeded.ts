@@ -1,4 +1,4 @@
-export default class FirebaseDepthExceeded extends Error {
+export class FileDepthExceeded extends Error {
   constructor(e: Error) {
     super(e.message);
     this.stack = e.stack;
