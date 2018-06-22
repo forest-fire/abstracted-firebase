@@ -187,7 +187,7 @@
                       pathValue.path = "/" + pathValue.path;
                   }
                   if (exists.has(pathValue.path)) {
-                      const e = new Error(`You have attempted to add the path "${pathValue.path}" twice.`);
+                      const e = new Error(`You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation.`);
                       e.code = "duplicate-path";
                       throw e;
                   }
@@ -203,7 +203,10 @@
                   return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
               },
               get payload() {
-                  return mps;
+                  return mps.map(i => {
+                      i.path = [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
+                      return i;
+                  });
               },
               /** receive a call back on conclusion of the firebase operation */
               callback(cb) {

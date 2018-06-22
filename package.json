@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.11.17",
+  "version": "0.11.20",
   "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -28,10 +28,10 @@
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
-    "common-types": "^1.8.0",
+    "common-types": "^1.8.2",
     "firebase-api-surface": "^0.8.3",
     "lodash": "^4.17.10",
-    "serialized-query": "^0.3.8",
+    "serialized-query": "^0.4.3",
     "typed-conversions": "^0.8.3",
     "wait-in-parallel": "^1.1.4"
   },
