@@ -8,6 +8,7 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 // tslint:disable-next-line:no-implicit-dependencies
 import { Mock } from "firemock";
+// tslint:disable-next-line:no-submodule-imports
 import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 
 export interface IPathSetter<T = any> {
