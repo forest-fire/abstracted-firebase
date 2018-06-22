@@ -1,6 +1,7 @@
 import { SerializedQuery } from "serialized-query";
 import { rtdb } from "firebase-api-surface";
 import { Mock } from "firemock";
+import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 export interface IPathSetter<T = any> {
     path: string;
     value: T;
@@ -50,9 +51,25 @@ export declare abstract class RealTimeDB {
     protected abstract _messaging: any;
     protected abstract _auth: any;
     initialize(config?: IFirebaseConfig): void;
+    /**
+     * watch
+     *
+     * Watch for firebase events based on a DB path or Query
+     *
+     * @param target a database path or a SerializedQuery
+     * @param events an event type or an array of event types (e.g., "value", "child_added")
+     * @param cb the callback function to call when event triggered
+     */
+    watch(target: string | SerializedQuery, events: EventType | EventType[], cb: any): void;
+    unWatch(events?: EventType | EventType[], cb?: any): void;
+    /**
+     * Get a Firebase SerializedQuery reference
+     *
+     * @param path path for query
+     */
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
-    ref(path: string): rtdb.IReference;
+    ref(path?: string): rtdb.IReference;
     readonly isMockDb: boolean;
     readonly mock: Mock;
     waitForConnection(): Promise<this>;

@@ -8,6 +8,7 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 // tslint:disable-next-line:no-implicit-dependencies
 import { Mock } from "firemock";
+import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -85,12 +86,63 @@ export abstract class RealTimeDB {
     }
   }
 
+  /**
+   * watch
+   *
+   * Watch for firebase events based on a DB path or Query
+   *
+   * @param target a database path or a SerializedQuery
+   * @param events an event type or an array of event types (e.g., "value", "child_added")
+   * @param cb the callback function to call when event triggered
+   */
+  public watch(
+    target: string | SerializedQuery,
+    events: EventType | EventType[],
+    cb: any
+  ) {
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    events.map(evt => {
+      if (typeof target === "string") {
+        this.ref(slashNotation(target)).on(evt, cb);
+      } else {
+        target
+          .setDB(this)
+          .deserialize()
+          .on(evt, cb);
+      }
+    });
+  }
+
+  public unWatch(events?: EventType | EventType[], cb?: any) {
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    if (!events) {
+      this.ref().off();
+      return;
+    }
+    events.map(evt => {
+      if (cb) {
+        this.ref().off(evt, cb);
+      } else {
+        this.ref().off(evt);
+      }
+    });
+  }
+
+  /**
+   * Get a Firebase SerializedQuery reference
+   *
+   * @param path path for query
+   */
   public query<T = any>(path: string) {
     return SerializedQuery.path<T>(path);
   }
 
   /** Get a DB reference for a given path in Firebase */
-  public ref(path: string): rtdb.IReference {
+  public ref(path: string = "/"): rtdb.IReference {
     return this._mocking
       ? (this.mock.ref(path) as rtdb.IReference)
       : (this._database.ref(path) as rtdb.IReference);

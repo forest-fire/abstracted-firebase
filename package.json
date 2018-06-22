@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.11.20",
+  "version": "0.11.23",
   "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -15,7 +15,7 @@
   ],
   "module": "dist/abstracted-firebase.es.js",
   "main": "dist/abstracted-firebase.cjs.js",
-  "typings": "dist/esnext/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",

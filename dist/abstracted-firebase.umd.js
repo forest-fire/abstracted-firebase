@@ -71,11 +71,58 @@
               this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
           }
       }
+      /**
+       * watch
+       *
+       * Watch for firebase events based on a DB path or Query
+       *
+       * @param target a database path or a SerializedQuery
+       * @param events an event type or an array of event types (e.g., "value", "child_added")
+       * @param cb the callback function to call when event triggered
+       */
+      watch(target, events, cb) {
+          if (!Array.isArray(events)) {
+              events = [events];
+          }
+          events.map(evt => {
+              if (typeof target === "string") {
+                  this.ref(slashNotation(target)).on(evt, cb);
+              }
+              else {
+                  target
+                      .setDB(this)
+                      .deserialize()
+                      .on(evt, cb);
+              }
+          });
+      }
+      unWatch(events, cb) {
+          if (!Array.isArray(events)) {
+              events = [events];
+          }
+          if (!events) {
+              this.ref().off();
+              return;
+          }
+          events.map(evt => {
+              if (cb) {
+                  this.ref().off(evt, cb);
+              }
+              else {
+                  this.ref().off(evt);
+              }
+          });
+      }
+      /**
+       * Get a Firebase SerializedQuery reference
+       *
+       * @param path path for query
+       */
       query(path) {
           return serializedQuery.SerializedQuery.path(path);
       }
       /** Get a DB reference for a given path in Firebase */
-      ref(path) {
+      ref(path = "/") {
           return this._mocking
               ? this.mock.ref(path)
               : this._database.ref(path);
