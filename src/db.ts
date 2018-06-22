@@ -1,11 +1,15 @@
 import { IDictionary, wait } from "common-types";
+import { Parallel } from "wait-in-parallel";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
 import { rtdb } from "firebase-api-surface";
-import FileDepthExceeded from "./errors/FileDepthExceeded";
-import UndefinedAssignment from "./errors/UndefinedAssignment";
-import Parallel from "wait-in-parallel";
+import { FileDepthExceeded } from "./errors/FileDepthExceeded";
+import { UndefinedAssignment } from "./errors/UndefinedAssignment";
+// tslint:disable-next-line:no-implicit-dependencies
+import { Mock } from "firemock";
+// tslint:disable-next-line:no-submodule-imports
+import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -57,7 +61,7 @@ export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
-  protected _mock: import("firemock").Mock;
+  protected _mock: Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
@@ -83,15 +87,70 @@ export abstract class RealTimeDB {
     }
   }
 
+  /**
+   * watch
+   *
+   * Watch for firebase events based on a DB path or Query
+   *
+   * @param target a database path or a SerializedQuery
+   * @param events an event type or an array of event types (e.g., "value", "child_added")
+   * @param cb the callback function to call when event triggered
+   */
+  public watch(
+    target: string | SerializedQuery,
+    events: EventType | EventType[],
+    cb: any
+  ) {
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    events.map(evt => {
+      if (typeof target === "string") {
+        this.ref(slashNotation(target)).on(evt, cb);
+      } else {
+        target
+          .setDB(this)
+          .deserialize()
+          .on(evt, cb);
+      }
+    });
+  }
+
+  public unWatch(events?: EventType | EventType[], cb?: any) {
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    if (!events) {
+      this.ref().off();
+      return;
+    }
+    events.map(evt => {
+      if (cb) {
+        this.ref().off(evt, cb);
+      } else {
+        this.ref().off(evt);
+      }
+    });
+  }
+
+  /**
+   * Get a Firebase SerializedQuery reference
+   *
+   * @param path path for query
+   */
   public query<T = any>(path: string) {
     return SerializedQuery.path<T>(path);
   }
 
   /** Get a DB reference for a given path in Firebase */
-  public ref(path: string): rtdb.IReference {
+  public ref(path: string = "/"): rtdb.IReference {
     return this._mocking
       ? (this.mock.ref(path) as rtdb.IReference)
       : (this._database.ref(path) as rtdb.IReference);
+  }
+
+  public get isMockDb() {
+    return this._mocking;
   }
 
   public get mock() {
@@ -216,7 +275,9 @@ export abstract class RealTimeDB {
         }
         if (exists.has(pathValue.path)) {
           const e: any = new Error(
-            `You have attempted to add the path "${pathValue.path}" twice.`
+            `You have attempted to add the path "${
+              pathValue.path
+            }" twice to a MultiPathSet operation.`
           );
           e.code = "duplicate-path";
           throw e;
@@ -231,6 +292,12 @@ export abstract class RealTimeDB {
       /** the absolute paths (including the base offset) which will be updated upon execution */
       get fullPaths() {
         return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
+      },
+      get payload() {
+        return mps.map(i => {
+          i.path = [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
+          return i;
+        });
       },
       /** receive a call back on conclusion of the firebase operation */
       callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {

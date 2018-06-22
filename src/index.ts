@@ -1,14 +1,11 @@
-import FileDepthExceeded from "./errors/FileDepthExceeded";
-import UndefinedAssignment from "./errors/UndefinedAssignment";
 export { RealTimeDB, IFirebaseListener, FirebaseBoolean, FirebaseEvent } from "./db";
+export { FileDepthExceeded } from "./errors/FileDepthExceeded";
+export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
-
 export { rtdb } from "firebase-api-surface";
-export { FileDepthExceeded, UndefinedAssignment };
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-
 export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
