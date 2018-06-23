@@ -1,3 +1,4 @@
+// tslint:disable:no-implicit-dependencies
 import { IDictionary, wait } from "common-types";
 import { Parallel } from "wait-in-parallel";
 import * as convert from "typed-conversions";
@@ -10,18 +11,29 @@ import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { Mock } from "firemock";
 // tslint:disable-next-line:no-submodule-imports
 import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
+import { WatcherEventWrapper } from "./WatcherEventWrapper";
+// tslint:disable-next-line:no-submodule-imports
+import SnapShot from "firemock/dist/snapshot";
 
 export interface IPathSetter<T = any> {
   path: string;
   value: T;
 }
 
-export type FirebaseEvent =
-  | "child_added"
-  | "child_removed"
-  | "child_changed"
-  | "child_moved"
-  | "value";
+export type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
+
+export interface IFirebaseWatchContext {
+  eventType: rtdb.EventType;
+  targetType: "path" | "query";
+}
+
+export interface IFirebaseWatchCoreEvent {
+  key: string;
+  value: any;
+  previousChildKey?: string;
+}
+
+export type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
 
 export enum FirebaseBoolean {
   true = 1,
@@ -99,19 +111,27 @@ export abstract class RealTimeDB {
   public watch(
     target: string | SerializedQuery,
     events: EventType | EventType[],
-    cb: any
+    cb: IFirebaseWatchHandler
   ) {
     if (!Array.isArray(events)) {
       events = [events];
     }
+    console.log("EVENTS:", events);
+
     events.map(evt => {
+      console.log(`dispatch set for ${evt}`);
+
+      const dispatch = WatcherEventWrapper({
+        eventType: evt,
+        targetType: "path"
+      })(cb);
       if (typeof target === "string") {
-        this.ref(slashNotation(target)).on(evt, cb);
+        this.ref(slashNotation(target)).on(evt, dispatch);
       } else {
         target
           .setDB(this)
           .deserialize()
-          .on(evt, cb);
+          .on(evt, dispatch);
       }
     });
   }

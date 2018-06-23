@@ -12,14 +12,14 @@ const expect = chai.expect;
 
 describe("FireMock", () => {
   it("Asking admin for a mock DB gives back a Mock object", async () => {
-    const mockDb = new DB({ mocking: true });
+    const mockDb = await DB.connect({ mocking: true });
     expect(mockDb.mock).to.be.instanceOf(Mock);
     expect(mockDb.mock.db).to.be.an("object");
     expect(mockDb.mock.addSchema).to.be.an("function");
   });
 
   it("Asking client for a mock DB gives back a Mock object", async () => {
-    const mockDb = new ClientDB({ mocking: true });
+    const mockDb = await ClientDB.connect({ mocking: true });
     expect(mockDb.mock).to.be.instanceOf(Mock);
     expect(mockDb.mock.db).to.be.an("object");
     await mockDb.set("foo", "bar");
@@ -27,7 +27,7 @@ describe("FireMock", () => {
     expect(foo).to.equal("bar");
   });
 
-  it.only("Asking fakeDB for a mock DB gives back a Mock object", async () => {
+  it("Asking fakeDB for a mock DB gives back a Mock object", async () => {
     const mockDb = new FakeDB({ mocking: true });
     await mockDb.waitForConnection();
     expect(mockDb.mock).to.be.instanceOf(Mock);

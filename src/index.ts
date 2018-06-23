@@ -1,8 +1,10 @@
-export { RealTimeDB, IFirebaseListener, FirebaseBoolean, FirebaseEvent } from "./db";
+export { RealTimeDB, IFirebaseListener, FirebaseBoolean } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
 export { rtdb } from "firebase-api-surface";
+// tslint:disable-next-line:no-submodule-imports
+import { EventType as FirebaseEvent } from "firebase-api-surface/dist/esnext/rtdb";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;

@@ -41,7 +41,7 @@ export function setupEnv() {
   }
 
   if (process.env.MOCK === undefined) {
-    process.env.MOCK = true;
+    process.env.MOCK = "true";
   }
 
   const current = process.env;

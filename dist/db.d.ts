@@ -6,7 +6,17 @@ export interface IPathSetter<T = any> {
     path: string;
     value: T;
 }
-export declare type FirebaseEvent = "child_added" | "child_removed" | "child_changed" | "child_moved" | "value";
+export declare type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
+export interface IFirebaseWatchContext {
+    eventType: rtdb.EventType;
+    targetType: "path" | "query";
+}
+export interface IFirebaseWatchCoreEvent {
+    key: string;
+    value: any;
+    previousChildKey?: string;
+}
+export declare type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
 export declare enum FirebaseBoolean {
     true = 1,
     false = 0
@@ -60,7 +70,7 @@ export declare abstract class RealTimeDB {
      * @param events an event type or an array of event types (e.g., "value", "child_added")
      * @param cb the callback function to call when event triggered
      */
-    watch(target: string | SerializedQuery, events: EventType | EventType[], cb: any): void;
+    watch(target: string | SerializedQuery, events: EventType | EventType[], cb: IFirebaseWatchHandler): void;
     unWatch(events?: EventType | EventType[], cb?: any): void;
     /**
      * Get a Firebase SerializedQuery reference

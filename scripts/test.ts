@@ -11,9 +11,7 @@ function getScope(files?: string[]): string {
   let fileScope: string;
 
   if (!files || files[0] === "all") {
-    console.log(
-      chalk.white("no specific files specified so all files being tested")
-    );
+    console.log(chalk.white("no specific files specified so all files being tested"));
     fileScope = "--recursive test/**/*-spec.ts";
   } else {
     const shapeFileName = (fn: string) => {
@@ -48,13 +46,11 @@ function cleanJSTests() {
 
 function executeTests(stg: string, fileScope: string): void {
   console.log(
-    chalk.green(
-      `${chalk.bold("mocha")} --compilers ts:ts-node/register  ${fileScope}`
-    )
+    chalk.green(`${chalk.bold("mocha")} --compilers ts:ts-node/register  ${fileScope}`)
   );
   process.env.AWS_STAGE = stg;
   process.env.TS_NODE_COMPILER_OPTIONS = '{ "noImplicitAny": false }';
-  exec(`mocha --require ts-node/register ` + fileScope);
+  exec(`mocha --require ts-node/register --exit ` + fileScope);
 }
 
 function lint() {
@@ -65,12 +61,7 @@ function lint() {
 program
   .arguments("[files...]")
   .description("Run mocha tests with ts-node")
-  .option(
-    "-s, --stage [env]",
-    "Environment to use",
-    /^(dev|test|stage|prod)^/,
-    "test"
-  )
+  .option("-s, --stage [env]", "Environment to use", /^(dev|test|stage|prod)^/, "test")
   .option("--skip-lint", "Skip the linting checks")
   .action(async files => {
     await cleanJSTests();

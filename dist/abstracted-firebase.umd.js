@@ -42,6 +42,22 @@
       }
   }
 
+  const WatcherEventWrapper = (context) => (handler) => {
+      return (snapshot, previousChildKey) => {
+          const event = {
+              key: snapshot.key,
+              value: snapshot.val()
+          };
+          if (previousChildKey) {
+              event.previousChildKey = previousChildKey;
+          }
+          const fullEvent = Object.assign({}, event, context);
+          console.log("FULL EVENT", fullEvent);
+          return handler(fullEvent);
+      };
+  };
+
+  // tslint:disable:no-implicit-dependencies
   (function (FirebaseBoolean) {
       FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
       FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
@@ -84,15 +100,21 @@
           if (!Array.isArray(events)) {
               events = [events];
           }
+          console.log("EVENTS:", events);
           events.map(evt => {
+              console.log(`dispatch set for ${evt}`);
+              const dispatch = WatcherEventWrapper({
+                  eventType: evt,
+                  targetType: "path"
+              })(cb);
               if (typeof target === "string") {
-                  this.ref(slashNotation(target)).on(evt, cb);
+                  this.ref(slashNotation(target)).on(evt, dispatch);
               }
               else {
                   target
                       .setDB(this)
                       .deserialize()
-                      .on(evt, cb);
+                      .on(evt, dispatch);
               }
           });
       }
