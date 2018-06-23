@@ -116,7 +116,6 @@ export abstract class RealTimeDB {
     if (!Array.isArray(events)) {
       events = [events];
     }
-    console.log("EVENTS:", events);
 
     events.map(evt => {
       console.log(`dispatch set for ${evt}`);

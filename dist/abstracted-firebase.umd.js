@@ -52,7 +52,6 @@
               event.previousChildKey = previousChildKey;
           }
           const fullEvent = Object.assign({}, event, context);
-          console.log("FULL EVENT", fullEvent);
           return handler(fullEvent);
       };
   };
@@ -100,7 +99,6 @@
           if (!Array.isArray(events)) {
               events = [events];
           }
-          console.log("EVENTS:", events);
           events.map(evt => {
               console.log(`dispatch set for ${evt}`);
               const dispatch = WatcherEventWrapper({

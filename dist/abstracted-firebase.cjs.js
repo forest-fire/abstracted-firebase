@@ -56,7 +56,6 @@ const WatcherEventWrapper = (context) => (handler) => {
             event.previousChildKey = previousChildKey;
         }
         const fullEvent = Object.assign({}, event, context);
-        console.log("FULL EVENT", fullEvent);
         return handler(fullEvent);
     };
 };
@@ -104,7 +103,6 @@ class RealTimeDB {
         if (!Array.isArray(events)) {
             events = [events];
         }
-        console.log("EVENTS:", events);
         events.map(evt => {
             console.log(`dispatch set for ${evt}`);
             const dispatch = WatcherEventWrapper({

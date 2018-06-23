@@ -1,4 +1,11 @@
-export { RealTimeDB, IFirebaseListener, FirebaseBoolean } from "./db";
+export {
+  RealTimeDB,
+  IFirebaseListener,
+  FirebaseBoolean,
+  IFirebaseWatchCoreEvent,
+  IFirebaseWatchEvent,
+  IFirebaseWatchHandler
+} from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";

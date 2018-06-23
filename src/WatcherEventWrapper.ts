@@ -20,7 +20,6 @@ export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (
       event.previousChildKey = previousChildKey;
     }
     const fullEvent: IFirebaseWatchEvent = { ...event, ...context };
-    console.log("FULL EVENT", fullEvent);
 
     return handler(fullEvent);
   };
