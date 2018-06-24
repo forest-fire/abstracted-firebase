@@ -104,7 +104,6 @@ class RealTimeDB {
             events = [events];
         }
         events.map(evt => {
-            console.log(`dispatch set for ${evt}`);
             const dispatch = WatcherEventWrapper({
                 eventType: evt,
                 targetType: "path"

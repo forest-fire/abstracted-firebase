@@ -594,10 +594,10 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
 
 abstracted-admin@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/abstracted-admin/-/abstracted-admin-0.12.1.tgz#ec7721137b0da2c02a1a2ee40597844fbde988e3"
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/abstracted-admin/-/abstracted-admin-0.12.2.tgz#ea71a37a88a719a74c14884795f437c3da4525e6"
   dependencies:
-    abstracted-firebase "^0.12.0"
+    abstracted-firebase "^0.12.2"
     common-types "^1.8.2"
     firebase-admin "^5.12.1"
     firebase-api-surface "^0.8.3"
@@ -608,10 +608,10 @@ abstracted-admin@^0.12.1:
     typed-conversions "^0.8.3"
 
 abstracted-client@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/abstracted-client/-/abstracted-client-0.12.1.tgz#5b0ffa28922879fb25c98f17e9142a9b88710238"
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/abstracted-client/-/abstracted-client-0.12.2.tgz#6bd9f2cef94d80025c4a5dd9c3b990ff440c0141"
   dependencies:
-    abstracted-firebase "^0.12.0"
+    abstracted-firebase "^0.12.2"
     common-types "^1.8.2"
     events "^3.0.0"
     firebase "^5.0.4"
@@ -622,9 +622,9 @@ abstracted-client@^0.12.1:
     serialized-query "^0.4.3"
     typed-conversions "^0.8.3"
 
-abstracted-firebase@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.0.tgz#948ac1ec6685fd272847190b20923a1574a5d731"
+abstracted-firebase@^0.12.2:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.3.tgz#aa930fb9c55fa542b63c202c0bec6315810c3ee8"
   dependencies:
     common-types "^1.8.2"
     firebase-api-surface "^0.8.3"
