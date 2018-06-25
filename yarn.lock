@@ -594,10 +594,10 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
 
 abstracted-admin@^0.12.1:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/abstracted-admin/-/abstracted-admin-0.12.2.tgz#ea71a37a88a719a74c14884795f437c3da4525e6"
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/abstracted-admin/-/abstracted-admin-0.12.3.tgz#d51150ba84dae7d72958f921d905e2b51a7c5c0e"
   dependencies:
-    abstracted-firebase "^0.12.2"
+    abstracted-firebase "^0.12.4"
     common-types "^1.8.2"
     firebase-admin "^5.12.1"
     firebase-api-surface "^0.8.3"
@@ -605,7 +605,7 @@ abstracted-admin@^0.12.1:
     lodash.last "^3.0.0"
     moment "^2.22.0"
     serialized-query "^0.4.3"
-    typed-conversions "^0.8.3"
+    typed-conversions "^0.8.8"
 
 abstracted-client@^0.12.1:
   version "0.12.2"
@@ -622,9 +622,9 @@ abstracted-client@^0.12.1:
     serialized-query "^0.4.3"
     typed-conversions "^0.8.3"
 
-abstracted-firebase@^0.12.2:
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.3.tgz#aa930fb9c55fa542b63c202c0bec6315810c3ee8"
+abstracted-firebase@^0.12.2, abstracted-firebase@^0.12.4:
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.4.tgz#29a31d128f6f214fa544b41aa696dccb5722657c"
   dependencies:
     common-types "^1.8.2"
     firebase-api-surface "^0.8.3"
@@ -1939,8 +1939,8 @@ he@1.1.1:
   resolved "https://registry.yarnpkg.com/he/-/he-1.1.1.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
 
 hosted-git-info@^2.1.4:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.6.0.tgz#23235b29ab230c576aab0d4f13fc046b0b038222"
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.6.1.tgz#6e4cee78b01bb849dcf93527708c69fdbee410df"
 
 http-parser-js@>=0.4.0:
   version "0.4.13"
@@ -2698,8 +2698,8 @@ node-forge@^0.7.4:
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.5.tgz#6c152c345ce11c52f465c2abd957e8639cd674df"
 
 node-pre-gyp@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.0.tgz#6e4ef5bb5c5203c6552448828c852c40111aac46"
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.2.tgz#e8945c20ef6795a20aac2b44f036eb13cf5146e3"
   dependencies:
     detect-libc "^1.0.2"
     mkdirp "^0.5.1"
@@ -2707,7 +2707,7 @@ node-pre-gyp@^0.10.0:
     nopt "^4.0.1"
     npm-packlist "^1.1.6"
     npmlog "^4.0.2"
-    rc "^1.1.7"
+    rc "^1.2.7"
     rimraf "^2.6.1"
     semver "^5.3.0"
     tar "^4"
@@ -3158,7 +3158,7 @@ randomatic@^3.0.0:
     kind-of "^6.0.0"
     math-random "^1.0.1"
 
-rc@^1.1.7:
+rc@^1.2.7:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
   dependencies:
@@ -3309,8 +3309,8 @@ rimraf@^2.6.1, rimraf@^2.6.2:
     glob "^7.0.5"
 
 rollup-plugin-typescript2@^0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.15.0.tgz#33cf4ec8528f6fa5686cf1246f047acec4801d3a"
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.15.1.tgz#7b35d0eaa6ad5a54a253ed158a565b99d8f15372"
   dependencies:
     fs-extra "^5.0.0"
     resolve "^1.7.1"
@@ -3794,14 +3794,7 @@ typed-conversions@^0.7.4:
   dependencies:
     common-types "^1.1.0"
 
-typed-conversions@^0.8.3:
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/typed-conversions/-/typed-conversions-0.8.3.tgz#8b477cf03f383b2a08259a9f018fee0113a075bd"
-  dependencies:
-    common-types "^1.7.36"
-    lodash.get "^4.4.2"
-
-typed-conversions@^0.8.8:
+typed-conversions@^0.8.3, typed-conversions@^0.8.8:
   version "0.8.8"
   resolved "https://registry.yarnpkg.com/typed-conversions/-/typed-conversions-0.8.8.tgz#25e57f9a5435b8ec81a459b4981a19050a211a2c"
   dependencies:
@@ -3813,8 +3806,8 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
 typescript@^3.0.0-dev.20180606:
-  version "3.0.0-dev.20180622"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.0-dev.20180622.tgz#16cb2d9cd90cda892810439f75b0b92762b8e745"
+  version "3.0.0-dev.20180623"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.0-dev.20180623.tgz#2121f0c77a8737bdd9f028eb84ac328c35274fbb"
 
 uglify-js@^2.6:
   version "2.8.29"
