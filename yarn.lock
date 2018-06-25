@@ -608,29 +608,29 @@ abstracted-admin@^0.12.1:
     typed-conversions "^0.8.8"
 
 abstracted-client@^0.12.1:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/abstracted-client/-/abstracted-client-0.12.2.tgz#6bd9f2cef94d80025c4a5dd9c3b990ff440c0141"
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/abstracted-client/-/abstracted-client-0.12.3.tgz#01dc55e5a539339981095b8353c80a6f91792601"
   dependencies:
-    abstracted-firebase "^0.12.2"
+    abstracted-firebase "^0.12.5"
     common-types "^1.8.2"
     events "^3.0.0"
-    firebase "^5.0.4"
+    firebase "^5.1.0"
     firebase-api-surface "^0.8.3"
     lodash.first "^3.0.0"
     lodash.last "^3.0.0"
     moment "^2.20.1"
-    serialized-query "^0.4.3"
-    typed-conversions "^0.8.3"
+    serialized-query "^0.4.4"
+    typed-conversions "^0.8.8"
 
-abstracted-firebase@^0.12.2, abstracted-firebase@^0.12.4:
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.4.tgz#29a31d128f6f214fa544b41aa696dccb5722657c"
+abstracted-firebase@^0.12.4, abstracted-firebase@^0.12.5:
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/abstracted-firebase/-/abstracted-firebase-0.12.5.tgz#1d55c939870d4b3cdf5ecdb8c10c09cb5869b6eb"
   dependencies:
     common-types "^1.8.2"
     firebase-api-surface "^0.8.3"
     lodash "^4.17.10"
-    serialized-query "^0.4.3"
-    typed-conversions "^0.8.3"
+    serialized-query "^0.4.4"
+    typed-conversions "^0.8.8"
     wait-in-parallel "^1.1.4"
 
 acorn-es7-plugin@^1.0.12:
@@ -1567,7 +1567,7 @@ firebase-key@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.1.tgz#5f1fe462c011c7f944f2f0f489c838dd1ed162ef"
 
-firebase@^5.0.4:
+firebase@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/firebase/-/firebase-5.1.0.tgz#9f56f910ef4e5e605c0f3de910b2070d2a1c3b55"
   dependencies:
@@ -3794,9 +3794,9 @@ typed-conversions@^0.7.4:
   dependencies:
     common-types "^1.1.0"
 
-typed-conversions@^0.8.3, typed-conversions@^0.8.8:
-  version "0.8.8"
-  resolved "https://registry.yarnpkg.com/typed-conversions/-/typed-conversions-0.8.8.tgz#25e57f9a5435b8ec81a459b4981a19050a211a2c"
+typed-conversions@^0.8.8, typed-conversions@^0.8.9:
+  version "0.8.9"
+  resolved "https://registry.yarnpkg.com/typed-conversions/-/typed-conversions-0.8.9.tgz#160b9f6aaf2228cc271461a41444279f6fde0a30"
   dependencies:
     common-types "^1.7.36"
     lodash.get "^4.4.2"
