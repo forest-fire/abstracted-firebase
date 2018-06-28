@@ -254,7 +254,15 @@ class RealTimeDB {
                     pathValue.path = "/" + pathValue.path;
                 }
                 if (exists.has(pathValue.path)) {
-                    const e = new Error(`You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation.`);
+                    let message = `You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation [ value: ${pathValue.value} ]. For context the payload in the multi-path-set is: ${JSON.stringify(api.payload, null, 2)}`;
+                    if (api.findPathItem(pathValue.path).value === pathValue.value) {
+                        message +=
+                            "As you can see from the above payload, the second attempt at setting the value is producing the same value. ";
+                    }
+                    else {
+                        message += `As you can see from the above payload, the second attempt at setting the value is producing a different value then before! [ ${api.findPathItem(pathValue.path).value} => ${pathValue.value}  ] `;
+                    }
+                    const e = new Error(message);
                     e.code = "duplicate-path";
                     throw e;
                 }
@@ -274,6 +282,9 @@ class RealTimeDB {
                     i.path = [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
                     return i;
                 });
+            },
+            findPathItem(path) {
+                return mps.find(i => i.path === path);
             },
             /** receive a call back on conclusion of the firebase operation */
             callback(cb) {
