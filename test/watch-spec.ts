@@ -21,7 +21,6 @@ describe.skip("Watch →", () => {
       age: 65
     });
     await db.remove("/foo2/bar4");
-    console.log(events);
 
     expect(events).to.have.lengthOf(3);
   });

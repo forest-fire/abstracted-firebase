@@ -248,21 +248,10 @@
               },
               /** Add in a new path and value to be included in the operation */
               add(pathValue) {
-                  const exists = new Set(api.paths);
-                  if (pathValue.path.indexOf("/") === -1) {
-                      pathValue.path = "/" + pathValue.path;
-                  }
-                  if (exists.has(pathValue.path)) {
-                      let message = `You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation [ value: ${pathValue.value} ]. For context the payload in the multi-path-set is: ${JSON.stringify(api.payload, null, 2)}`;
-                      if (api.findPathItem(pathValue.path).value === pathValue.value) {
-                          message +=
-                              "As you can see from the above payload, the second attempt at setting the value is producing the same value. ";
-                      }
-                      else {
-                          message += `As you can see from the above payload, the second attempt at setting the value is producing a different value then before! [ ${api.findPathItem(pathValue.path).value} => ${pathValue.value}  ] `;
-                      }
+                  if (api.paths.includes(pathValue.path)) {
+                      const message = `You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation [ value: ${pathValue.value} ]. For context the payload in the multi-path-set was already: ${JSON.stringify(api.payload, null, 2)}`;
                       const e = new Error(message);
-                      e.code = "duplicate-path";
+                      e.name = "DuplicatePath";
                       throw e;
                   }
                   mps.push(pathValue);
@@ -283,7 +272,13 @@
                   });
               },
               findPathItem(path) {
-                  return mps.find(i => i.path === path);
+                  let result = "unknown";
+                  api.payload.map(i => {
+                      if (i.path === path) {
+                          result = i.value;
+                      }
+                  });
+                  return result;
               },
               /** receive a call back on conclusion of the firebase operation */
               callback(cb) {

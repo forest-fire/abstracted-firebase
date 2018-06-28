@@ -273,6 +273,9 @@ export abstract class RealTimeDB {
     const mps: IPathSetter[] = [];
     const ref = this.ref.bind(this);
     let callback: (err: any, pathSetters: IPathSetter[]) => void;
+    const makeFullPath = (path: string, basePath: string) => {
+      return [basePath, path].join("/").replace(/[\/]{2,3}/g, "/");
+    };
     const api = {
       /** The base reference path which all paths will be relative to */
       _basePath: base || "/",
@@ -287,32 +290,21 @@ export abstract class RealTimeDB {
       },
       /** Add in a new path and value to be included in the operation */
       add<X = any>(pathValue: IPathSetter<X>) {
-        const exists = new Set(api.paths);
-        if (pathValue.path.indexOf("/") === -1) {
-          pathValue.path = "/" + pathValue.path;
-        }
-        if (exists.has(pathValue.path)) {
-          let message = `You have attempted to add the path "${
+        if (api.paths.includes(pathValue.path)) {
+          const message = `You have attempted to add the path "${
             pathValue.path
           }" twice to a MultiPathSet operation [ value: ${
             pathValue.value
-          } ]. For context the payload in the multi-path-set is: ${JSON.stringify(
+          } ]. For context the payload in the multi-path-set was already: ${JSON.stringify(
             api.payload,
             null,
             2
           )}`;
-          if (api.findPathItem(pathValue.path).value === pathValue.value) {
-            message +=
-              "As you can see from the above payload, the second attempt at setting the value is producing the same value. ";
-          } else {
-            message += `As you can see from the above payload, the second attempt at setting the value is producing a different value then before! [ ${
-              api.findPathItem(pathValue.path).value
-            } => ${pathValue.value}  ] `;
-          }
           const e: any = new Error(message);
-          e.code = "duplicate-path";
+          e.name = "DuplicatePath";
           throw e;
         }
+
         mps.push(pathValue);
         return api;
       },
@@ -331,7 +323,15 @@ export abstract class RealTimeDB {
         });
       },
       findPathItem(path: string) {
-        return mps.find(i => i.path === path);
+        let result = "unknown";
+
+        api.payload.map(i => {
+          if (i.path === path) {
+            result = i.value;
+          }
+        });
+
+        return result;
       },
       /** receive a call back on conclusion of the firebase operation */
       callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {

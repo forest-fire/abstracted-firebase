@@ -104,7 +104,7 @@ export declare abstract class RealTimeDB {
         /** the absolute paths (including the base offset) which will be updated upon execution */
         readonly fullPaths: string[];
         readonly payload: IPathSetter<any>[];
-        findPathItem(path: string): IPathSetter<any>;
+        findPathItem(path: string): string;
         /** receive a call back on conclusion of the firebase operation */
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
         execute(): Promise<any>;
