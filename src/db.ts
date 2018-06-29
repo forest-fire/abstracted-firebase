@@ -7,14 +7,7 @@ import { slashNotation } from "./util";
 import { rtdb } from "firebase-api-surface";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
-// tslint:disable-next-line:no-implicit-dependencies
-import { Mock } from "firemock";
-// tslint:disable-next-line:no-submodule-imports
-import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-// tslint:disable-next-line:no-submodule-imports
-import SnapShot from "firemock/dist/snapshot";
-import { NOTIMP } from "dns";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -74,7 +67,7 @@ export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
-  protected _mock: Mock;
+  protected _mock: import("firemock").Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
@@ -111,7 +104,7 @@ export abstract class RealTimeDB {
    */
   public watch(
     target: string | SerializedQuery,
-    events: EventType | EventType[],
+    events: rtdb.EventType | rtdb.EventType[],
     cb: IFirebaseWatchHandler
   ) {
     if (!Array.isArray(events)) {
@@ -134,7 +127,7 @@ export abstract class RealTimeDB {
     });
   }
 
-  public unWatch(events?: EventType | EventType[], cb?: any) {
+  public unWatch(events?: rtdb.EventType | rtdb.EventType[], cb?: any) {
     if (!Array.isArray(events)) {
       events = [events];
     }
