@@ -7,13 +7,7 @@ import { slashNotation } from "./util";
 import { rtdb } from "firebase-api-surface";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
-// tslint:disable-next-line:no-implicit-dependencies
-import { Mock } from "firemock";
-// tslint:disable-next-line:no-submodule-imports
-import { EventType } from "firebase-api-surface/dist/esnext/rtdb";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-// tslint:disable-next-line:no-submodule-imports
-import SnapShot from "firemock/dist/snapshot";
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -73,7 +67,7 @@ export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
-  protected _mock: Mock;
+  protected _mock: import("firemock").Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
@@ -110,7 +104,7 @@ export abstract class RealTimeDB {
    */
   public watch(
     target: string | SerializedQuery,
-    events: EventType | EventType[],
+    events: rtdb.EventType | rtdb.EventType[],
     cb: IFirebaseWatchHandler
   ) {
     if (!Array.isArray(events)) {
@@ -133,7 +127,7 @@ export abstract class RealTimeDB {
     });
   }
 
-  public unWatch(events?: EventType | EventType[], cb?: any) {
+  public unWatch(events?: rtdb.EventType | rtdb.EventType[], cb?: any) {
     if (!Array.isArray(events)) {
       events = [events];
     }
@@ -272,6 +266,9 @@ export abstract class RealTimeDB {
     const mps: IPathSetter[] = [];
     const ref = this.ref.bind(this);
     let callback: (err: any, pathSetters: IPathSetter[]) => void;
+    const makeFullPath = (path: string, basePath: string) => {
+      return [basePath, path].join("/").replace(/[\/]{2,3}/g, "/");
+    };
     const api = {
       /** The base reference path which all paths will be relative to */
       _basePath: base || "/",
@@ -286,19 +283,21 @@ export abstract class RealTimeDB {
       },
       /** Add in a new path and value to be included in the operation */
       add<X = any>(pathValue: IPathSetter<X>) {
-        const exists = new Set(api.paths);
-        if (pathValue.path.indexOf("/") === -1) {
-          pathValue.path = "/" + pathValue.path;
-        }
-        if (exists.has(pathValue.path)) {
-          const e: any = new Error(
-            `You have attempted to add the path "${
-              pathValue.path
-            }" twice to a MultiPathSet operation.`
-          );
-          e.code = "duplicate-path";
+        if (api.paths.includes(pathValue.path)) {
+          const message = `You have attempted to add the path "${
+            pathValue.path
+          }" twice to a MultiPathSet operation [ value: ${
+            pathValue.value
+          } ]. For context the payload in the multi-path-set was already: ${JSON.stringify(
+            api.payload,
+            null,
+            2
+          )}`;
+          const e: any = new Error(message);
+          e.name = "DuplicatePath";
           throw e;
         }
+
         mps.push(pathValue);
         return api;
       },
@@ -315,6 +314,17 @@ export abstract class RealTimeDB {
           i.path = [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
           return i;
         });
+      },
+      findPathItem(path: string) {
+        let result = "unknown";
+
+        api.payload.map(i => {
+          if (i.path === path) {
+            result = i.value;
+          }
+        });
+
+        return result;
       },
       /** receive a call back on conclusion of the firebase operation */
       callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {

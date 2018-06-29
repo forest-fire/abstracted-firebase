@@ -1,7 +1,7 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.12.5",
-  "description": "Core library supporting 'abstracted-admin' and 'abstracted-client' libraries",
+  "version": "0.14.0",
+  "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
   "author": "Ken Snyder <ken@ken.net>",
@@ -13,9 +13,9 @@
   "files": [
     "dist"
   ],
-  "module": "dist/abstracted-firebase.es.js",
-  "main": "dist/abstracted-firebase.cjs.js",
-  "typings": "dist/index.d.ts",
+  "module": "dist/esnext/index.js",
+  "main": "dist/cjs/index.js",
+  "typings": "dist/esnext/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
@@ -30,7 +30,6 @@
   "dependencies": {
     "common-types": "^1.8.2",
     "firebase-api-surface": "^0.8.3",
-    "lodash": "^4.17.10",
     "serialized-query": "^0.4.4",
     "typed-conversions": "^0.8.9",
     "wait-in-parallel": "^1.1.4"
@@ -53,6 +52,7 @@
     "faker": "^4.1.0",
     "firemock": "^0.18.0",
     "js-yaml": "^3.12.0",
+    "lodash": "^4.17.10",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
     "rimraf": "^2.6.2",
