@@ -1,4 +1,5 @@
 export const WatcherEventWrapper = (context) => (handler) => {
+    // tslint:disable-next-line:whitespace
     return (snapshot, previousChildKey) => {
         const event = {
             key: snapshot.key,
