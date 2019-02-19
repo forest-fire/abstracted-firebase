@@ -80,10 +80,14 @@ export declare abstract class RealTimeDB {
     ref(path?: string): rtdb.IReference;
     readonly isMockDb: boolean;
     readonly mock: import("../../../../../../Users/ken/mine/forest-fire/abstracted-firebase/node_modules/firemock/dist/mock").default;
+    /**
+     * Provides a promise-based way of waiting for the connection to be
+     * established before resolving
+     */
     waitForConnection(): Promise<this>;
     readonly isConnected: boolean;
     /** set a "value" in the database at a given path */
-    set<T = T>(path: string, value: T): Promise<void>;
+    set<T = any>(path: string, value: T): Promise<void>;
     /**
      * Equivalent to Firebase's traditional "multi-path updates" which are
      * in behaviour are really "multi-path SETs". Calling this function provides
