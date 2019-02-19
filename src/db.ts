@@ -9,6 +9,8 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
 
+type Mock = import ("firemock").Mock;
+
 export interface IPathSetter<T = any> {
   path: string;
   value: T;
@@ -67,7 +69,7 @@ export abstract class RealTimeDB {
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
-  protected _mock: import("firemock").Mock;
+  protected _mock: Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
   protected _onConnected: IFirebaseListener[] = [];
@@ -164,7 +166,7 @@ export abstract class RealTimeDB {
     return this._mocking;
   }
 
-  public get mock() {
+  public get mock(): Mock {
     if (!this._mocking && !this._allowMocking) {
       const e = new Error(
         "You can not mock the database without setting mocking in the constructor"
@@ -186,7 +188,7 @@ export abstract class RealTimeDB {
       throw e;
     }
 
-    return this._mock;
+    return this._mock as Mock;
   }
 
   /**
