@@ -1,6 +1,3 @@
-import { IDictionary } from "common-types";
-// tslint:disable-next-line:no-implicit-dependencies
-import { SnapShot } from "firemock";
 import {
   IFirebaseWatchEvent,
   IFirebaseWatchHandler,
@@ -11,7 +8,8 @@ import {
 export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (
   handler: IFirebaseWatchHandler
 ) => {
-  return (snapshot: SnapShot, previousChildKey?: string) => {
+  // tslint:disable-next-line:whitespace
+  return (snapshot: import("firemock").SnapShot, previousChildKey?: string) => {
     const event: IFirebaseWatchCoreEvent = {
       key: snapshot.key,
       value: snapshot.val()

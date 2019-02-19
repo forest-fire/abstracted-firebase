@@ -10,6 +10,7 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WatcherEventWrapper = (context) => (handler) => {
+        // tslint:disable-next-line:whitespace
         return (snapshot, previousChildKey) => {
             const event = {
                 key: snapshot.key,

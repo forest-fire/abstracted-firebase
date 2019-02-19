@@ -189,6 +189,10 @@ export abstract class RealTimeDB {
     return this._mock;
   }
 
+  /**
+   * Provides a promise-based way of waiting for the connection to be
+   * established before resolving
+   */
   public async waitForConnection() {
     if (this._mocking) {
       // MOCKING
@@ -231,7 +235,7 @@ export abstract class RealTimeDB {
   }
 
   /** set a "value" in the database at a given path */
-  public async set<T = T>(path: string, value: T): Promise<void> {
+  public async set<T = any>(path: string, value: T): Promise<void> {
     try {
       return this.ref(path).set(value);
     } catch (e) {

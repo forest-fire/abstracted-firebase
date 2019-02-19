@@ -118,6 +118,10 @@ export class RealTimeDB {
         }
         return this._mock;
     }
+    /**
+     * Provides a promise-based way of waiting for the connection to be
+     * established before resolving
+     */
     async waitForConnection() {
         if (this._mocking) {
             // MOCKING
