@@ -2,7 +2,6 @@ export { RealTimeDB, IFirebaseListener, FirebaseBoolean, IFirebaseWatchCoreEvent
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
-export { rtdb } from "firebase-api-surface";
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export declare type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;

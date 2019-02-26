@@ -1,5 +1,6 @@
 import { SerializedQuery } from "serialized-query";
-import { rtdb } from "firebase-api-surface";
+import { FirebaseDatabase, DataSnapshot } from "@firebase/database-types";
+import { EventType } from "./types";
 declare type Mock = import("firemock").Mock;
 export interface IPathSetter<T = any> {
     path: string;
@@ -7,7 +8,7 @@ export interface IPathSetter<T = any> {
 }
 export declare type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
 export interface IFirebaseWatchContext {
-    eventType: rtdb.EventType;
+    eventType: EventType;
     targetType: "path" | "query";
 }
 export interface IFirebaseWatchCoreEvent {
@@ -54,7 +55,7 @@ export declare abstract class RealTimeDB {
     protected _mocking: boolean;
     protected _allowMocking: boolean;
     protected app: any;
-    protected _database: rtdb.IFirebaseDatabase;
+    protected _database: FirebaseDatabase;
     protected abstract _firestore: any;
     protected abstract _storage: any;
     protected abstract _messaging: any;
@@ -69,8 +70,8 @@ export declare abstract class RealTimeDB {
      * @param events an event type or an array of event types (e.g., "value", "child_added")
      * @param cb the callback function to call when event triggered
      */
-    watch(target: string | SerializedQuery, events: rtdb.EventType | rtdb.EventType[], cb: IFirebaseWatchHandler): void;
-    unWatch(events?: rtdb.EventType | rtdb.EventType[], cb?: any): void;
+    watch(target: string | SerializedQuery, events: EventType | EventType[], cb: IFirebaseWatchHandler): void;
+    unWatch(events?: EventType | EventType[], cb?: any): void;
     /**
      * Get a Firebase SerializedQuery reference
      *
@@ -78,7 +79,7 @@ export declare abstract class RealTimeDB {
      */
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
-    ref(path?: string): rtdb.IReference;
+    ref(path?: string): import("@firebase/database-types").Reference | import("firemock").Reference<any>;
     readonly isMockDb: boolean;
     readonly mock: Mock;
     /**
@@ -113,9 +114,9 @@ export declare abstract class RealTimeDB {
         execute(): Promise<any>;
     };
     update<T = any>(path: string, value: Partial<T>): Promise<any>;
-    remove<T = any>(path: string, ignoreMissing?: boolean): Promise<void>;
+    remove<T = any>(path: string, ignoreMissing?: boolean): Promise<any>;
     /** returns the firebase snapshot at a given path in the database */
-    getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot>;
+    getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
     /** returns the JS value at a given path in the database */
     getValue<T = any>(path: string): Promise<T>;
     /**
