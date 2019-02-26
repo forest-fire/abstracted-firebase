@@ -8,10 +8,9 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
 import { FirebaseDatabase, DataSnapshot } from "@firebase/database-types";
-import { EventType, IReference } from "./types";
-import { SnapShot } from "firemock";
+import { EventType } from "./types";
 
-type Mock = import ("firemock").Mock;
+type Mock = import("firemock").Mock;
 
 export interface IPathSetter<T = any> {
   path: string;
@@ -159,9 +158,7 @@ export abstract class RealTimeDB {
 
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string = "/") {
-    return this._mocking 
-      ? this.mock.ref(path)
-      : this._database.ref(path);
+    return this._mocking ? this.mock.ref(path) : this._database.ref(path);
   }
 
   public get isMockDb() {

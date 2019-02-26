@@ -105,9 +105,7 @@
         }
         /** Get a DB reference for a given path in Firebase */
         ref(path = "/") {
-            return this._mocking
-                ? this.mock.ref(path)
-                : this._database.ref(path);
+            return this._mocking ? this.mock.ref(path) : this._database.ref(path);
         }
         get isMockDb() {
             return this._mocking;
