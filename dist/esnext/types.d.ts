@@ -1,6 +1,40 @@
-import { DataSnapshot, OnDisconnect, Query, ThenableReference } from "@firebase/database-types";
+import { DataSnapshot, OnDisconnect, Query, ThenableReference, EventType } from "@firebase/database-types";
 import { IDictionary } from "common-types";
-export declare type EventType = "value" | "child_moved" | "child_removed" | "child_added" | "child_changed";
+import { RealTimeDB } from "./db";
+export declare type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
+export declare type DebuggingCallback = (message: string) => void;
+export interface IFirebaseConfig {
+    debugging?: boolean | DebuggingCallback;
+    mocking?: boolean;
+}
+export interface IFirebaseListener {
+    id: string;
+    cb: (db: RealTimeDB) => void;
+}
+export interface IEmitter {
+    emit: (event: string | symbol, ...args: any[]) => boolean;
+    on: (event: string, value: any) => void;
+    once: (event: string, value: any) => void;
+}
+export interface IPathSetter<T = any> {
+    path: string;
+    value: T;
+}
+export declare type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
+export interface IFirebaseWatchContext {
+    eventType: EventType;
+    targetType: "path" | "query";
+}
+export interface IFirebaseWatchCoreEvent {
+    key: string;
+    value: any;
+    previousChildKey?: string;
+}
+export declare type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
+export declare enum FirebaseBoolean {
+    true = 1,
+    false = 0
+}
 export interface IReference<T = any> extends IQuery {
     readonly key: string | null;
     readonly parent: IReference | null;

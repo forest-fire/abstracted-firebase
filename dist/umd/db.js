@@ -19,11 +19,6 @@
     const FileDepthExceeded_1 = require("./errors/FileDepthExceeded");
     const UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
     const WatcherEventWrapper_1 = require("./WatcherEventWrapper");
-    var FirebaseBoolean;
-    (function (FirebaseBoolean) {
-        FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
-        FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
-    })(FirebaseBoolean = exports.FirebaseBoolean || (exports.FirebaseBoolean = {}));
     /** time by which the dynamically loaded mock library should be loaded */
     exports.MOCK_LOADING_TIMEOUT = 2000;
     class RealTimeDB {
@@ -105,9 +100,7 @@
         }
         /** Get a DB reference for a given path in Firebase */
         ref(path = "/") {
-            return this._mocking
-                ? this.mock.ref(path)
-                : this._database.ref(path);
+            return this._mocking ? this.mock.ref(path) : this._database.ref(path);
         }
         get isMockDb() {
             return this._mocking;

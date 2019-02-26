@@ -3,7 +3,7 @@ import {
   IFirebaseWatchHandler,
   IFirebaseWatchContext,
   IFirebaseWatchCoreEvent
-} from "./db";
+} from "./types";
 import { DataSnapshot } from "@firebase/database-types";
 
 export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (

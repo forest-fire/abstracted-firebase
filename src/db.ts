@@ -7,57 +7,20 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-import { FirebaseDatabase, DataSnapshot } from "@firebase/database-types";
-import { EventType, IReference } from "./types";
-import { SnapShot } from "firemock";
+import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
+import {
+  IEmitter,
+  IFirebaseWatchHandler,
+  IPathSetter,
+  IMockLoadingState,
+  IFirebaseListener,
+  IFirebaseConfig
+} from "./types";
 
-type Mock = import ("firemock").Mock;
+type Mock = import("firemock").Mock;
 
-export interface IPathSetter<T = any> {
-  path: string;
-  value: T;
-}
-
-export type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
-
-export interface IFirebaseWatchContext {
-  eventType: EventType;
-  targetType: "path" | "query";
-}
-
-export interface IFirebaseWatchCoreEvent {
-  key: string;
-  value: any;
-  previousChildKey?: string;
-}
-
-export type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
-
-export enum FirebaseBoolean {
-  true = 1,
-  false = 0
-}
-
-export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
-
-export type DebuggingCallback = (message: string) => void;
-export interface IFirebaseConfig {
-  debugging?: boolean | DebuggingCallback;
-  mocking?: boolean;
-}
-export interface IFirebaseListener {
-  id: string;
-  cb: (db: RealTimeDB) => void;
-}
-
-export interface IEmitter {
-  emit: (event: string | symbol, ...args: any[]) => boolean;
-  on: (event: string, value: any) => void;
-  once: (event: string, value: any) => void;
-}
-
 export abstract class RealTimeDB {
   /** how many miliseconds before the attempt to connect to DB is timed out */
   public CONNECTION_TIMEOUT = 5000;
@@ -159,9 +122,7 @@ export abstract class RealTimeDB {
 
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string = "/") {
-    return this._mocking 
-      ? this.mock.ref(path)
-      : this._database.ref(path);
+    return this._mocking ? this.mock.ref(path) : this._database.ref(path);
   }
 
   public get isMockDb() {

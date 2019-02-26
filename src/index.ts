@@ -1,11 +1,4 @@
-export {
-  RealTimeDB,
-  IFirebaseListener,
-  FirebaseBoolean,
-  IFirebaseWatchCoreEvent,
-  IFirebaseWatchEvent,
-  IFirebaseWatchHandler
-} from "./db";
+export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
@@ -14,6 +7,8 @@ export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
+
+export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
   apiKey: string;
   authDomain: string;
