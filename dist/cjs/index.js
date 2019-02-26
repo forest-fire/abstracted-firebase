@@ -9,5 +9,3 @@ var UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
 exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
 var util_1 = require("./util");
 exports._getFirebaseType = util_1._getFirebaseType;
-var firebase_api_surface_1 = require("firebase-api-surface");
-exports.rtdb = firebase_api_surface_1.rtdb;

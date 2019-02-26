@@ -4,10 +4,12 @@ import { Parallel } from "wait-in-parallel";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
-import { rtdb } from "firebase-api-surface";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
+import { FirebaseDatabase, DataSnapshot } from "@firebase/database-types";
+import { EventType, IReference } from "./types";
+import { SnapShot } from "firemock";
 
 type Mock = import ("firemock").Mock;
 
@@ -19,7 +21,7 @@ export interface IPathSetter<T = any> {
 export type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
 
 export interface IFirebaseWatchContext {
-  eventType: rtdb.EventType;
+  eventType: EventType;
   targetType: "path" | "query";
 }
 
@@ -79,7 +81,7 @@ export abstract class RealTimeDB {
   protected _allowMocking: boolean = false;
 
   protected app: any;
-  protected _database: rtdb.IFirebaseDatabase;
+  protected _database: FirebaseDatabase;
   protected abstract _firestore: any;
   protected abstract _storage: any;
   protected abstract _messaging: any;
@@ -106,7 +108,7 @@ export abstract class RealTimeDB {
    */
   public watch(
     target: string | SerializedQuery,
-    events: rtdb.EventType | rtdb.EventType[],
+    events: EventType | EventType[],
     cb: IFirebaseWatchHandler
   ) {
     if (!Array.isArray(events)) {
@@ -129,7 +131,7 @@ export abstract class RealTimeDB {
     });
   }
 
-  public unWatch(events?: rtdb.EventType | rtdb.EventType[], cb?: any) {
+  public unWatch(events?: EventType | EventType[], cb?: any) {
     if (!Array.isArray(events)) {
       events = [events];
     }
@@ -156,10 +158,10 @@ export abstract class RealTimeDB {
   }
 
   /** Get a DB reference for a given path in Firebase */
-  public ref(path: string = "/"): rtdb.IReference {
-    return this._mocking
-      ? (this.mock.ref(path) as rtdb.IReference)
-      : (this._database.ref(path) as rtdb.IReference);
+  public ref(path: string = "/") {
+    return this._mocking 
+      ? this.mock.ref(path)
+      : this._database.ref(path);
   }
 
   public get isMockDb() {
@@ -398,7 +400,7 @@ export abstract class RealTimeDB {
   }
 
   /** returns the firebase snapshot at a given path in the database */
-  public async getSnapshot(path: string | SerializedQuery): Promise<rtdb.IDataSnapshot> {
+  public async getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot> {
     return typeof path === "string"
       ? this.ref(slashNotation(path)).once("value")
       : path.setDB(this).execute();

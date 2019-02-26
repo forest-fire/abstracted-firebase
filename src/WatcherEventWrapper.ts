@@ -4,12 +4,13 @@ import {
   IFirebaseWatchContext,
   IFirebaseWatchCoreEvent
 } from "./db";
+import { DataSnapshot } from "@firebase/database-types";
 
 export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (
   handler: IFirebaseWatchHandler
 ) => {
   // tslint:disable-next-line:whitespace
-  return (snapshot: import("firemock").SnapShot, previousChildKey?: string) => {
+  return (snapshot: DataSnapshot, previousChildKey?: string) => {
     const event: IFirebaseWatchCoreEvent = {
       key: snapshot.key,
       value: snapshot.val()

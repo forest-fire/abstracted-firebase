@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util", "firebase-api-surface"], factory);
+        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -18,6 +18,4 @@
     exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
     var util_1 = require("./util");
     exports._getFirebaseType = util_1._getFirebaseType;
-    var firebase_api_surface_1 = require("firebase-api-surface");
-    exports.rtdb = firebase_api_surface_1.rtdb;
 });
