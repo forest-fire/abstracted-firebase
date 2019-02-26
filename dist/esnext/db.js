@@ -7,11 +7,6 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-export var FirebaseBoolean;
-(function (FirebaseBoolean) {
-    FirebaseBoolean[FirebaseBoolean["true"] = 1] = "true";
-    FirebaseBoolean[FirebaseBoolean["false"] = 0] = "false";
-})(FirebaseBoolean || (FirebaseBoolean = {}));
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {

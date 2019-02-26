@@ -1,43 +1,9 @@
 import { SerializedQuery } from "serialized-query";
-import { FirebaseDatabase, DataSnapshot } from "@firebase/database-types";
-import { EventType } from "./types";
+import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
+import { IEmitter, IFirebaseWatchHandler, IPathSetter, IMockLoadingState, IFirebaseListener, IFirebaseConfig } from "./types";
 declare type Mock = import("firemock").Mock;
-export interface IPathSetter<T = any> {
-    path: string;
-    value: T;
-}
-export declare type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
-export interface IFirebaseWatchContext {
-    eventType: EventType;
-    targetType: "path" | "query";
-}
-export interface IFirebaseWatchCoreEvent {
-    key: string;
-    value: any;
-    previousChildKey?: string;
-}
-export declare type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
-export declare enum FirebaseBoolean {
-    true = 1,
-    false = 0
-}
-export declare type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
-export declare type DebuggingCallback = (message: string) => void;
-export interface IFirebaseConfig {
-    debugging?: boolean | DebuggingCallback;
-    mocking?: boolean;
-}
-export interface IFirebaseListener {
-    id: string;
-    cb: (db: RealTimeDB) => void;
-}
-export interface IEmitter {
-    emit: (event: string | symbol, ...args: any[]) => boolean;
-    on: (event: string, value: any) => void;
-    once: (event: string, value: any) => void;
-}
 export declare abstract class RealTimeDB {
     /** how many miliseconds before the attempt to connect to DB is timed out */
     CONNECTION_TIMEOUT: number;
