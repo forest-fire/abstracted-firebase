@@ -6,7 +6,6 @@ import {
   EventType
 } from "@firebase/database-types";
 import { IDictionary } from "common-types";
-import { RealTimeDB } from "./db";
 
 export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 
