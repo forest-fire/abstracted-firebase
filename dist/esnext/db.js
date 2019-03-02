@@ -1,6 +1,5 @@
 // tslint:disable:no-implicit-dependencies
-import { wait } from "common-types";
-import { Parallel } from "wait-in-parallel";
+import { wait, createError } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -16,8 +15,6 @@ export class RealTimeDB {
         this._isConnected = false;
         this._mockLoadingState = "not-applicable";
         this._waitingForConnection = [];
-        this._onConnected = [];
-        this._onDisconnected = [];
         this._debugging = false;
         this._mocking = false;
         this._allowMocking = false;
@@ -129,7 +126,7 @@ export class RealTimeDB {
         }
         else {
             // NON-MOCKING
-            if (this.isConnected) {
+            if (this._isConnected) {
                 return;
             }
             const connectionEvent = async () => {
@@ -142,9 +139,11 @@ export class RealTimeDB {
                     }
                 });
             };
-            const p = new Parallel();
-            p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
-            await p.isDone();
+            const timeout = async () => {
+                await wait(this.CONNECTION_TIMEOUT);
+                throw createError("abstracted-firebase/connection-timeout", `The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`);
+            };
+            await Promise.race([connectionEvent, timeout]);
             this._isConnected = true;
             return this;
         }

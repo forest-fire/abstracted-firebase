@@ -1,6 +1,5 @@
 // tslint:disable:no-implicit-dependencies
-import { IDictionary, wait } from "common-types";
-import { Parallel } from "wait-in-parallel";
+import { IDictionary, wait, createError } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -8,12 +7,12 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
 import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
+
 import {
   IEmitter,
   IFirebaseWatchHandler,
   IPathSetter,
   IMockLoadingState,
-  IFirebaseListener,
   IFirebaseConfig
 } from "./types";
 
@@ -37,8 +36,6 @@ export abstract class RealTimeDB {
   protected _mock: Mock;
   protected _resetMockDb: () => void;
   protected _waitingForConnection: Array<() => void> = [];
-  protected _onConnected: IFirebaseListener[] = [];
-  protected _onDisconnected: IFirebaseListener[] = [];
   protected _debugging: boolean = false;
   protected _mocking: boolean = false;
   protected _allowMocking: boolean = false;
@@ -172,7 +169,7 @@ export abstract class RealTimeDB {
       return;
     } else {
       // NON-MOCKING
-      if (this.isConnected) {
+      if (this._isConnected) {
         return;
       }
 
@@ -186,9 +183,17 @@ export abstract class RealTimeDB {
         });
       };
 
-      const p = new Parallel();
-      p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
-      await p.isDone();
+      const timeout = async () => {
+        await wait(this.CONNECTION_TIMEOUT);
+        throw createError(
+          "abstracted-firebase/connection-timeout",
+          `The database didn't connect after the allocated period of ${
+            this.CONNECTION_TIMEOUT
+          }ms`
+        );
+      };
+
+      await Promise.race([connectionEvent, timeout]);
       this._isConnected = true;
 
       return this;
