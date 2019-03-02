@@ -15,10 +15,6 @@ export interface IFirebaseConfig {
   debugging?: boolean | DebuggingCallback;
   mocking?: boolean;
 }
-export interface IFirebaseListener {
-  id: string;
-  cb: (db: RealTimeDB) => void;
-}
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;

@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "common-types", "wait-in-parallel", "typed-conversions", "serialized-query", "./util", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./WatcherEventWrapper"], factory);
+        define(["require", "exports", "common-types", "typed-conversions", "serialized-query", "./util", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./WatcherEventWrapper"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,7 +12,6 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     // tslint:disable:no-implicit-dependencies
     const common_types_1 = require("common-types");
-    const wait_in_parallel_1 = require("wait-in-parallel");
     const convert = require("typed-conversions");
     const serialized_query_1 = require("serialized-query");
     const util_1 = require("./util");
@@ -28,8 +27,6 @@
             this._isConnected = false;
             this._mockLoadingState = "not-applicable";
             this._waitingForConnection = [];
-            this._onConnected = [];
-            this._onDisconnected = [];
             this._debugging = false;
             this._mocking = false;
             this._allowMocking = false;
@@ -141,7 +138,7 @@
             }
             else {
                 // NON-MOCKING
-                if (this.isConnected) {
+                if (this._isConnected) {
                     return;
                 }
                 const connectionEvent = async () => {
@@ -154,9 +151,11 @@
                         }
                     });
                 };
-                const p = new wait_in_parallel_1.Parallel();
-                p.add("connection", connectionEvent, this.CONNECTION_TIMEOUT);
-                await p.isDone();
+                const timeout = async () => {
+                    await common_types_1.wait(this.CONNECTION_TIMEOUT);
+                    throw common_types_1.createError("abstracted-firebase/connection-timeout", `The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`);
+                };
+                await Promise.race([connectionEvent, timeout]);
                 this._isConnected = true;
                 return this;
             }

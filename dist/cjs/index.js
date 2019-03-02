@@ -11,4 +11,6 @@ var UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
 exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
 var util_1 = require("./util");
 exports._getFirebaseType = util_1._getFirebaseType;
+var database_types_1 = require("@firebase/database-types");
+exports.FirebaseDatabase = database_types_1.FirebaseDatabase;
 __export(require("./types"));

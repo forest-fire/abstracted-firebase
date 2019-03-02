@@ -1,6 +1,6 @@
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
-import { IEmitter, IFirebaseWatchHandler, IPathSetter, IMockLoadingState, IFirebaseListener, IFirebaseConfig } from "./types";
+import { IEmitter, IFirebaseWatchHandler, IPathSetter, IMockLoadingState, IFirebaseConfig } from "./types";
 declare type Mock = import("firemock").Mock;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
@@ -15,8 +15,6 @@ export declare abstract class RealTimeDB {
     protected _mock: Mock;
     protected _resetMockDb: () => void;
     protected _waitingForConnection: Array<() => void>;
-    protected _onConnected: IFirebaseListener[];
-    protected _onDisconnected: IFirebaseListener[];
     protected _debugging: boolean;
     protected _mocking: boolean;
     protected _allowMocking: boolean;

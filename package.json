@@ -30,8 +30,7 @@
     "@firebase/database-types": "^0.3.5",
     "common-types": "^1.9.6",
     "serialized-query": "^0.4.5",
-    "typed-conversions": "^0.8.9",
-    "wait-in-parallel": "^1.1.4"
+    "typed-conversions": "^0.8.9"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
