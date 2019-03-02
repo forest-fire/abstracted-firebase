@@ -42,10 +42,10 @@ export abstract class RealTimeDB {
 
   protected app: any;
   protected _database: FirebaseDatabase;
-  protected abstract _firestore: any;
-  protected abstract _storage: any;
-  protected abstract _messaging: any;
-  protected abstract _auth: any;
+  // protected abstract _firestore: any;
+  // protected abstract _storage: any;
+  // protected abstract _messaging: any;
+  protected abstract _auth: import('@firebase/auth-types').FirebaseAuth;
 
   public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {

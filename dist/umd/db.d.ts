@@ -20,10 +20,7 @@ export declare abstract class RealTimeDB {
     protected _allowMocking: boolean;
     protected app: any;
     protected _database: FirebaseDatabase;
-    protected abstract _firestore: any;
-    protected abstract _storage: any;
-    protected abstract _messaging: any;
-    protected abstract _auth: any;
+    protected abstract _auth: import('@firebase/auth-types').FirebaseAuth;
     initialize(config?: IFirebaseConfig): void;
     /**
      * watch
