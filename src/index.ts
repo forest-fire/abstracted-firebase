@@ -7,7 +7,6 @@ export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
-export { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
 
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
