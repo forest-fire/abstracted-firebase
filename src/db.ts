@@ -42,9 +42,6 @@ export abstract class RealTimeDB {
 
   protected app: any;
   protected _database: FirebaseDatabase;
-  // protected abstract _firestore: any;
-  // protected abstract _storage: any;
-  // protected abstract _messaging: any;
   protected abstract _auth: import("@firebase/auth-types").FirebaseAuth;
 
   public initialize(config: IFirebaseConfig = {}) {
@@ -341,9 +338,7 @@ export abstract class RealTimeDB {
       const result = await this.ref(path).update(value);
       return result;
     } catch (e) {
-      if (e.name === "Error") {
-        e.name = "AbstractedFirebaseUpdateError";
-      }
+      e.name = e.code;
       e.code = "abstracted-firebase/update";
       if (
         e.message.indexOf("First argument path specified exceeds the maximum depth") !==
@@ -361,25 +356,41 @@ export abstract class RealTimeDB {
       const result = await ref.remove();
       return result;
     } catch (e) {
+      e.name = e.code;
+      e.code = "abstracted-firebase/remove";
       if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
         return;
       }
 
-      throw createError("abstracted-firebase/remove", e.message, e);
+      throw e;
     }
   }
 
   /** returns the firebase snapshot at a given path in the database */
   public async getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot> {
-    return typeof path === "string"
-      ? this.ref(slashNotation(path)).once("value")
-      : path.setDB(this).execute();
+    try {
+      const response =
+        (await typeof path) === "string"
+          ? this.ref(slashNotation(path as string)).once("value")
+          : (path as SerializedQuery).setDB(this).execute();
+      return response;
+    } catch (e) {
+      e.name = e.code;
+      e.code = "abstracted-firebase/getSnapshot";
+      throw e;
+    }
   }
 
   /** returns the JS value at a given path in the database */
   public async getValue<T = any>(path: string): Promise<T> {
-    const snap = await this.getSnapshot(path);
-    return snap.val() as T;
+    try {
+      const snap = await this.getSnapshot(path);
+      return snap.val() as T;
+    } catch (e) {
+      e.name = e.code;
+      e.code = "abstracted-firebase/getValue";
+      throw e;
+    }
   }
 
   /**
@@ -391,15 +402,19 @@ export abstract class RealTimeDB {
     path: string | SerializedQuery<T>,
     idProp = "id"
   ): Promise<T> {
-    return this.getSnapshot(path).then(snap => {
+    try {
+      const snap = await this.getSnapshot(path);
       let object = snap.val();
-
       if (typeof object !== "object") {
         object = { value: snap.val() };
       }
 
       return { ...object, ...{ [idProp]: snap.key } };
-    });
+    } catch (e) {
+      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getRecord";
+      throw e;
+    }
   }
 
   /**
@@ -412,9 +427,14 @@ export abstract class RealTimeDB {
     path: string | SerializedQuery<T>,
     idProp = "id"
   ): Promise<T[]> {
-    return this.getSnapshot(path).then(snap => {
+    try {
+      const snap = await this.getSnapshot(path);
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
-    });
+    } catch (e) {
+      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getList";
+      throw e;
+    }
   }
 
   /**
@@ -439,7 +459,13 @@ export abstract class RealTimeDB {
    * of the form of "/{path}/{pushkey}/{value}"
    */
   public async push<T = any>(path: string, value: T) {
-    this.ref(path).push(value);
+    try {
+      this.ref(path).push(value);
+    } catch (e) {
+      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/push";
+      throw e;
+    }
   }
 
   /** validates the existance of a path in the database */
@@ -449,14 +475,6 @@ export abstract class RealTimeDB {
 
   protected abstract connectToFirebase(config: any): Promise<void>;
   protected abstract listenForConnectionStatus(): void;
-
-  protected handleError(e: any, name: string, message = "") {
-    console.error(`Error ${message}:`, e);
-    return Promise.reject({
-      code: `firebase/${name}`,
-      message: message + e.message || e
-    });
-  }
 
   protected async getFireMock() {
     try {
