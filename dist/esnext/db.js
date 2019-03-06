@@ -171,12 +171,11 @@ export class RealTimeDB {
             return this.ref(path).set(value);
         }
         catch (e) {
+            e.name =
+                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/set" + e.code ? `/${e.code}` : "";
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
-                console.log("FILE DEPTH EXCEEDED");
                 throw new FileDepthExceeded(e);
-            }
-            if (e.name === "Error") {
-                e.name = "AbstractedFirebaseSetError";
             }
             if (e.message.indexOf("First argument includes undefined in property") !== -1) {
                 e.name = "FirebaseUndefinedValueAssignment";
@@ -281,7 +280,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/update";
+            e.code = "abstracted-firebase/update" + e.code ? `/${e.code}` : "";
             if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                 -1) {
                 e.name = "AbstractedFirebaseUpdateDepthError";
@@ -298,7 +297,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/remove";
+            e.code = "abstracted-firebase/remove" + e.code ? `/${e.code}` : "";
             if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
                 return;
             }
@@ -316,7 +315,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getSnapshot";
+            e.code = "abstracted-firebase/getSnapshot" + e.code ? `/${e.code}` : "";
             throw e;
         }
     }
@@ -329,7 +328,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getValue";
+            e.code = "abstracted-firebase/getValue" + e.code ? `/${e.code}` : "";
             throw e;
         }
     }
@@ -350,7 +349,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getRecord";
+            e.code = "abstracted-firebase/getRecord" + e.code ? `/${e.code}` : "";
             throw e;
         }
     }
@@ -368,7 +367,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getList";
+            e.code = "abstracted-firebase/getList" + e.code ? `/${e.code}` : "";
             throw e;
         }
     }
@@ -399,7 +398,7 @@ export class RealTimeDB {
         catch (e) {
             e.name =
                 !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/push";
+            e.code = "abstracted-firebase/push" + e.code ? `/${e.code}` : "";
             throw e;
         }
     }
