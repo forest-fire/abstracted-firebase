@@ -291,7 +291,8 @@
                 return result;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/update";
                 if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                     -1) {
@@ -307,7 +308,8 @@
                 return result;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/remove";
                 if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
                     return;
@@ -324,7 +326,8 @@
                 return response;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getSnapshot";
                 throw e;
             }
@@ -336,7 +339,8 @@
                 return snap.val();
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getValue";
                 throw e;
             }
@@ -356,7 +360,8 @@
                 return Object.assign({}, object, { [idProp]: snap.key });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getRecord";
                 throw e;
             }

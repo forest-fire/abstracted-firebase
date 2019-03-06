@@ -350,7 +350,8 @@ export abstract class RealTimeDB {
       const result = await this.ref(path).update(value);
       return result;
     } catch (e) {
-      e.name = e.code;
+      e.name =
+        !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/update";
       if (
         e.message.indexOf("First argument path specified exceeds the maximum depth") !==
@@ -368,7 +369,8 @@ export abstract class RealTimeDB {
       const result = await ref.remove();
       return result;
     } catch (e) {
-      e.name = e.code;
+      e.name =
+        !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/remove";
       if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
         return;
@@ -387,7 +389,8 @@ export abstract class RealTimeDB {
           : (path as SerializedQuery).setDB(this).execute();
       return response;
     } catch (e) {
-      e.name = e.code;
+      e.name =
+        !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/getSnapshot";
       throw e;
     }
@@ -399,7 +402,8 @@ export abstract class RealTimeDB {
       const snap = await this.getSnapshot(path);
       return snap.val() as T;
     } catch (e) {
-      e.name = e.code;
+      e.name =
+        !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/getValue";
       throw e;
     }
@@ -423,7 +427,8 @@ export abstract class RealTimeDB {
 
       return { ...object, ...{ [idProp]: snap.key } };
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.name =
+        !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/getRecord";
       throw e;
     }
