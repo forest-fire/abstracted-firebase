@@ -72,7 +72,7 @@
                 });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/watch";
                 throw e;
             }
@@ -96,7 +96,7 @@
                 });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/unWatch";
                 throw e;
             }
@@ -190,7 +190,7 @@
                 if (e.name === "Error") {
                     e.name = "AbstractedFirebaseSetError";
                 }
-                if (e.message.indexOf("First argument contains undefined in property") !== -1) {
+                if (e.message.indexOf("First argument includes undefined in property") !== -1) {
                     e.name = "FirebaseUndefinedValueAssignment";
                     throw new UndefinedAssignment_1.UndefinedAssignment(e);
                 }
@@ -292,7 +292,7 @@
             }
             catch (e) {
                 e.name =
-                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/update";
                 if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                     -1) {
@@ -309,7 +309,7 @@
             }
             catch (e) {
                 e.name =
-                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/remove";
                 if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
                     return;
@@ -327,7 +327,7 @@
             }
             catch (e) {
                 e.name =
-                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getSnapshot";
                 throw e;
             }
@@ -340,7 +340,7 @@
             }
             catch (e) {
                 e.name =
-                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getValue";
                 throw e;
             }
@@ -361,7 +361,7 @@
             }
             catch (e) {
                 e.name =
-                    !e.code || e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getRecord";
                 throw e;
             }
@@ -378,7 +378,8 @@
                 return snap.val() ? convert.snapshotToArray(snap, idProp) : [];
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getList";
                 throw e;
             }
@@ -408,7 +409,8 @@
                 this.ref(path).push(value);
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/push";
                 throw e;
             }
