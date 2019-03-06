@@ -20,6 +20,7 @@ export interface IFirebaseWatchContext {
     eventType: EventType;
     targetType: "path" | "query";
 }
+/** A standard watch event coming from the Firebase DB */
 export interface IFirebaseWatchCoreEvent {
     key: string;
     value: any;

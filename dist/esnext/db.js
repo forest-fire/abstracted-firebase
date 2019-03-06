@@ -261,12 +261,14 @@ export class RealTimeDB {
     }
     async update(path, value) {
         try {
-            return this.ref(path).update(value);
+            const result = await this.ref(path).update(value);
+            return result;
         }
         catch (e) {
             if (e.name === "Error") {
                 e.name = "AbstractedFirebaseUpdateError";
             }
+            e.code = "abstracted-firebase/update";
             if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                 -1) {
                 e.name = "AbstractedFirebaseUpdateDepthError";
@@ -276,12 +278,16 @@ export class RealTimeDB {
     }
     async remove(path, ignoreMissing = false) {
         const ref = this.ref(path);
-        return ref.remove().catch((e) => {
+        try {
+            const result = await ref.remove();
+            return result;
+        }
+        catch (e) {
             if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
-                return Promise.resolve();
+                return;
             }
-            this.handleError(e, "remove", `attempt to remove ${path} failed: `);
-        });
+            throw createError("abstracted-firebase/remove", e.message, e);
+        }
     }
     /** returns the firebase snapshot at a given path in the database */
     async getSnapshot(path) {
