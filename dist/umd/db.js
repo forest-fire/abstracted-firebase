@@ -72,7 +72,7 @@
                 });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/watch";
                 throw e;
             }
@@ -96,7 +96,7 @@
                 });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/unWatch";
                 throw e;
             }
@@ -190,7 +190,7 @@
                 if (e.name === "Error") {
                     e.name = "AbstractedFirebaseSetError";
                 }
-                if (e.message.indexOf("First argument contains undefined in property") !== -1) {
+                if (e.message.indexOf("First argument includes undefined in property") !== -1) {
                     e.name = "FirebaseUndefinedValueAssignment";
                     throw new UndefinedAssignment_1.UndefinedAssignment(e);
                 }
@@ -291,7 +291,8 @@
                 return result;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/update";
                 if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                     -1) {
@@ -307,7 +308,8 @@
                 return result;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/remove";
                 if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
                     return;
@@ -324,7 +326,8 @@
                 return response;
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getSnapshot";
                 throw e;
             }
@@ -336,7 +339,8 @@
                 return snap.val();
             }
             catch (e) {
-                e.name = e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getValue";
                 throw e;
             }
@@ -356,7 +360,8 @@
                 return Object.assign({}, object, { [idProp]: snap.key });
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getRecord";
                 throw e;
             }
@@ -373,7 +378,8 @@
                 return snap.val() ? convert.snapshotToArray(snap, idProp) : [];
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/getList";
                 throw e;
             }
@@ -403,7 +409,8 @@
                 this.ref(path).push(value);
             }
             catch (e) {
-                e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+                e.name =
+                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
                 e.code = "abstracted-firebase/push";
                 throw e;
             }

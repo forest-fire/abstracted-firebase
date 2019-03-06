@@ -88,7 +88,7 @@ export abstract class RealTimeDB {
         }
       });
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/watch";
       throw e;
     }
@@ -111,7 +111,7 @@ export abstract class RealTimeDB {
         }
       });
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/unWatch";
       throw e;
     }
@@ -218,19 +218,18 @@ export abstract class RealTimeDB {
     try {
       return this.ref(path).set(value);
     } catch (e) {
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/set" + e.code ? `/${e.code}` : "";
       if (
         e.message.indexOf(
           "path specified exceeds the maximum depth that can be written"
         ) !== -1
       ) {
-        console.log("FILE DEPTH EXCEEDED");
         throw new FileDepthExceeded(e);
       }
 
-      if (e.name === "Error") {
-        e.name = "AbstractedFirebaseSetError";
-      }
-      if (e.message.indexOf("First argument contains undefined in property") !== -1) {
+      if (e.message.indexOf("First argument includes undefined in property") !== -1) {
         e.name = "FirebaseUndefinedValueAssignment";
         throw new UndefinedAssignment(e);
       }
@@ -350,8 +349,9 @@ export abstract class RealTimeDB {
       const result = await this.ref(path).update(value);
       return result;
     } catch (e) {
-      e.name = e.code;
-      e.code = "abstracted-firebase/update";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/update" + e.code ? `/${e.code}` : "";
       if (
         e.message.indexOf("First argument path specified exceeds the maximum depth") !==
         -1
@@ -368,8 +368,9 @@ export abstract class RealTimeDB {
       const result = await ref.remove();
       return result;
     } catch (e) {
-      e.name = e.code;
-      e.code = "abstracted-firebase/remove";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/remove" + e.code ? `/${e.code}` : "";
       if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
         return;
       }
@@ -387,8 +388,9 @@ export abstract class RealTimeDB {
           : (path as SerializedQuery).setDB(this).execute();
       return response;
     } catch (e) {
-      e.name = e.code;
-      e.code = "abstracted-firebase/getSnapshot";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getSnapshot" + e.code ? `/${e.code}` : "";
       throw e;
     }
   }
@@ -399,8 +401,9 @@ export abstract class RealTimeDB {
       const snap = await this.getSnapshot(path);
       return snap.val() as T;
     } catch (e) {
-      e.name = e.code;
-      e.code = "abstracted-firebase/getValue";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getValue" + e.code ? `/${e.code}` : "";
       throw e;
     }
   }
@@ -423,8 +426,9 @@ export abstract class RealTimeDB {
 
       return { ...object, ...{ [idProp]: snap.key } };
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getRecord";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getRecord" + e.code ? `/${e.code}` : "";
       throw e;
     }
   }
@@ -443,8 +447,9 @@ export abstract class RealTimeDB {
       const snap = await this.getSnapshot(path);
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getList";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/getList" + e.code ? `/${e.code}` : "";
       throw e;
     }
   }
@@ -474,8 +479,9 @@ export abstract class RealTimeDB {
     try {
       this.ref(path).push(value);
     } catch (e) {
-      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/push";
+      e.name =
+        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/push" + e.code ? `/${e.code}` : "";
       throw e;
     }
   }
