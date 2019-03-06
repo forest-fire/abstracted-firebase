@@ -33,6 +33,7 @@ export interface IFirebaseWatchContext {
   targetType: "path" | "query";
 }
 
+/** A standard watch event coming from the Firebase DB */
 export interface IFirebaseWatchCoreEvent {
   key: string;
   value: any;

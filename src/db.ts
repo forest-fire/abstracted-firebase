@@ -45,7 +45,7 @@ export abstract class RealTimeDB {
   // protected abstract _firestore: any;
   // protected abstract _storage: any;
   // protected abstract _messaging: any;
-  protected abstract _auth: import('@firebase/auth-types').FirebaseAuth;
+  protected abstract _auth: import("@firebase/auth-types").FirebaseAuth;
 
   public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {
@@ -338,11 +338,13 @@ export abstract class RealTimeDB {
 
   public async update<T = any>(path: string, value: Partial<T>): Promise<any> {
     try {
-      return this.ref(path).update(value);
+      const result = await this.ref(path).update(value);
+      return result;
     } catch (e) {
       if (e.name === "Error") {
         e.name = "AbstractedFirebaseUpdateError";
       }
+      e.code = "abstracted-firebase/update";
       if (
         e.message.indexOf("First argument path specified exceeds the maximum depth") !==
         -1
@@ -355,14 +357,16 @@ export abstract class RealTimeDB {
 
   public async remove<T = any>(path: string, ignoreMissing = false) {
     const ref = this.ref(path);
-
-    return ref.remove().catch((e: any) => {
+    try {
+      const result = await ref.remove();
+      return result;
+    } catch (e) {
       if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
-        return Promise.resolve();
+        return;
       }
 
-      this.handleError(e, "remove", `attempt to remove ${path} failed: `);
-    });
+      throw createError("abstracted-firebase/remove", e.message, e);
+    }
   }
 
   /** returns the firebase snapshot at a given path in the database */
