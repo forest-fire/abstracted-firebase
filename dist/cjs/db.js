@@ -44,38 +44,52 @@ class RealTimeDB {
         if (!Array.isArray(events)) {
             events = [events];
         }
-        events.map(evt => {
-            const dispatch = WatcherEventWrapper_1.WatcherEventWrapper({
-                eventType: evt,
-                targetType: "path"
-            })(cb);
-            if (typeof target === "string") {
-                this.ref(util_1.slashNotation(target)).on(evt, dispatch);
-            }
-            else {
-                target
-                    .setDB(this)
-                    .deserialize()
-                    .on(evt, dispatch);
-            }
-        });
+        try {
+            events.map(evt => {
+                const dispatch = WatcherEventWrapper_1.WatcherEventWrapper({
+                    eventType: evt,
+                    targetType: "path"
+                })(cb);
+                if (typeof target === "string") {
+                    this.ref(util_1.slashNotation(target)).on(evt, dispatch);
+                }
+                else {
+                    target
+                        .setDB(this)
+                        .deserialize()
+                        .on(evt, dispatch);
+                }
+            });
+        }
+        catch (e) {
+            e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/watch";
+            throw e;
+        }
     }
     unWatch(events, cb) {
-        if (!Array.isArray(events)) {
-            events = [events];
-        }
-        if (!events) {
-            this.ref().off();
-            return;
-        }
-        events.map(evt => {
-            if (cb) {
-                this.ref().off(evt, cb);
+        try {
+            if (!Array.isArray(events)) {
+                events = [events];
             }
-            else {
-                this.ref().off(evt);
+            if (!events) {
+                this.ref().off();
+                return;
             }
-        });
+            events.map(evt => {
+                if (cb) {
+                    this.ref().off(evt, cb);
+                }
+                else {
+                    this.ref().off(evt);
+                }
+            });
+        }
+        catch (e) {
+            e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/unWatch";
+            throw e;
+        }
     }
     /**
      * Get a Firebase SerializedQuery reference
@@ -267,9 +281,7 @@ class RealTimeDB {
             return result;
         }
         catch (e) {
-            if (e.name === "Error") {
-                e.name = "AbstractedFirebaseUpdateError";
-            }
+            e.name = e.code;
             e.code = "abstracted-firebase/update";
             if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
                 -1) {
@@ -285,22 +297,39 @@ class RealTimeDB {
             return result;
         }
         catch (e) {
+            e.name = e.code;
+            e.code = "abstracted-firebase/remove";
             if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
                 return;
             }
-            throw common_types_1.createError("abstracted-firebase/remove", e.message, e);
+            throw e;
         }
     }
     /** returns the firebase snapshot at a given path in the database */
     async getSnapshot(path) {
-        return typeof path === "string"
-            ? this.ref(util_1.slashNotation(path)).once("value")
-            : path.setDB(this).execute();
+        try {
+            const response = (await typeof path) === "string"
+                ? this.ref(util_1.slashNotation(path)).once("value")
+                : path.setDB(this).execute();
+            return response;
+        }
+        catch (e) {
+            e.name = e.code;
+            e.code = "abstracted-firebase/getSnapshot";
+            throw e;
+        }
     }
     /** returns the JS value at a given path in the database */
     async getValue(path) {
-        const snap = await this.getSnapshot(path);
-        return snap.val();
+        try {
+            const snap = await this.getSnapshot(path);
+            return snap.val();
+        }
+        catch (e) {
+            e.name = e.code;
+            e.code = "abstracted-firebase/getValue";
+            throw e;
+        }
     }
     /**
      * Gets a snapshot from a given path in the DB
@@ -308,13 +337,19 @@ class RealTimeDB {
      * is included as part of the record (as 'id' by default)
      */
     async getRecord(path, idProp = "id") {
-        return this.getSnapshot(path).then(snap => {
+        try {
+            const snap = await this.getSnapshot(path);
             let object = snap.val();
             if (typeof object !== "object") {
                 object = { value: snap.val() };
             }
             return Object.assign({}, object, { [idProp]: snap.key });
-        });
+        }
+        catch (e) {
+            e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/getRecord";
+            throw e;
+        }
     }
     /**
      * Get a list of a given type
@@ -323,9 +358,15 @@ class RealTimeDB {
      * @param idProp
      */
     async getList(path, idProp = "id") {
-        return this.getSnapshot(path).then(snap => {
+        try {
+            const snap = await this.getSnapshot(path);
             return snap.val() ? convert.snapshotToArray(snap, idProp) : [];
-        });
+        }
+        catch (e) {
+            e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/getList";
+            throw e;
+        }
     }
     /**
      * getSortedList() will return the sorting order that was defined in the Firebase
@@ -348,18 +389,18 @@ class RealTimeDB {
      * of the form of "/{path}/{pushkey}/{value}"
      */
     async push(path, value) {
-        this.ref(path).push(value);
+        try {
+            this.ref(path).push(value);
+        }
+        catch (e) {
+            e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.code = "abstracted-firebase/push";
+            throw e;
+        }
     }
     /** validates the existance of a path in the database */
     async exists(path) {
         return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
-    }
-    handleError(e, name, message = "") {
-        console.error(`Error ${message}:`, e);
-        return Promise.reject({
-            code: `firebase/${name}`,
-            message: message + e.message || e
-        });
     }
     async getFireMock() {
         try {
