@@ -114,7 +114,6 @@ export declare abstract class RealTimeDB {
     exists(path: string): Promise<boolean>;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
-    protected handleError(e: any, name: string, message?: string): Promise<never>;
     protected getFireMock(): Promise<void>;
 }
 export {};

@@ -72,37 +72,49 @@ export abstract class RealTimeDB {
       events = [events];
     }
 
-    events.map(evt => {
-      const dispatch = WatcherEventWrapper({
-        eventType: evt,
-        targetType: "path"
-      })(cb);
-      if (typeof target === "string") {
-        this.ref(slashNotation(target)).on(evt, dispatch);
-      } else {
-        target
-          .setDB(this)
-          .deserialize()
-          .on(evt, dispatch);
-      }
-    });
+    try {
+      events.map(evt => {
+        const dispatch = WatcherEventWrapper({
+          eventType: evt,
+          targetType: "path"
+        })(cb);
+        if (typeof target === "string") {
+          this.ref(slashNotation(target)).on(evt, dispatch);
+        } else {
+          target
+            .setDB(this)
+            .deserialize()
+            .on(evt, dispatch);
+        }
+      });
+    } catch (e) {
+      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/watch";
+      throw e;
+    }
   }
 
   public unWatch(events?: EventType | EventType[], cb?: any) {
-    if (!Array.isArray(events)) {
-      events = [events];
-    }
-    if (!events) {
-      this.ref().off();
-      return;
-    }
-    events.map(evt => {
-      if (cb) {
-        this.ref().off(evt, cb);
-      } else {
-        this.ref().off(evt);
+    try {
+      if (!Array.isArray(events)) {
+        events = [events];
       }
-    });
+      if (!events) {
+        this.ref().off();
+        return;
+      }
+      events.map(evt => {
+        if (cb) {
+          this.ref().off(evt, cb);
+        } else {
+          this.ref().off(evt);
+        }
+      });
+    } catch (e) {
+      e.name = e.code.contains("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.code = "abstracted-firebase/unWatch";
+      throw e;
+    }
   }
 
   /**
