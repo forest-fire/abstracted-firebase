@@ -6,6 +6,7 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
+import { handleError } from "./handleError";
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
@@ -168,12 +169,14 @@ export class RealTimeDB {
     /** set a "value" in the database at a given path */
     async set(path, value) {
         try {
-            return this.ref(path).set(value);
+            const results = await this.ref(path).set(value);
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/set" + e.code ? `/${e.code}` : "";
+            if (e.code === "PERMISSION_DENIED") {
+                const e = createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to set a value at path "${path}" failed due to incorrect permissions.`);
+                e.name = "PERMISSION_DENIED";
+                throw e;
+            }
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                 throw new FileDepthExceeded(e);
             }
@@ -181,7 +184,7 @@ export class RealTimeDB {
                 e.name = "FirebaseUndefinedValueAssignment";
                 throw new UndefinedAssignment(e);
             }
-            throw e;
+            handleError(e, "set", { path, value });
         }
     }
     /**
@@ -272,20 +275,18 @@ export class RealTimeDB {
         };
         return api;
     }
+    /** update, non-destructively, at a given path in the database */
     async update(path, value) {
         try {
             const result = await this.ref(path).update(value);
-            return result;
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/update" + e.code ? `/${e.code}` : "";
-            if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
-                -1) {
-                e.name = "AbstractedFirebaseUpdateDepthError";
+            if (e.code === "PERMISSION_DENIED") {
+                const e = createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to update a value at path "${path}" failed due to incorrect permissions.`);
+                e.name = "PERMISSION_DENIED";
+                throw e;
             }
-            throw e;
+            handleError(e, "update", { path, value });
         }
     }
     async remove(path, ignoreMissing = false) {

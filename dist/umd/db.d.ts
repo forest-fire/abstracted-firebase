@@ -74,7 +74,8 @@ export declare abstract class RealTimeDB {
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
         execute(): Promise<any>;
     };
-    update<T = any>(path: string, value: Partial<T>): Promise<any>;
+    /** update, non-destructively, at a given path in the database */
+    update<T = any>(path: string, value: Partial<T>): Promise<void>;
     remove<T = any>(path: string, ignoreMissing?: boolean): Promise<any>;
     /** returns the firebase snapshot at a given path in the database */
     getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
