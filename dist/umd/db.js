@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "common-types", "typed-conversions", "serialized-query", "./util", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./WatcherEventWrapper"], factory);
+        define(["require", "exports", "common-types", "typed-conversions", "serialized-query", "./util", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./WatcherEventWrapper", "./handleError"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -18,6 +18,7 @@
     const FileDepthExceeded_1 = require("./errors/FileDepthExceeded");
     const UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
     const WatcherEventWrapper_1 = require("./WatcherEventWrapper");
+    const handleError_1 = require("./handleError");
     /** time by which the dynamically loaded mock library should be loaded */
     exports.MOCK_LOADING_TIMEOUT = 2000;
     class RealTimeDB {
@@ -180,12 +181,14 @@
         /** set a "value" in the database at a given path */
         async set(path, value) {
             try {
-                return this.ref(path).set(value);
+                const results = await this.ref(path).set(value);
             }
             catch (e) {
-                e.name =
-                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-                e.code = "abstracted-firebase/set" + e.code ? `/${e.code}` : "";
+                if (e.code === "PERMISSION_DENIED") {
+                    const e = common_types_1.createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to set a value at path "${path}" failed due to incorrect permissions.`);
+                    e.name = "PERMISSION_DENIED";
+                    throw e;
+                }
                 if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                     throw new FileDepthExceeded_1.FileDepthExceeded(e);
                 }
@@ -193,7 +196,7 @@
                     e.name = "FirebaseUndefinedValueAssignment";
                     throw new UndefinedAssignment_1.UndefinedAssignment(e);
                 }
-                throw e;
+                handleError_1.handleError(e, "set", { path, value });
             }
         }
         /**
@@ -284,20 +287,18 @@
             };
             return api;
         }
+        /** update, non-destructively, at a given path in the database */
         async update(path, value) {
             try {
                 const result = await this.ref(path).update(value);
-                return result;
             }
             catch (e) {
-                e.name =
-                    !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-                e.code = "abstracted-firebase/update" + e.code ? `/${e.code}` : "";
-                if (e.message.indexOf("First argument path specified exceeds the maximum depth") !==
-                    -1) {
-                    e.name = "AbstractedFirebaseUpdateDepthError";
+                if (e.code === "PERMISSION_DENIED") {
+                    const e = common_types_1.createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to update a value at path "${path}" failed due to incorrect permissions.`);
+                    e.name = "PERMISSION_DENIED";
+                    throw e;
                 }
-                throw e;
+                handleError_1.handleError(e, "update", { path, value });
             }
         }
         async remove(path, ignoreMissing = false) {
