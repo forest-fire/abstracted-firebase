@@ -1,14 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+function isValueBasedEvent(evt, context) {
+    return context.targetType === "query";
+}
 exports.WatcherEventWrapper = (context) => (handler) => {
-    // tslint:disable-next-line:whitespace
     return (snapshot, previousChildKey) => {
-        const event = {
-            key: snapshot.key,
-            value: snapshot.val()
-        };
-        if (previousChildKey) {
-            event.previousChildKey = previousChildKey;
+        let event;
+        const value = snapshot.val();
+        if (isValueBasedEvent(event, context)) {
+            event = {
+                previousChildKey,
+                key: snapshot.key,
+                value,
+                eventType: context.eventType,
+                targetType: "query"
+            };
+        }
+        else {
+            event = {
+                key: snapshot.key,
+                eventType: context.eventType,
+                targetType: "path",
+                paths: value
+            };
         }
         const fullEvent = Object.assign({}, event, context);
         return handler(fullEvent);

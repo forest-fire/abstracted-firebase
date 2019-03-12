@@ -15,17 +15,31 @@ export interface IPathSetter<T = any> {
     path: string;
     value: T;
 }
-export declare type IFirebaseWatchEvent = IFirebaseWatchContext & IFirebaseWatchCoreEvent;
+export declare type IFirebaseWatchEvent = IValueBasedWatchEvent | IPathBasedWatchEvent;
 export interface IFirebaseWatchContext {
     eventType: EventType;
-    targetType: "path" | "query";
+    targetType: any;
 }
 /** A standard watch event coming from the Firebase DB */
-export interface IFirebaseWatchCoreEvent {
+export interface IValueBasedWatchEvent extends IFirebaseWatchContext {
+    targetType: "query";
     key: string;
     value: any;
     previousChildKey?: string;
 }
+/**
+ * an event which states an array of paths which have changes rather than
+ * a singular value object
+ */
+export interface IPathBasedWatchEvent extends IFirebaseWatchContext {
+    targetType: "path";
+    key: string;
+    paths: IPathSetter[];
+}
+/**
+ * a function/callback which receives an event whenever the "watch"
+ * detects a change
+ */
 export declare type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
 export declare enum FirebaseBoolean {
     true = 1,
