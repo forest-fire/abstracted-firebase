@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -31,7 +31,7 @@
     "@firebase/database-types": "^0.3.6",
     "common-types": "^1.9.7",
     "serialized-query": "^0.5.0",
-    "typed-conversions": "^0.8.9"
+    "typed-conversions": "^0.9.6"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
