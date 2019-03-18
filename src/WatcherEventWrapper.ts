@@ -18,27 +18,9 @@ export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (
   handler: IFirebaseWatchHandler
 ) => {
   return (snapshot: DataSnapshot, previousChildKey?: string) => {
-    let event: IFirebaseWatchEvent;
     const value = snapshot.val();
-
-    if (isValueBasedEvent(event, context)) {
-      event = {
-        previousChildKey,
-        key: snapshot.key,
-        value,
-        eventType: context.eventType,
-        targetType: "query"
-      };
-    } else {
-      event = {
-        key: snapshot.key,
-        eventType: context.eventType,
-        targetType: "path",
-        paths: value
-      };
-    }
-
-    const fullEvent: IFirebaseWatchEvent = event;
+    const key = snapshot.key;
+    const fullEvent: IFirebaseWatchEvent = { ...context, value, key, previousChildKey };
 
     return handler(fullEvent);
   };
