@@ -43,7 +43,9 @@ export interface IValueBasedWatchEvent extends IFirebaseWatchContext {
 
 /**
  * an event which states an array of paths which have changes rather than
- * a singular value object
+ * a singular value object; this happens typically when the event is originated
+ * from Firemodel (aka, not Firebase) but can happen also when abstracted-firebase
+ * writes to the DB using a "multi-path set" operation.
  */
 export interface IPathBasedWatchEvent extends IFirebaseWatchContext {
   targetType: "path";
