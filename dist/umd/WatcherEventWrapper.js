@@ -33,7 +33,7 @@
                     paths: value
                 };
             }
-            const fullEvent = Object.assign({}, event, context);
+            const fullEvent = event;
             return handler(fullEvent);
         };
     };

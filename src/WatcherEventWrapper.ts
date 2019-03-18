@@ -38,7 +38,7 @@ export const WatcherEventWrapper = (context: IFirebaseWatchContext) => (
       };
     }
 
-    const fullEvent: IFirebaseWatchEvent = { ...event, ...context };
+    const fullEvent: IFirebaseWatchEvent = event;
 
     return handler(fullEvent);
   };
