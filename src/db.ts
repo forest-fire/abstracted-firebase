@@ -6,7 +6,13 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
+import {
+  FirebaseDatabase,
+  DataSnapshot,
+  EventType,
+  Query,
+  Reference
+} from "@firebase/database-types";
 
 import {
   IFirebaseConfig,
@@ -128,7 +134,7 @@ export abstract class RealTimeDB {
   }
 
   /** Get a DB reference for a given path in Firebase */
-  public ref(path: string = "/") {
+  public ref(path: string = "/"): Reference {
     return this._mocking ? this.mock.ref(path) : this._database.ref(path);
   }
 
@@ -153,7 +159,11 @@ export abstract class RealTimeDB {
     }
 
     if (!this._mock) {
-      const e = new Error(`Attempting to use mock getter but _mock is not set!`);
+      const e = new Error(
+        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${
+          this._mocking
+        } ]!`
+      );
       e.name = "AbstractedFirebase::NotAllowed";
       throw e;
     }
@@ -168,15 +178,7 @@ export abstract class RealTimeDB {
   public async waitForConnection() {
     if (this._mocking) {
       // MOCKING
-      if (this._mockLoadingState === "loaded") {
-        return;
-      }
-      const timeout = new Date().getTime() + MOCK_LOADING_TIMEOUT;
-      while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
-        await wait(1);
-      }
-
-      return;
+      await this.getFireMock();
     } else {
       // NON-MOCKING
       if (this._isConnected) {
@@ -321,32 +323,25 @@ export abstract class RealTimeDB {
         return;
       },
       async execute() {
-        return new Promise((resolve, reject) => {
-          const updateHash: IDictionary = {};
-          const fullyQualifiedPaths = mps.map(i => ({
-            ...i,
-            path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
-          }));
-          fullyQualifiedPaths.map(item => {
-            updateHash[item.path] = item.value;
-          });
-
-          return ref()
-            .update(updateHash)
-            .then(() => {
-              if (callback) {
-                callback(null, mps);
-                resolve();
-              }
-            })
-            .catch((e: any) => {
-              if (callback) {
-                callback(e, mps);
-              }
-
-              reject(e);
-            });
+        const updateHash: IDictionary = {};
+        const fullyQualifiedPaths = mps.map(i => ({
+          ...i,
+          path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
+        }));
+        fullyQualifiedPaths.map(item => {
+          updateHash[item.path] = item.value;
         });
+
+        try {
+          await ref().update(updateHash);
+          if (callback) {
+            await callback(null, mps);
+          }
+        } catch (e) {
+          if (callback) {
+            await callback(e, mps);
+          }
+        }
       }
     };
 
@@ -365,9 +360,9 @@ export abstract class RealTimeDB {
         );
         e.name = "PERMISSION_DENIED";
         throw e;
+      } else {
+        handleError(e, "update", { path, value });
       }
-
-      handleError(e, "update", { path, value });
     }
   }
 
