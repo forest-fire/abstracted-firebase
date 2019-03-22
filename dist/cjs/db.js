@@ -251,7 +251,6 @@ class RealTimeDB {
                 fullyQualifiedPaths.map(item => {
                     updateHash[item.path] = item.value;
                 });
-                console.log("starting mps");
                 try {
                     await ref().update(updateHash);
                     if (callback) {
