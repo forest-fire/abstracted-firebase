@@ -6,7 +6,7 @@ const expect = chai.expect;
 
 setupEnv();
 
-describe("Multi-path Set →", () => {
+describe("Multi-path Set ?", () => {
   it("duplicate events throw error", async () => {
     const db = await Admin.connect();
     const mps = db.multiPathSet("foo/bar");
@@ -28,10 +28,14 @@ describe("Multi-path Set →", () => {
     data.map(item => {
       mps.add(item);
     });
-
-    mps.add({
-      path: "/auditing/people/byId/-LG71JiaTVG5qMobx5vh/all/-LG71JibMhlEQ4V_MMfQ",
-      value: 1530216926119
-    });
+    try {
+      mps.add({
+        path: "/auditing/people/byId/-LG71JiaTVG5qMobx5vh/all/-LG71JibMhlEQ4V_MMfQ",
+        value: 1530216926119
+      });
+      throw new Error("adding duplicate path should have triggered an error in MPS");
+    } catch (e) {
+      expect(e.name).to.equal("DuplicatePath");
+    }
   });
 });

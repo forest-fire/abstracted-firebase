@@ -1,5 +1,5 @@
 import { SerializedQuery } from "serialized-query";
-import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
+import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IPathSetter } from "./types";
 declare type Mock = import("firemock").Mock;
 declare type IMockAuthConfig = import("firemock").IMockAuthConfig;
@@ -41,7 +41,7 @@ export declare abstract class RealTimeDB {
      */
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
-    ref(path?: string): import("@firebase/database-types").Reference | import("firemock").Reference<any>;
+    ref(path?: string): Reference;
     readonly isMockDb: boolean;
     readonly mock: Mock;
     /**
@@ -73,7 +73,7 @@ export declare abstract class RealTimeDB {
         findPathItem(path: string): string;
         /** receive a call back on conclusion of the firebase operation */
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
-        execute(): Promise<{}>;
+        execute(): Promise<void>;
     };
     /** update, non-destructively, at a given path in the database */
     update<T = any>(path: string, value: Partial<T>): Promise<void>;

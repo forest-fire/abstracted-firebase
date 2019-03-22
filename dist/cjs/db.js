@@ -118,7 +118,7 @@ class RealTimeDB {
             throw e;
         }
         if (!this._mock) {
-            const e = new Error(`Attempting to use mock getter but _mock is not set!`);
+            const e = new Error(`Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`);
             e.name = "AbstractedFirebase::NotAllowed";
             throw e;
         }
@@ -131,14 +131,7 @@ class RealTimeDB {
     async waitForConnection() {
         if (this._mocking) {
             // MOCKING
-            if (this._mockLoadingState === "loaded") {
-                return;
-            }
-            const timeout = new Date().getTime() + exports.MOCK_LOADING_TIMEOUT;
-            while (this._mockLoadingState === "loading" && new Date().getTime() < timeout) {
-                await common_types_1.wait(1);
-            }
-            return;
+            await this.getFireMock();
         }
         else {
             // NON-MOCKING
@@ -253,27 +246,22 @@ class RealTimeDB {
                 return;
             },
             async execute() {
-                return new Promise((resolve, reject) => {
-                    const updateHash = {};
-                    const fullyQualifiedPaths = mps.map(i => (Object.assign({}, i, { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
-                    fullyQualifiedPaths.map(item => {
-                        updateHash[item.path] = item.value;
-                    });
-                    return ref()
-                        .update(updateHash)
-                        .then(() => {
-                        if (callback) {
-                            callback(null, mps);
-                            resolve();
-                        }
-                    })
-                        .catch((e) => {
-                        if (callback) {
-                            callback(e, mps);
-                        }
-                        reject(e);
-                    });
+                const updateHash = {};
+                const fullyQualifiedPaths = mps.map(i => (Object.assign({}, i, { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
+                fullyQualifiedPaths.map(item => {
+                    updateHash[item.path] = item.value;
                 });
+                try {
+                    await ref().update(updateHash);
+                    if (callback) {
+                        await callback(null, mps);
+                    }
+                }
+                catch (e) {
+                    if (callback) {
+                        await callback(e, mps);
+                    }
+                }
             }
         };
         return api;
@@ -289,7 +277,9 @@ class RealTimeDB {
                 e.name = "PERMISSION_DENIED";
                 throw e;
             }
-            handleError_1.handleError(e, "update", { path, value });
+            else {
+                handleError_1.handleError(e, "update", { path, value });
+            }
         }
     }
     async remove(path, ignoreMissing = false) {

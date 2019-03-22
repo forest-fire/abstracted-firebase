@@ -1,30 +1,25 @@
 // tslint:disable:no-implicit-dependencies
 import chalk from "chalk";
-import { exec } from "async-shelljs";
+import { exec, asyncExec, find } from "async-shelljs";
 import * as rm from "rimraf";
 import * as process from "process";
-import * as program from "commander";
 import "../test/testing/test-console";
-import { stdout, stderr } from "test-console";
+import { stdout } from "test-console";
 
-function getScope(files?: string[]): string {
-  let fileScope: string;
+function prepOutput(output: string) {
+  return output.replace(/\t\r\n/, "").replace("undefined", "");
+}
 
-  if (!files || files[0] === "all") {
-    console.log(chalk.white("no specific files specified so all files being tested"));
-    fileScope = "--recursive test/**/*-spec.ts";
-  } else {
-    const shapeFileName = (fn: string) => {
-      const prefix = fn.slice(0, 5) === "test/" ? "" : "test/";
-      const postfix = fn.slice(-5) === "-spec" ? "" : "-spec";
+function getExecutionStage(): Promise<string> {
+  return new Promise<string>(resolve => {
+    const inspect = stdout.inspect();
+    exec(`npm get stage`, (_code, output) => {
+      inspect.restore();
 
-      return prefix + fn + postfix + ".ts";
-    };
-
-    fileScope = files.map(f => shapeFileName(f)).join(" ");
-  }
-
-  return fileScope;
+      const result = prepOutput(output).trim();
+      resolve(result ? result : "test");
+    });
+  });
 }
 
 /**
@@ -33,43 +28,88 @@ function getScope(files?: string[]): string {
  * may represent unintentional stale tests
  */
 function cleanJSTests() {
-  return new Promise((resolve, reject) => {
-    rm("test/**/*.js", e => {
-      if (e) {
-        reject(e);
-      } else {
-        resolve();
-      }
-    });
+  rm.sync("test/**/*.js");
+}
+
+function scriptNames(scripts: string[]) {
+  return scripts.map(script => {
+    const path = script.split("/");
+    const last = path.pop().replace("-spec.ts", "");
+    return chalk.grey(path.join("/") + "/" + chalk.white(last));
   });
 }
 
-function executeTests(stg: string, fileScope: string): void {
-  console.log(
-    chalk.green(`${chalk.bold("mocha")} --compilers ts:ts-node/register  ${fileScope}`)
-  );
+async function lintSource() {
+  return asyncExec(`tslint src/**/*`);
+}
+
+async function mochaTests(stg: string, searchTerms: string[]) {
   process.env.AWS_STAGE = stg;
   process.env.TS_NODE_COMPILER_OPTIONS = '{ "noImplicitAny": false }';
-  exec(`mocha --require ts-node/register --exit ` + fileScope);
+  await asyncExec(`mocha --exit --require ts-node/register ` + searchTerms.join(" "));
 }
 
-function lint() {
-  console.log(chalk.yellow(`Linting source files`));
-  return exec(`tslint ./src/**/*.ts`);
-}
+(async () => {
+  const stage = await getExecutionStage();
+  const searchTerms = process.argv.slice(2).filter(fn => fn[0] !== "-");
+  const options = new Set(process.argv.slice(2).filter(fn => fn[0] === "-"));
+  const availableScripts = await find("./test").filter(f => f.match(/-spec\.ts/));
+  const scriptsToTest =
+    searchTerms.length > 0
+      ? availableScripts.filter(s => {
+          return searchTerms.reduce((prv, script) => s.match(script) || prv, 0);
+        })
+      : availableScripts;
 
-program
-  .arguments("[files...]")
-  .description("Run mocha tests with ts-node")
-  .option("-s, --stage [env]", "Environment to use", /^(dev|test|stage|prod)^/, "test")
-  .option("--skip-lint", "Skip the linting checks")
-  .action(async files => {
-    await cleanJSTests();
-    const stage = program.stage;
-    const scope = getScope(files);
-    if (!program.skipLint) {
-      await lint();
+  if (options.has("-ls") || options.has("-l") || options.has("list")) {
+    console.log(chalk.yellow("- đ¤  The following test scripts are available:"));
+    console.log("    - " + scriptNames(availableScripts).join("\n    - "));
+
+    return;
+  }
+
+  console.log(chalk.yellow("- Starting testing đ "));
+
+  try {
+    await lintSource();
+    console.log(chalk.green(`- Linting found no problems đ`));
+  } catch (e) {
+    if (!options.has("--ignoreLint")) {
+      console.log(
+        chalk.red.bold(
+          `- Error with linting! ${chalk.white.dim(
+            "you can disable this by adding --ignoreLint flag\n"
+          )} đ`
+        )
+      );
+    } else {
+      console.log(
+        `- Continuing onto mocha tests because of ${chalk.bold("--ignoreLint")} flag đŚ`
+      );
     }
-    await executeTests(stage, scope);
-  })
-  .parse(process.argv);
+  }
+
+  if (availableScripts.length === scriptsToTest.length) {
+    console.log(
+      chalk.yellow(
+        `- Running ALL ${availableScripts.length} test scripts: ${chalk.grey(
+          scriptNames(scriptsToTest).join(", ")
+        )} đ`
+      )
+    );
+  } else {
+    console.log(
+      chalk.yellow(
+        `- Running ${chalk.bold(String(scriptsToTest.length))} of ${
+          availableScripts.length
+        } test scripts: [ ${chalk.grey(scriptNames(scriptsToTest).join(", "))} ] đ`
+      )
+    );
+  }
+  try {
+    await mochaTests(stage, scriptsToTest);
+    console.log(chalk.green("- Successful test run! đ\n"));
+  } catch (e) {
+    console.log(chalk.red.bold(`- Error(s) in tests. đ\n `));
+  }
+})();
