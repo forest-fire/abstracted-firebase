@@ -1,7 +1,8 @@
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
-import { IEmitter, IFirebaseWatchHandler, IPathSetter, IMockLoadingState, IFirebaseConfig } from "./types";
+import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IPathSetter } from "./types";
 declare type Mock = import("firemock").Mock;
+declare type IMockAuthConfig = import("firemock").IMockAuthConfig;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB {
@@ -72,7 +73,7 @@ export declare abstract class RealTimeDB {
         findPathItem(path: string): string;
         /** receive a call back on conclusion of the firebase operation */
         callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
-        execute(): Promise<any>;
+        execute(): Promise<{}>;
     };
     /** update, non-destructively, at a given path in the database */
     update<T = any>(path: string, value: Partial<T>): Promise<void>;
@@ -115,6 +116,6 @@ export declare abstract class RealTimeDB {
     exists(path: string): Promise<boolean>;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
-    protected getFireMock(): Promise<void>;
+    protected getFireMock(config?: IMockAuthConfig): Promise<void>;
 }
 export {};
