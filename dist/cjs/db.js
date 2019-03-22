@@ -25,7 +25,6 @@ class RealTimeDB {
     initialize(config = {}) {
         if (config.mocking) {
             this._mocking = true;
-            this.getFireMock();
         }
         else {
             this._mocking = false;
@@ -254,24 +253,26 @@ class RealTimeDB {
                 return;
             },
             async execute() {
-                const updateHash = {};
-                const fullyQualifiedPaths = mps.map(i => (Object.assign({}, i, { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
-                fullyQualifiedPaths.map(item => {
-                    updateHash[item.path] = item.value;
-                });
-                return ref()
-                    .update(updateHash)
-                    .then(() => {
-                    if (callback) {
-                        callback(null, mps);
-                        return;
-                    }
-                })
-                    .catch((e) => {
-                    if (callback) {
-                        callback(e, mps);
-                    }
-                    throw e;
+                return new Promise((resolve, reject) => {
+                    const updateHash = {};
+                    const fullyQualifiedPaths = mps.map(i => (Object.assign({}, i, { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
+                    fullyQualifiedPaths.map(item => {
+                        updateHash[item.path] = item.value;
+                    });
+                    return ref()
+                        .update(updateHash)
+                        .then(() => {
+                        if (callback) {
+                            callback(null, mps);
+                            resolve();
+                        }
+                    })
+                        .catch((e) => {
+                        if (callback) {
+                            callback(e, mps);
+                        }
+                        reject(e);
+                    });
                 });
             }
         };
@@ -409,13 +410,13 @@ class RealTimeDB {
     async exists(path) {
         return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
     }
-    async getFireMock() {
+    async getFireMock(config = {}) {
         try {
             this._mockLoadingState = "loading";
             // tslint:disable-next-line:no-implicit-dependencies
             const FireMock = await Promise.resolve().then(() => require("firemock"));
             this._mockLoadingState = "loaded";
-            this._mock = new FireMock.Mock();
+            this._mock = new FireMock.Mock({}, config);
             this._isConnected = true;
             this._mocking = true;
         }

@@ -9,15 +9,16 @@ import { WatcherEventWrapper } from "./WatcherEventWrapper";
 import { FirebaseDatabase, DataSnapshot, EventType } from "@firebase/database-types";
 
 import {
+  IFirebaseConfig,
   IEmitter,
-  IFirebaseWatchHandler,
-  IPathSetter,
   IMockLoadingState,
-  IFirebaseConfig
+  IFirebaseWatchHandler,
+  IPathSetter
 } from "./types";
 import { handleError } from "./handleError";
 
 type Mock = import("firemock").Mock;
+type IMockAuthConfig = import("firemock").IMockAuthConfig;
 
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
@@ -48,7 +49,6 @@ export abstract class RealTimeDB {
   public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {
       this._mocking = true;
-      this.getFireMock();
     } else {
       this._mocking = false;
       this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
@@ -321,30 +321,32 @@ export abstract class RealTimeDB {
         return;
       },
       async execute() {
-        const updateHash: IDictionary = {};
-        const fullyQualifiedPaths = mps.map(i => ({
-          ...i,
-          path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
-        }));
-        fullyQualifiedPaths.map(item => {
-          updateHash[item.path] = item.value;
-        });
-
-        return ref()
-          .update(updateHash)
-          .then(() => {
-            if (callback) {
-              callback(null, mps);
-              return;
-            }
-          })
-          .catch((e: any) => {
-            if (callback) {
-              callback(e, mps);
-            }
-
-            throw e;
+        return new Promise((resolve, reject) => {
+          const updateHash: IDictionary = {};
+          const fullyQualifiedPaths = mps.map(i => ({
+            ...i,
+            path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
+          }));
+          fullyQualifiedPaths.map(item => {
+            updateHash[item.path] = item.value;
           });
+
+          return ref()
+            .update(updateHash)
+            .then(() => {
+              if (callback) {
+                callback(null, mps);
+                resolve();
+              }
+            })
+            .catch((e: any) => {
+              if (callback) {
+                callback(e, mps);
+              }
+
+              reject(e);
+            });
+        });
       }
     };
 
@@ -501,13 +503,13 @@ export abstract class RealTimeDB {
   protected abstract connectToFirebase(config: any): Promise<void>;
   protected abstract listenForConnectionStatus(): void;
 
-  protected async getFireMock() {
+  protected async getFireMock(config: IMockAuthConfig = {}) {
     try {
       this._mockLoadingState = "loading";
       // tslint:disable-next-line:no-implicit-dependencies
       const FireMock = await import("firemock");
       this._mockLoadingState = "loaded";
-      this._mock = new FireMock.Mock();
+      this._mock = new FireMock.Mock({}, config);
       this._isConnected = true;
       this._mocking = true;
     } catch (e) {
