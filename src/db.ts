@@ -498,6 +498,7 @@ export abstract class RealTimeDB {
   protected abstract connectToFirebase(config: any): Promise<void>;
   protected abstract listenForConnectionStatus(): void;
 
+  /** asynchronously imports firemock and then sets isConnected to true */
   protected async getFireMock(config: IMockAuthConfig = {}) {
     try {
       this._mockLoadingState = "loading";

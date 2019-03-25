@@ -116,6 +116,7 @@ export declare abstract class RealTimeDB {
     exists(path: string): Promise<boolean>;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
+    /** asynchronously imports firemock and then sets isConnected to true */
     protected getFireMock(config?: IMockAuthConfig): Promise<void>;
 }
 export {};
