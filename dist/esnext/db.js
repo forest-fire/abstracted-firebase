@@ -398,6 +398,7 @@ export class RealTimeDB {
     async exists(path) {
         return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
     }
+    /** asynchronously imports firemock and then sets isConnected to true */
     async getFireMock(config = {}) {
         try {
             this._mockLoadingState = "loading";
