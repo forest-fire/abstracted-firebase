@@ -261,6 +261,10 @@ class RealTimeDB {
                     if (callback) {
                         await callback(e, mps);
                     }
+                    const err = common_types_1.createError(`abstracted-firebase/mps-failure`, `While attempting to execute a multi-path-set operation there was a failure: ${e.message}`);
+                    err.name = "AbstractedFirebase::mps-failure";
+                    err.stack = e.stack;
+                    throw err;
                 }
             }
         };
