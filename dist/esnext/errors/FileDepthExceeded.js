@@ -2,8 +2,11 @@ export class FileDepthExceeded extends Error {
     constructor(e) {
         super(e.message);
         this.stack = e.stack;
+        const name = "abstracted-firebase/depth-exceeded";
         if (e.name === "Error") {
-            e.name = "AbstractedFirebase";
+            this.name = name;
         }
+        this.code = name.split("/")[1];
+        this.stack = e.stack;
     }
 }

@@ -7,6 +7,8 @@ import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
 import { handleError } from "./handleError";
+import { PermissionDenied } from "./errors";
+import { AbstractedProxyError } from "./errors/AbstractedProxyError";
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
@@ -160,14 +162,13 @@ export class RealTimeDB {
     }
     /** set a "value" in the database at a given path */
     async set(path, value) {
+        // return new Promise((resolve, reject))
         try {
             const results = await this.ref(path).set(value);
         }
         catch (e) {
             if (e.code === "PERMISSION_DENIED") {
-                const e = createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to set a value at path "${path}" failed due to incorrect permissions.`);
-                e.name = "PERMISSION_DENIED";
-                throw e;
+                throw new PermissionDenied(e, `The attempt to set a value at path "${path}" failed due to incorrect permissions.`);
             }
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                 throw new FileDepthExceeded(e);
@@ -176,15 +177,28 @@ export class RealTimeDB {
                 e.name = "FirebaseUndefinedValueAssignment";
                 throw new UndefinedAssignment(e);
             }
-            handleError(e, "set", { path, value });
+            throw new AbstractedProxyError(e, "unknown", JSON.stringify({ path, value }));
         }
     }
     /**
+     * **multiPathSet**
+     *
      * Equivalent to Firebase's traditional "multi-path updates" which are
      * in behaviour are really "multi-path SETs". Calling this function provides
      * access to simplified API for adding and executing this operation.
      *
-     * @param paths an array of path and value updates
+     * What's important to understand is that the structure of this request
+     * is an array of name/values where the _name_ is a path in the database
+     * and the _value_ is what is to be **set** there. By grouping these together
+     * you not only receive performance benefits but also they are treated as
+     * a "transaction" where either _all_ or _none_ of the updates will take
+     * place.
+     *
+     * @param base you can state a _base_ path which all subsequent paths will be
+     * based off of. This is often useful when making a series of changes to a
+     * part of the Firebase datamodel. In particular, if you are using **FireModel**
+     * then operations which effect a single "model" will leverage this **base**
+     * property
      */
     multiPathSet(base) {
         const mps = [];
@@ -204,7 +218,6 @@ export class RealTimeDB {
                 api._basePath = path;
                 return api;
             },
-            /** Add in a new path and value to be included in the operation */
             add(pathValue) {
                 if (api.paths.includes(pathValue.path)) {
                     const message = `You have attempted to add the path "${pathValue.path}" twice to a MultiPathSet operation [ value: ${pathValue.value} ]. For context the payload in the multi-path-set was already: ${JSON.stringify(api.payload, null, 2)}`;
@@ -215,11 +228,9 @@ export class RealTimeDB {
                 mps.push(pathValue);
                 return api;
             },
-            /** the relative paths from the base which will be updated upon execution */
             get paths() {
                 return mps.map(i => i.path);
             },
-            /** the absolute paths (including the base offset) which will be updated upon execution */
             get fullPaths() {
                 return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
             },
@@ -238,10 +249,9 @@ export class RealTimeDB {
                 });
                 return result;
             },
-            /** receive a call back on conclusion of the firebase operation */
             callback(cb) {
                 callback = cb;
-                return;
+                return api;
             },
             async execute() {
                 const updateHash = {};
@@ -252,23 +262,33 @@ export class RealTimeDB {
                 try {
                     await ref().update(updateHash);
                     if (callback) {
-                        await callback(null, mps);
+                        callback(null, mps);
                     }
+                    // resolve();
                 }
                 catch (e) {
                     if (callback) {
-                        await callback(e, mps);
+                        callback(e, mps);
                     }
                     const err = createError(`abstracted-firebase/mps-failure`, `While attempting to execute a multi-path-set operation there was a failure: ${e.message}`);
                     err.name = "AbstractedFirebase::mps-failure";
                     err.stack = e.stack;
-                    throw err;
+                    // reject(err);
                 }
+                // });
             }
         };
         return api;
     }
-    /** update, non-destructively, at a given path in the database */
+    /**
+     * **update**
+     *
+     * Update the database at a given path. Note that this operation is
+     * **non-destructive**, so assuming that the value you are passing in
+     * a POJO/object then the properties sent in will be updated but if
+     * properties that exist in the DB, but not in the value passed in,
+     * then these properties will _not_ be changed.
+     */
     async update(path, value) {
         try {
             const result = await this.ref(path).update(value);
@@ -284,6 +304,15 @@ export class RealTimeDB {
             }
         }
     }
+    /**
+     * **remove**
+     *
+     * Removes a path from the database. By default if you attempt to
+     * remove a path in the database which _didn't_ exist it will throw
+     * a `abstracted-firebase/remove` error. If you'd prefer for this
+     * error to be ignored than you can pass in **true** to the `ignoreMissing`
+     * parameter.
+     */
     async remove(path, ignoreMissing = false) {
         const ref = this.ref(path);
         try {
@@ -300,7 +329,11 @@ export class RealTimeDB {
             throw e;
         }
     }
-    /** returns the firebase snapshot at a given path in the database */
+    /**
+     * **getSnapshot**
+     *
+     * returns the Firebase snapshot at a given path in the database
+     */
     async getSnapshot(path) {
         try {
             const response = (await typeof path) === "string"
@@ -315,7 +348,13 @@ export class RealTimeDB {
             throw e;
         }
     }
-    /** returns the JS value at a given path in the database */
+    /**
+     * **getValue**
+     *
+     * Returns the JS value at a given path in the database. This method is a
+     * typescript _generic_ which defaults to `any` but you can set the type to
+     * whatever value you expect at that path in the database.
+     */
     async getValue(path) {
         try {
             const snap = await this.getSnapshot(path);
@@ -329,9 +368,11 @@ export class RealTimeDB {
         }
     }
     /**
-     * Gets a snapshot from a given path in the DB
+     * **getRecord**
+     *
+     * Gets a snapshot from a given path in the Firebase DB
      * and converts it to a JS object where the snapshot's key
-     * is included as part of the record (as 'id' by default)
+     * is included as part of the record (as `id` by default)
      */
     async getRecord(path, idProp = "id") {
         try {
@@ -350,7 +391,11 @@ export class RealTimeDB {
         }
     }
     /**
-     * Get a list of a given type
+     * **getList**
+     *
+     * Get a list of a given type (defaults to _any_). Assumes that the
+     * "key" for the record is the `id` property but that can be changed
+     * with the optional `idProp` parameter.
      *
      * @param path the path in the database to
      * @param idProp
@@ -368,6 +413,8 @@ export class RealTimeDB {
         }
     }
     /**
+     * **getSortedList**
+     *
      * getSortedList() will return the sorting order that was defined in the Firebase
      * Query. This _can_ be useful but often the sort orders
      * really intended for the server only (so that filteration
@@ -382,10 +429,17 @@ export class RealTimeDB {
         });
     }
     /**
+     * **push**
+     *
      * Pushes a value (typically a hash) under a given path in the
      * database but allowing Firebase to insert a unique "push key"
      * to ensure the value is placed into a Dictionary/Hash structure
-     * of the form of "/{path}/{pushkey}/{value}"
+     * of the form of `/{path}/{pushkey}/{value}`
+     *
+     * Note, the pushkey will be generated on the Firebase side and
+     * Firebase keys are guarenteed to be unique and embedded into the
+     * UUID is precise time-based information so you _can_ count on
+     * the keys to have a natural time based sort order.
      */
     async push(path, value) {
         try {
@@ -398,27 +452,39 @@ export class RealTimeDB {
             throw e;
         }
     }
-    /** validates the existance of a path in the database */
+    /**
+     * **exists**
+     *
+     * Validates the existance of a path in the database
+     */
     async exists(path) {
         return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
     }
-    /** asynchronously imports firemock and then sets isConnected to true */
+    /**
+     * **getFireMock**
+     *
+     * Asynchronously imports both `FireMock` and the `Faker` libraries
+     * then sets `isConnected` to **true**
+     */
     async getFireMock(config = {}) {
         try {
+            this._mocking = true;
             this._mockLoadingState = "loading";
-            // tslint:disable-next-line:no-implicit-dependencies
-            const FireMock = await import("firemock");
+            const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
             this._mockLoadingState = "loaded";
             this._mock = new FireMock.Mock({}, config);
+            await this._mock.importFakerLibrary();
             this._isConnected = true;
-            this._mocking = true;
         }
         catch (e) {
-            console.error(`There was an error asynchronously loading Firemock library.`);
+            console.error(`There was an error asynchronously loading Firemock/Faker library's.`);
             if (e.stack) {
                 console.log(`The stack trace was:\n`, e.stack);
             }
-            throw e;
+            const err = createError("abstracted-firebase/import-firemock", `There was a problem importing the FireMock and/or Faker libraries. Both are required to run in "mocking" mode. The error encountered was: ${e.message}`);
+            err.name = e.name;
+            err.stack = e.stack;
+            throw err;
         }
     }
 }

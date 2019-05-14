@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class FileDepthExceeded extends Error {
-    constructor(e) {
-        super(e.message);
+class PermissionDenied extends Error {
+    constructor(e, context) {
+        super(context ? context + ".\n" + e.message : e.message);
         this.stack = e.stack;
-        const name = "abstracted-firebase/depth-exceeded";
+        const name = "abstracted-firebase/premission-denied";
         if (e.name === "Error") {
             this.name = name;
         }
@@ -12,4 +12,4 @@ class FileDepthExceeded extends Error {
         this.stack = e.stack;
     }
 }
-exports.FileDepthExceeded = FileDepthExceeded;
+exports.PermissionDenied = PermissionDenied;

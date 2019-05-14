@@ -9,11 +9,13 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    class FileDepthExceeded extends Error {
-        constructor(e) {
-            super(e.message);
+    class AbstractedProxyError extends Error {
+        constructor(e, errName, context) {
+            super(context
+                ? `${e.name ? `[Proxy of ${e.name}]` : ""}` + context + ".\n" + e.message
+                : `${e.name ? `[Proxy of ${e.name}]` : ""}` + e.message);
             this.stack = e.stack;
-            const name = "abstracted-firebase/depth-exceeded";
+            const name = `abstracted-firebase/${errName ? errName : "unknown-error"}`;
             if (e.name === "Error") {
                 this.name = name;
             }
@@ -21,5 +23,5 @@
             this.stack = e.stack;
         }
     }
-    exports.FileDepthExceeded = FileDepthExceeded;
+    exports.AbstractedProxyError = AbstractedProxyError;
 });
