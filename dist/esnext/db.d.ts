@@ -1,6 +1,6 @@
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
-import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IPathSetter } from "./types";
+import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet } from "./types";
 declare type Mock = import("firemock").Mock;
 declare type IMockAuthConfig = import("firemock").IMockAuthConfig;
 /** time by which the dynamically loaded mock library should be loaded */
@@ -53,49 +53,82 @@ export declare abstract class RealTimeDB {
     /** set a "value" in the database at a given path */
     set<T = any>(path: string, value: T): Promise<void>;
     /**
+     * **multiPathSet**
+     *
      * Equivalent to Firebase's traditional "multi-path updates" which are
      * in behaviour are really "multi-path SETs". Calling this function provides
      * access to simplified API for adding and executing this operation.
      *
-     * @param paths an array of path and value updates
+     * What's important to understand is that the structure of this request
+     * is an array of name/values where the _name_ is a path in the database
+     * and the _value_ is what is to be **set** there. By grouping these together
+     * you not only receive performance benefits but also they are treated as
+     * a "transaction" where either _all_ or _none_ of the updates will take
+     * place.
+     *
+     * @param base you can state a _base_ path which all subsequent paths will be
+     * based off of. This is often useful when making a series of changes to a
+     * part of the Firebase datamodel. In particular, if you are using **FireModel**
+     * then operations which effect a single "model" will leverage this **base**
+     * property
      */
-    multiPathSet(base?: string): {
-        /** The base reference path which all paths will be relative to */
-        _basePath: string;
-        basePath(path?: string): string | any;
-        /** Add in a new path and value to be included in the operation */
-        add<X = any>(pathValue: IPathSetter<X>): any;
-        /** the relative paths from the base which will be updated upon execution */
-        readonly paths: string[];
-        /** the absolute paths (including the base offset) which will be updated upon execution */
-        readonly fullPaths: string[];
-        readonly payload: IPathSetter<any>[];
-        findPathItem(path: string): string;
-        /** receive a call back on conclusion of the firebase operation */
-        callback(cb: (err: any, pathSetters: IPathSetter<any>[]) => void): void;
-        execute(): Promise<void>;
-    };
-    /** update, non-destructively, at a given path in the database */
+    multiPathSet(base?: string): IMultiPathSet;
+    /**
+     * **update**
+     *
+     * Update the database at a given path. Note that this operation is
+     * **non-destructive**, so assuming that the value you are passing in
+     * a POJO/object then the properties sent in will be updated but if
+     * properties that exist in the DB, but not in the value passed in,
+     * then these properties will _not_ be changed.
+     */
     update<T = any>(path: string, value: Partial<T>): Promise<void>;
+    /**
+     * **remove**
+     *
+     * Removes a path from the database. By default if you attempt to
+     * remove a path in the database which _didn't_ exist it will throw
+     * a `abstracted-firebase/remove` error. If you'd prefer for this
+     * error to be ignored than you can pass in **true** to the `ignoreMissing`
+     * parameter.
+     */
     remove<T = any>(path: string, ignoreMissing?: boolean): Promise<any>;
-    /** returns the firebase snapshot at a given path in the database */
+    /**
+     * **getSnapshot**
+     *
+     * returns the Firebase snapshot at a given path in the database
+     */
     getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
-    /** returns the JS value at a given path in the database */
+    /**
+     * **getValue**
+     *
+     * Returns the JS value at a given path in the database. This method is a
+     * typescript _generic_ which defaults to `any` but you can set the type to
+     * whatever value you expect at that path in the database.
+     */
     getValue<T = any>(path: string): Promise<T>;
     /**
-     * Gets a snapshot from a given path in the DB
+     * **getRecord**
+     *
+     * Gets a snapshot from a given path in the Firebase DB
      * and converts it to a JS object where the snapshot's key
-     * is included as part of the record (as 'id' by default)
+     * is included as part of the record (as `id` by default)
      */
     getRecord<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
     /**
-     * Get a list of a given type
+     * **getList**
+     *
+     * Get a list of a given type (defaults to _any_). Assumes that the
+     * "key" for the record is the `id` property but that can be changed
+     * with the optional `idProp` parameter.
      *
      * @param path the path in the database to
      * @param idProp
      */
     getList<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
     /**
+     * **getSortedList**
+     *
      * getSortedList() will return the sorting order that was defined in the Firebase
      * Query. This _can_ be useful but often the sort orders
      * really intended for the server only (so that filteration
@@ -106,17 +139,33 @@ export declare abstract class RealTimeDB {
      */
     getSortedList<T = any>(query: any, idProp?: string): Promise<T[]>;
     /**
+     * **push**
+     *
      * Pushes a value (typically a hash) under a given path in the
      * database but allowing Firebase to insert a unique "push key"
      * to ensure the value is placed into a Dictionary/Hash structure
-     * of the form of "/{path}/{pushkey}/{value}"
+     * of the form of `/{path}/{pushkey}/{value}`
+     *
+     * Note, the pushkey will be generated on the Firebase side and
+     * Firebase keys are guarenteed to be unique and embedded into the
+     * UUID is precise time-based information so you _can_ count on
+     * the keys to have a natural time based sort order.
      */
     push<T = any>(path: string, value: T): Promise<void>;
-    /** validates the existance of a path in the database */
+    /**
+     * **exists**
+     *
+     * Validates the existance of a path in the database
+     */
     exists(path: string): Promise<boolean>;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
-    /** asynchronously imports firemock and then sets isConnected to true */
+    /**
+     * **getFireMock**
+     *
+     * Asynchronously imports both `FireMock` and the `Faker` libraries
+     * then sets `isConnected` to **true**
+     */
     protected getFireMock(config?: IMockAuthConfig): Promise<void>;
 }
 export {};
