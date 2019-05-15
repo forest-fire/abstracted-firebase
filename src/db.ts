@@ -53,11 +53,13 @@ export abstract class RealTimeDB {
 
   protected app: any;
   protected _database: FirebaseDatabase;
-  protected abstract _auth: import("@firebase/auth-types").FirebaseAuth;
+  protected _fakerReady: Promise<any>;
+  protected abstract _auth: any;
 
   public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {
       this._mocking = true;
+      // this._fakerReady = this._mock.importFakerLibrary();
     } else {
       this._mocking = false;
       this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
@@ -588,8 +590,7 @@ export abstract class RealTimeDB {
       this._mockLoadingState = "loading";
       const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
       this._mockLoadingState = "loaded";
-      this._mock = new FireMock.Mock({}, config);
-      await this._mock.importFakerLibrary();
+      this._mock = await FireMock.Mock.prepare({}, config);
       this._isConnected = true;
     } catch (e) {
       throw new AbstractedProxyError(

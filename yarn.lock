@@ -1293,10 +1293,10 @@ firebase-key@^2.0.2:
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
   integrity sha512-gH0u6apANQsqHUqcf+Yd49VaUQyKNCLxofwYx0gqUGcymeLs5HWg/3tXroGheYYH8+ynxbrnP/Z4F/FEqNy9Ow==
 
-firemock@^0.24.101:
-  version "0.24.101"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.24.101.tgz#750bee8decc4ab21f06e3f761b2e36d1be7bb24f"
-  integrity sha512-nPhRMSwicjQdGJ/h5mZjp/ln8JuSjiuP6e1vhiDtFnbFU5xZoVLdzQVPFLeDCfTgDPx401vOmRg+UEWYI+cOgQ==
+firemock@^0.24.102:
+  version "0.24.102"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.24.102.tgz#923791d9fdc80dfcef2991d4cf47170ea60ec231"
+  integrity sha512-z0JV+9aj1iTFKDo9ZZJ+8LHUKXmAWX6xzeeTFpxh2gqwC0ZvPwfqrWZ0QeT19v8gwCB+1khP24az7VI4F7Veew==
   dependencies:
     "@firebase/app-types" "^0.4.0"
     "@firebase/auth-types" "^0.7.0"

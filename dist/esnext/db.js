@@ -24,6 +24,7 @@ export class RealTimeDB {
     initialize(config = {}) {
         if (config.mocking) {
             this._mocking = true;
+            // this._fakerReady = this._mock.importFakerLibrary();
         }
         else {
             this._mocking = false;
@@ -460,8 +461,7 @@ export class RealTimeDB {
             this._mockLoadingState = "loading";
             const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
             this._mockLoadingState = "loaded";
-            this._mock = new FireMock.Mock({}, config);
-            await this._mock.importFakerLibrary();
+            this._mock = await FireMock.Mock.prepare({}, config);
             this._isConnected = true;
         }
         catch (e) {

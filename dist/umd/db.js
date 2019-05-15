@@ -36,6 +36,7 @@
         initialize(config = {}) {
             if (config.mocking) {
                 this._mocking = true;
+                // this._fakerReady = this._mock.importFakerLibrary();
             }
             else {
                 this._mocking = false;
@@ -472,8 +473,7 @@
                 this._mockLoadingState = "loading";
                 const FireMock = await (__syncRequire ? Promise.resolve().then(() => require(/* webpackChunkName: "firemock" */ "firemock")) : new Promise((resolve_1, reject_1) => { require(["firemock"], resolve_1, reject_1); }));
                 this._mockLoadingState = "loaded";
-                this._mock = new FireMock.Mock({}, config);
-                await this._mock.importFakerLibrary();
+                this._mock = await FireMock.Mock.prepare({}, config);
                 this._isConnected = true;
             }
             catch (e) {
