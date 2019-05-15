@@ -359,15 +359,13 @@ export abstract class RealTimeDB {
           if (callback) {
             callback(e, mps);
           }
-          const err = createError(
-            `abstracted-firebase/mps-failure`,
-            `While attempting to execute a multi-path-set operation there was a failure: ${
-              e.message
-            }`
+          throw new AbstractedProxyError(
+            e,
+            "abstracted-firebase/mps-failure",
+            `While executing a MPS there was a failure. The base path was ${
+              api._basePath
+            }.`
           );
-          err.name = "AbstractedFirebase::mps-failure";
-          err.stack = e.stack;
-          // reject(err);
         }
         // });
       }
@@ -390,14 +388,16 @@ export abstract class RealTimeDB {
       const result = await this.ref(path).update(value);
     } catch (e) {
       if (e.code === "PERMISSION_DENIED") {
-        const e = createError(
-          "abstracted-firebase/PERMISSION_DENIED",
+        throw new PermissionDenied(
+          e,
           `The attempt to update a value at path "${path}" failed due to incorrect permissions.`
         );
-        e.name = "PERMISSION_DENIED";
-        throw e;
       } else {
-        handleError(e, "update", { path, value });
+        throw new AbstractedProxyError(
+          e,
+          undefined,
+          `While updating the path "${path}", an error occurred`
+        );
       }
     }
   }
@@ -417,14 +417,18 @@ export abstract class RealTimeDB {
       const result = await ref.remove();
       return result;
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/remove" + e.code ? `/${e.code}` : "";
-      if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
-        return;
+      if (e.code === "PERMISSION_DENIED") {
+        throw new PermissionDenied(
+          e,
+          `The attempt to remove a value at path "${path}" failed due to incorrect permissions.`
+        );
+      } else {
+        throw new AbstractedProxyError(
+          e,
+          undefined,
+          `While removing the path "${path}", an error occurred`
+        );
       }
-
-      throw e;
     }
   }
 
@@ -441,10 +445,7 @@ export abstract class RealTimeDB {
           : (path as SerializedQuery).setDB(this).execute();
       return response;
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getSnapshot" + e.code ? `/${e.code}` : "";
-      throw e;
+      throw new AbstractedProxyError(e);
     }
   }
 
@@ -460,10 +461,7 @@ export abstract class RealTimeDB {
       const snap = await this.getSnapshot(path);
       return snap.val() as T;
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getValue" + e.code ? `/${e.code}` : "";
-      throw e;
+      throw new AbstractedProxyError(e);
     }
   }
 
@@ -487,10 +485,7 @@ export abstract class RealTimeDB {
 
       return { ...object, ...{ [idProp]: snap.key } };
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getRecord" + e.code ? `/${e.code}` : "";
-      throw e;
+      throw new AbstractedProxyError(e);
     }
   }
 
@@ -512,10 +507,7 @@ export abstract class RealTimeDB {
       const snap = await this.getSnapshot(path);
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/getList" + e.code ? `/${e.code}` : "";
-      throw e;
+      throw new AbstractedProxyError(e);
     }
   }
 
@@ -531,9 +523,13 @@ export abstract class RealTimeDB {
    * @param idProp what property name should the Firebase key be converted to (default is "id")
    */
   public async getSortedList<T = any>(query: any, idProp = "id"): Promise<T[]> {
-    return this.getSnapshot(query).then(snap => {
-      return convert.snapshotToArray<T>(snap, idProp);
-    });
+    try {
+      return this.getSnapshot(query).then(snap => {
+        return convert.snapshotToArray<T>(snap, idProp);
+      });
+    } catch (e) {
+      throw new AbstractedProxyError(e);
+    }
   }
 
   /**
@@ -553,10 +549,18 @@ export abstract class RealTimeDB {
     try {
       this.ref(path).push(value);
     } catch (e) {
-      e.name =
-        !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/push" + e.code ? `/${e.code}` : "";
-      throw e;
+      if (e.code === "PERMISSION_DENIED") {
+        throw new PermissionDenied(
+          e,
+          `The attempt to push a value to path "${path}" failed due to incorrect permissions.`
+        );
+      } else {
+        throw new AbstractedProxyError(
+          e,
+          undefined,
+          `While pushing to the path "${path}", an error occurred`
+        );
+      }
     }
   }
 
@@ -588,21 +592,15 @@ export abstract class RealTimeDB {
       await this._mock.importFakerLibrary();
       this._isConnected = true;
     } catch (e) {
-      console.error(
-        `There was an error asynchronously loading Firemock/Faker library's.`
+      throw new AbstractedProxyError(
+        e,
+        "abstracted-firebase/firemock-load-failure",
+        `Failed to load the FireMock library asynchronously. The config passed in was ${JSON.stringify(
+          config,
+          null,
+          2
+        )}`
       );
-      if (e.stack) {
-        console.log(`The stack trace was:\n`, e.stack);
-      }
-      const err = createError(
-        "abstracted-firebase/import-firemock",
-        `There was a problem importing the FireMock and/or Faker libraries. Both are required to run in "mocking" mode. The error encountered was: ${
-          e.message
-        }`
-      );
-      err.name = e.name;
-      err.stack = e.stack;
-      throw err;
     }
   }
 }
