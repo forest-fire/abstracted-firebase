@@ -8,7 +8,6 @@ const util_1 = require("./util");
 const FileDepthExceeded_1 = require("./errors/FileDepthExceeded");
 const UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
 const WatcherEventWrapper_1 = require("./WatcherEventWrapper");
-const handleError_1 = require("./handleError");
 const errors_1 = require("./errors");
 const AbstractedProxyError_1 = require("./errors/AbstractedProxyError");
 /** time by which the dynamically loaded mock library should be loaded */
@@ -272,10 +271,7 @@ class RealTimeDB {
                     if (callback) {
                         callback(e, mps);
                     }
-                    const err = common_types_1.createError(`abstracted-firebase/mps-failure`, `While attempting to execute a multi-path-set operation there was a failure: ${e.message}`);
-                    err.name = "AbstractedFirebase::mps-failure";
-                    err.stack = e.stack;
-                    // reject(err);
+                    throw new AbstractedProxyError_1.AbstractedProxyError(e, "abstracted-firebase/mps-failure", `While executing a MPS there was a failure. The base path was ${api._basePath}.`);
                 }
                 // });
             }
@@ -297,12 +293,10 @@ class RealTimeDB {
         }
         catch (e) {
             if (e.code === "PERMISSION_DENIED") {
-                const e = common_types_1.createError("abstracted-firebase/PERMISSION_DENIED", `The attempt to update a value at path "${path}" failed due to incorrect permissions.`);
-                e.name = "PERMISSION_DENIED";
-                throw e;
+                throw new errors_1.PermissionDenied(e, `The attempt to update a value at path "${path}" failed due to incorrect permissions.`);
             }
             else {
-                handleError_1.handleError(e, "update", { path, value });
+                throw new AbstractedProxyError_1.AbstractedProxyError(e, undefined, `While updating the path "${path}", an error occurred`);
             }
         }
     }
@@ -322,13 +316,12 @@ class RealTimeDB {
             return result;
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/remove" + e.code ? `/${e.code}` : "";
-            if (ignoreMissing && e.message.indexOf("key is not defined") !== -1) {
-                return;
+            if (e.code === "PERMISSION_DENIED") {
+                throw new errors_1.PermissionDenied(e, `The attempt to remove a value at path "${path}" failed due to incorrect permissions.`);
             }
-            throw e;
+            else {
+                throw new AbstractedProxyError_1.AbstractedProxyError(e, undefined, `While removing the path "${path}", an error occurred`);
+            }
         }
     }
     /**
@@ -344,10 +337,7 @@ class RealTimeDB {
             return response;
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getSnapshot" + e.code ? `/${e.code}` : "";
-            throw e;
+            throw new AbstractedProxyError_1.AbstractedProxyError(e);
         }
     }
     /**
@@ -363,10 +353,7 @@ class RealTimeDB {
             return snap.val();
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getValue" + e.code ? `/${e.code}` : "";
-            throw e;
+            throw new AbstractedProxyError_1.AbstractedProxyError(e);
         }
     }
     /**
@@ -386,10 +373,7 @@ class RealTimeDB {
             return Object.assign({}, object, { [idProp]: snap.key });
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getRecord" + e.code ? `/${e.code}` : "";
-            throw e;
+            throw new AbstractedProxyError_1.AbstractedProxyError(e);
         }
     }
     /**
@@ -408,10 +392,7 @@ class RealTimeDB {
             return snap.val() ? convert.snapshotToArray(snap, idProp) : [];
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/getList" + e.code ? `/${e.code}` : "";
-            throw e;
+            throw new AbstractedProxyError_1.AbstractedProxyError(e);
         }
     }
     /**
@@ -426,9 +407,14 @@ class RealTimeDB {
      * @param idProp what property name should the Firebase key be converted to (default is "id")
      */
     async getSortedList(query, idProp = "id") {
-        return this.getSnapshot(query).then(snap => {
-            return convert.snapshotToArray(snap, idProp);
-        });
+        try {
+            return this.getSnapshot(query).then(snap => {
+                return convert.snapshotToArray(snap, idProp);
+            });
+        }
+        catch (e) {
+            throw new AbstractedProxyError_1.AbstractedProxyError(e);
+        }
     }
     /**
      * **push**
@@ -448,10 +434,12 @@ class RealTimeDB {
             this.ref(path).push(value);
         }
         catch (e) {
-            e.name =
-                !e.code || e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-            e.code = "abstracted-firebase/push" + e.code ? `/${e.code}` : "";
-            throw e;
+            if (e.code === "PERMISSION_DENIED") {
+                throw new errors_1.PermissionDenied(e, `The attempt to push a value to path "${path}" failed due to incorrect permissions.`);
+            }
+            else {
+                throw new AbstractedProxyError_1.AbstractedProxyError(e, undefined, `While pushing to the path "${path}", an error occurred`);
+            }
         }
     }
     /**
@@ -479,14 +467,7 @@ class RealTimeDB {
             this._isConnected = true;
         }
         catch (e) {
-            console.error(`There was an error asynchronously loading Firemock/Faker library's.`);
-            if (e.stack) {
-                console.log(`The stack trace was:\n`, e.stack);
-            }
-            const err = common_types_1.createError("abstracted-firebase/import-firemock", `There was a problem importing the FireMock and/or Faker libraries. Both are required to run in "mocking" mode. The error encountered was: ${e.message}`);
-            err.name = e.name;
-            err.stack = e.stack;
-            throw err;
+            throw new AbstractedProxyError_1.AbstractedProxyError(e, "abstracted-firebase/firemock-load-failure", `Failed to load the FireMock library asynchronously. The config passed in was ${JSON.stringify(config, null, 2)}`);
         }
     }
 }
