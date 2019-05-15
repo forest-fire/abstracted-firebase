@@ -21,7 +21,8 @@ export declare abstract class RealTimeDB {
     protected _allowMocking: boolean;
     protected app: any;
     protected _database: FirebaseDatabase;
-    protected abstract _auth: import("@firebase/auth-types").FirebaseAuth;
+    protected _fakerReady: Promise<any>;
+    protected abstract _auth: any;
     initialize(config?: IFirebaseConfig): void;
     /**
      * watch
