@@ -32,6 +32,44 @@ type IMockAuthConfig = import("firemock").IMockAuthConfig;
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export abstract class RealTimeDB {
+  public get isMockDb() {
+    return this._mocking;
+  }
+
+  public get mock(): Mock {
+    if (!this._mocking && !this._allowMocking) {
+      const e = new Error(
+        "You can not mock the database without setting mocking in the constructor"
+      );
+      e.name = "AbstractedFirebase::NotAllowed";
+      throw e;
+    }
+    if (this._mockLoadingState === "loading") {
+      const e = new Error(
+        `Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`
+      );
+      e.name = "AbstractedFirebase::AsyncError";
+      throw e;
+    }
+
+    if (!this._mock) {
+      const e = new Error(
+        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${
+          this._mocking
+        } ]!`
+      );
+      e.name = "AbstractedFirebase::NotAllowed";
+      throw e;
+    }
+
+    return this._mock as Mock;
+  }
+
+  public get isConnected() {
+    return this._isConnected;
+  }
+
+  public static connect: (config: any) => Promise<any>;
   /** how many miliseconds before the attempt to connect to DB is timed out */
   public CONNECTION_TIMEOUT = 5000;
   /** Logs debugging information to the console */
@@ -53,7 +91,6 @@ export abstract class RealTimeDB {
 
   protected app: any;
   protected _database: FirebaseDatabase;
-  protected _fakerReady: Promise<any>;
   protected abstract _auth: any;
 
   public initialize(config: IFirebaseConfig = {}) {
@@ -90,6 +127,8 @@ export abstract class RealTimeDB {
           eventType: evt,
           targetType: "path"
         })(cb);
+        console.log("dispatch is:", dispatch);
+
         if (typeof target === "string") {
           this.ref(slashNotation(target)).on(evt, dispatch);
         } else {
@@ -100,9 +139,7 @@ export abstract class RealTimeDB {
         }
       });
     } catch (e) {
-      e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-      e.code = "abstracted-firebase/watch";
-      throw e;
+      throw new AbstractedProxyError(e);
     }
   }
 
@@ -141,39 +178,6 @@ export abstract class RealTimeDB {
   /** Get a DB reference for a given path in Firebase */
   public ref(path: string = "/"): Reference {
     return this._mocking ? this.mock.ref(path) : this._database.ref(path);
-  }
-
-  public get isMockDb() {
-    return this._mocking;
-  }
-
-  public get mock(): Mock {
-    if (!this._mocking && !this._allowMocking) {
-      const e = new Error(
-        "You can not mock the database without setting mocking in the constructor"
-      );
-      e.name = "AbstractedFirebase::NotAllowed";
-      throw e;
-    }
-    if (this._mockLoadingState === "loading") {
-      const e = new Error(
-        `Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`
-      );
-      e.name = "AbstractedFirebase::AsyncError";
-      throw e;
-    }
-
-    if (!this._mock) {
-      const e = new Error(
-        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${
-          this._mocking
-        } ]!`
-      );
-      e.name = "AbstractedFirebase::NotAllowed";
-      throw e;
-    }
-
-    return this._mock as Mock;
   }
 
   /**
@@ -215,10 +219,6 @@ export abstract class RealTimeDB {
 
       return this;
     }
-  }
-
-  public get isConnected() {
-    return this._isConnected;
   }
 
   /** set a "value" in the database at a given path */
@@ -360,6 +360,9 @@ export abstract class RealTimeDB {
         } catch (e) {
           if (callback) {
             callback(e, mps);
+          }
+          if (e.code === "PERMISSION_DENIED") {
+            throw new AbstractedProxyError(e, "abstracted-firebase/permission-denied");
           }
           throw new AbstractedProxyError(
             e,
