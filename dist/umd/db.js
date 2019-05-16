@@ -33,6 +33,30 @@
             this._mocking = false;
             this._allowMocking = false;
         }
+        get isMockDb() {
+            return this._mocking;
+        }
+        get mock() {
+            if (!this._mocking && !this._allowMocking) {
+                const e = new Error("You can not mock the database without setting mocking in the constructor");
+                e.name = "AbstractedFirebase::NotAllowed";
+                throw e;
+            }
+            if (this._mockLoadingState === "loading") {
+                const e = new Error(`Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`);
+                e.name = "AbstractedFirebase::AsyncError";
+                throw e;
+            }
+            if (!this._mock) {
+                const e = new Error(`Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`);
+                e.name = "AbstractedFirebase::NotAllowed";
+                throw e;
+            }
+            return this._mock;
+        }
+        get isConnected() {
+            return this._isConnected;
+        }
         initialize(config = {}) {
             if (config.mocking) {
                 this._mocking = true;
@@ -62,6 +86,7 @@
                         eventType: evt,
                         targetType: "path"
                     })(cb);
+                    console.log("dispatch is:", dispatch);
                     if (typeof target === "string") {
                         this.ref(util_1.slashNotation(target)).on(evt, dispatch);
                     }
@@ -74,9 +99,7 @@
                 });
             }
             catch (e) {
-                e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
-                e.code = "abstracted-firebase/watch";
-                throw e;
+                throw new AbstractedProxyError_1.AbstractedProxyError(e);
             }
         }
         unWatch(events, cb) {
@@ -115,27 +138,6 @@
         ref(path = "/") {
             return this._mocking ? this.mock.ref(path) : this._database.ref(path);
         }
-        get isMockDb() {
-            return this._mocking;
-        }
-        get mock() {
-            if (!this._mocking && !this._allowMocking) {
-                const e = new Error("You can not mock the database without setting mocking in the constructor");
-                e.name = "AbstractedFirebase::NotAllowed";
-                throw e;
-            }
-            if (this._mockLoadingState === "loading") {
-                const e = new Error(`Loading the mock library is an asynchronous task; typically it takes very little time but it is currently in process. You can listen to "waitForConnection()" to ensure the mock library is ready.`);
-                e.name = "AbstractedFirebase::AsyncError";
-                throw e;
-            }
-            if (!this._mock) {
-                const e = new Error(`Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`);
-                e.name = "AbstractedFirebase::NotAllowed";
-                throw e;
-            }
-            return this._mock;
-        }
         /**
          * Provides a promise-based way of waiting for the connection to be
          * established before resolving
@@ -168,9 +170,6 @@
                 this._isConnected = true;
                 return this;
             }
-        }
-        get isConnected() {
-            return this._isConnected;
         }
         /** set a "value" in the database at a given path */
         async set(path, value) {
@@ -281,6 +280,9 @@
                     catch (e) {
                         if (callback) {
                             callback(e, mps);
+                        }
+                        if (e.code === "PERMISSION_DENIED") {
+                            throw new AbstractedProxyError_1.AbstractedProxyError(e, "abstracted-firebase/permission-denied");
                         }
                         throw new AbstractedProxyError_1.AbstractedProxyError(e, "abstracted-firebase/mps-failure", `While executing a MPS there was a failure. The base path was ${api._basePath}.`);
                     }

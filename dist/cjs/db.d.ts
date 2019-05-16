@@ -6,6 +6,10 @@ declare type IMockAuthConfig = import("firemock").IMockAuthConfig;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB {
+    readonly isMockDb: boolean;
+    readonly mock: Mock;
+    readonly isConnected: boolean;
+    static connect: (config: any) => Promise<any>;
     /** how many miliseconds before the attempt to connect to DB is timed out */
     CONNECTION_TIMEOUT: number;
     /** Logs debugging information to the console */
@@ -21,7 +25,6 @@ export declare abstract class RealTimeDB {
     protected _allowMocking: boolean;
     protected app: any;
     protected _database: FirebaseDatabase;
-    protected _fakerReady: Promise<any>;
     protected abstract _auth: any;
     initialize(config?: IFirebaseConfig): void;
     /**
@@ -43,14 +46,11 @@ export declare abstract class RealTimeDB {
     query<T = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
     ref(path?: string): Reference;
-    readonly isMockDb: boolean;
-    readonly mock: Mock;
     /**
      * Provides a promise-based way of waiting for the connection to be
      * established before resolving
      */
     waitForConnection(): Promise<this>;
-    readonly isConnected: boolean;
     /** set a "value" in the database at a given path */
     set<T = any>(path: string, value: T): Promise<void>;
     /**
