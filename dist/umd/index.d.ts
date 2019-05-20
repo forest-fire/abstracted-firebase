@@ -1,3 +1,4 @@
+import { IDictionary } from "firemock";
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
@@ -31,4 +32,6 @@ export interface IAbstractedFirebaseConfig {
 }
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
     mocking: true;
+    /** initialize the database to a known state */
+    mockData?: IDictionary;
 }
