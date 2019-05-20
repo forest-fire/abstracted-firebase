@@ -1,8 +1,8 @@
+import { IMockConfigOptions } from "firemock";
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet } from "./types";
 declare type Mock = import("firemock").Mock;
-declare type IMockAuthConfig = import("firemock").IMockAuthConfig;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB {
@@ -167,6 +167,6 @@ export declare abstract class RealTimeDB {
      * Asynchronously imports both `FireMock` and the `Faker` libraries
      * then sets `isConnected` to **true**
      */
-    protected getFireMock(config?: IMockAuthConfig): Promise<void>;
+    protected getFireMock(config?: IMockConfigOptions): Promise<void>;
 }
 export {};

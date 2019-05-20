@@ -1,5 +1,6 @@
 // tslint:disable:no-implicit-dependencies
 import { IDictionary, wait, createError, pathJoin } from "common-types";
+import { IMockConfigOptions } from "firemock";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -96,6 +97,9 @@ export abstract class RealTimeDB {
   public initialize(config: IFirebaseConfig = {}) {
     if (config.mocking) {
       this._mocking = true;
+      if (config.mockData) {
+        this.mock.updateDB(config.mockData);
+      }
       // this._fakerReady = this._mock.importFakerLibrary();
     } else {
       this._mocking = false;
@@ -587,13 +591,13 @@ export abstract class RealTimeDB {
    * Asynchronously imports both `FireMock` and the `Faker` libraries
    * then sets `isConnected` to **true**
    */
-  protected async getFireMock(config: IMockAuthConfig = {}) {
+  protected async getFireMock(config: IMockConfigOptions = {}) {
     try {
       this._mocking = true;
       this._mockLoadingState = "loading";
       const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
       this._mockLoadingState = "loaded";
-      this._mock = await FireMock.Mock.prepare({}, config);
+      this._mock = await FireMock.Mock.prepare(config);
       this._isConnected = true;
     } catch (e) {
       throw new AbstractedProxyError(

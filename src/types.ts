@@ -6,14 +6,12 @@ import {
   EventType
 } from "@firebase/database-types";
 import { IDictionary } from "common-types";
+import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
 
 export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 
 export type DebuggingCallback = (message: string) => void;
-export interface IFirebaseConfig {
-  debugging?: boolean | DebuggingCallback;
-  mocking?: boolean;
-}
+export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;

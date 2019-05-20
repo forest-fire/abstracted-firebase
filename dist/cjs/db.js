@@ -50,6 +50,9 @@ class RealTimeDB {
     initialize(config = {}) {
         if (config.mocking) {
             this._mocking = true;
+            if (config.mockData) {
+                this.mock.updateDB(config.mockData);
+            }
             // this._fakerReady = this._mock.importFakerLibrary();
         }
         else {
@@ -465,7 +468,7 @@ class RealTimeDB {
             this._mockLoadingState = "loading";
             const FireMock = await Promise.resolve().then(() => require(/* webpackChunkName: "firemock" */ "firemock"));
             this._mockLoadingState = "loaded";
-            this._mock = await FireMock.Mock.prepare({}, config);
+            this._mock = await FireMock.Mock.prepare(config);
             this._isConnected = true;
         }
         catch (e) {
