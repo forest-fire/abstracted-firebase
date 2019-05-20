@@ -3,7 +3,7 @@ import { DB as Admin } from "abstracted-admin";
 import { setupEnv } from "./testing/helpers";
 import * as chai from "chai";
 const expect = chai.expect;
-import { IFirebaseWatchEvent } from "../src/";
+import { IFirebaseWatchEvent } from "../src";
 
 setupEnv();
 

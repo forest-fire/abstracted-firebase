@@ -1,11 +1,9 @@
 import { DataSnapshot, OnDisconnect, Query, ThenableReference, EventType } from "@firebase/database-types";
 import { IDictionary } from "common-types";
+import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
 export declare type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 export declare type DebuggingCallback = (message: string) => void;
-export interface IFirebaseConfig {
-    debugging?: boolean | DebuggingCallback;
-    mocking?: boolean;
-}
+export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export interface IEmitter {
     emit: (event: string | symbol, ...args: any[]) => boolean;
     on: (event: string, value: any) => void;

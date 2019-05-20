@@ -7,7 +7,7 @@ export { _getFirebaseType } from "./util";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
+export type IFirebaseClientConfig = IFirebaseClientConfigProps & IFirebaseConfigMocked;
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
 
 export * from "./types";
@@ -21,8 +21,16 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
 }
 
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
-  serviceAccount: string;
-  databaseUrl: string;
+  /**
+   * The service account must be provided but if not passed in it can be found
+   * in environment variable
+   */
+  serviceAccount?: string;
+  /**
+   * The databaseURL is required but if not passed in as a parameter it can be found
+   * in an environment variable
+   */
+  databaseUrl?: string;
 }
 
 export interface IAbstractedFirebaseConfig {
@@ -37,7 +45,7 @@ export interface IAbstractedFirebaseConfig {
 }
 
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
-  mocking: true;
+  mocking?: true;
   /** initialize the database to a known state */
   mockData?: IDictionary;
 }

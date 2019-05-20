@@ -5,7 +5,7 @@ export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export declare type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
+export declare type IFirebaseClientConfig = IFirebaseClientConfigProps & IFirebaseConfigMocked;
 export declare type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
@@ -17,8 +17,16 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
     messagingSenderId?: string;
 }
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
-    serviceAccount: string;
-    databaseUrl: string;
+    /**
+     * The service account must be provided but if not passed in it can be found
+     * in environment variable
+     */
+    serviceAccount?: string;
+    /**
+     * The databaseURL is required but if not passed in as a parameter it can be found
+     * in an environment variable
+     */
+    databaseUrl?: string;
 }
 export interface IAbstractedFirebaseConfig {
     /** set debugging override from logging config */
@@ -31,7 +39,7 @@ export interface IAbstractedFirebaseConfig {
     logging?: any;
 }
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
-    mocking: true;
+    mocking?: true;
     /** initialize the database to a known state */
     mockData?: IDictionary;
 }
