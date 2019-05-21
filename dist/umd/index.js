@@ -21,4 +21,12 @@
     var util_1 = require("./util");
     exports._getFirebaseType = util_1._getFirebaseType;
     __export(require("./types"));
+    function isMockConfig(config = {}) {
+        return config.mocking === true;
+    }
+    exports.isMockConfig = isMockConfig;
+    function isRealDbConfig(config) {
+        return config.mocking !== true;
+    }
+    exports.isRealDbConfig = isRealDbConfig;
 });

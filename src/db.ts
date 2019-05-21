@@ -26,6 +26,8 @@ import {
 import { handleError } from "./handleError";
 import { PermissionDenied } from "./errors";
 import { AbstractedProxyError } from "./errors/AbstractedProxyError";
+import { isMockConfig, IFirebaseListener, IFirebaseConnectionCallback } from ".";
+import { AbstractedError } from "./errors/AbstractedError";
 
 type Mock = import("firemock").Mock;
 type IMockAuthConfig = import("firemock").IMockAuthConfig;
@@ -80,6 +82,7 @@ export abstract class RealTimeDB {
   ) => any;
 
   protected abstract _eventManager: IEmitter;
+  protected abstract _clientType: "client" | "admin";
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
   // tslint:disable-next-line:whitespace
@@ -89,22 +92,21 @@ export abstract class RealTimeDB {
   protected _debugging: boolean = false;
   protected _mocking: boolean = false;
   protected _allowMocking: boolean = false;
-
+  protected _onConnected: IFirebaseListener[] = [];
+  protected _onDisconnected: IFirebaseListener[] = [];
   protected app: any;
   protected _database: FirebaseDatabase;
+  /** the config the db was started with */
+  protected _config: IFirebaseConfig;
   protected abstract _auth: any;
 
+  public constructor(config: IFirebaseConfig) {
+    this._config = config;
+  }
+
   public initialize(config: IFirebaseConfig = {}) {
-    if (config.mocking) {
-      this._mocking = true;
-      if (config.mockData) {
-        this.mock.updateDB(config.mockData);
-      }
-      // this._fakerReady = this._mock.importFakerLibrary();
-    } else {
-      this._mocking = false;
-      this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
-    }
+    this._mocking = config.mocking ? true : false;
+    this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
   }
 
   /**
@@ -189,9 +191,10 @@ export abstract class RealTimeDB {
    * established before resolving
    */
   public async waitForConnection() {
-    if (this._mocking) {
+    const config = this._config;
+    if (isMockConfig(config)) {
       // MOCKING
-      await this.getFireMock();
+      await this.getFireMock({ db: config.mockData, auth: config.mockAuth });
     } else {
       // NON-MOCKING
       if (this._isConnected) {
@@ -203,18 +206,21 @@ export abstract class RealTimeDB {
           if (state) {
             return;
           } else {
-            throw Error(`While waiting for connection received a disconnect message`);
+            throw new AbstractedError(
+              `While waiting for a connection received a disconnect message instead`,
+              `no-connection`
+            );
           }
         });
       };
 
       const timeout = async () => {
         await wait(this.CONNECTION_TIMEOUT);
-        throw createError(
-          "abstracted-firebase/connection-timeout",
+        throw new AbstractedError(
           `The database didn't connect after the allocated period of ${
             this.CONNECTION_TIMEOUT
-          }ms`
+          }ms`,
+          "connection-timeout"
         );
       };
 
@@ -223,6 +229,43 @@ export abstract class RealTimeDB {
 
       return this;
     }
+
+    this._onConnected.map(i => i.cb(this, i.ctx));
+  }
+
+  /**
+   * get a notification when DB is connected; returns a unique id
+   * which can be used to remove the callback. You may, optionally,
+   * state a unique id of your own.
+   */
+  public notifyWhenConnected(
+    cb: IFirebaseConnectionCallback,
+    id?: string,
+    ctx?: IDictionary
+  ): string {
+    if (!id) {
+      id = Math.random()
+        .toString(36)
+        .substr(2, 10);
+    } else {
+      if (this._onConnected.map(i => i.id).includes(id)) {
+        throw new AbstractedError(
+          `Request for onConnect() notifications was done with an explicit key [ ${id} ] which is already in use!`,
+          `duplicate-listener`
+        );
+      }
+    }
+    this._onConnected = this._onConnected.concat({ id, cb, ctx });
+    return id;
+  }
+
+  /**
+   * removes a callback notification previously registered
+   */
+  public removeNotificationOnConnection(id: string) {
+    this._onConnected = this._onConnected.filter(i => i.id !== id);
+
+    return this;
   }
 
   /** set a "value" in the database at a given path */
@@ -580,6 +623,23 @@ export abstract class RealTimeDB {
    */
   public async exists(path: string): Promise<boolean> {
     return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
+  }
+
+  /**
+   * monitorConnection
+   *
+   * allows interested parties to hook into event messages when the
+   * DB connection either connects or disconnects
+   */
+  protected _monitorConnection(snap: DataSnapshot) {
+    this._isConnected = snap.val();
+    // call active listeners
+    if (this._isConnected) {
+      // this._eventManager.connection(this._isConnected);
+      this._onConnected.forEach(listener => listener.cb(this));
+    } else {
+      this._onDisconnected.forEach(listener => listener.cb(this));
+    }
   }
 
   protected abstract connectToFirebase(config: any): Promise<void>;

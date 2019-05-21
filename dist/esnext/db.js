@@ -1,5 +1,5 @@
 // tslint:disable:no-implicit-dependencies
-import { wait, createError } from "common-types";
+import { wait } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -8,10 +8,12 @@ import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
 import { PermissionDenied } from "./errors";
 import { AbstractedProxyError } from "./errors/AbstractedProxyError";
+import { isMockConfig } from ".";
+import { AbstractedError } from "./errors/AbstractedError";
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
-    constructor() {
+    constructor(config) {
         /** how many miliseconds before the attempt to connect to DB is timed out */
         this.CONNECTION_TIMEOUT = 5000;
         this._isConnected = false;
@@ -20,6 +22,9 @@ export class RealTimeDB {
         this._debugging = false;
         this._mocking = false;
         this._allowMocking = false;
+        this._onConnected = [];
+        this._onDisconnected = [];
+        this._config = config;
     }
     get isMockDb() {
         return this._mocking;
@@ -46,17 +51,8 @@ export class RealTimeDB {
         return this._isConnected;
     }
     initialize(config = {}) {
-        if (config.mocking) {
-            this._mocking = true;
-            if (config.mockData) {
-                this.mock.updateDB(config.mockData);
-            }
-            // this._fakerReady = this._mock.importFakerLibrary();
-        }
-        else {
-            this._mocking = false;
-            this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
-        }
+        this._mocking = config.mocking ? true : false;
+        this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
     }
     /**
      * watch
@@ -134,9 +130,10 @@ export class RealTimeDB {
      * established before resolving
      */
     async waitForConnection() {
-        if (this._mocking) {
+        const config = this._config;
+        if (isMockConfig(config)) {
             // MOCKING
-            await this.getFireMock();
+            await this.getFireMock({ db: config.mockData, auth: config.mockAuth });
         }
         else {
             // NON-MOCKING
@@ -149,18 +146,45 @@ export class RealTimeDB {
                         return;
                     }
                     else {
-                        throw Error(`While waiting for connection received a disconnect message`);
+                        throw new AbstractedError(`While waiting for a connection received a disconnect message instead`, `no-connection`);
                     }
                 });
             };
             const timeout = async () => {
                 await wait(this.CONNECTION_TIMEOUT);
-                throw createError("abstracted-firebase/connection-timeout", `The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`);
+                throw new AbstractedError(`The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`, "connection-timeout");
             };
             await Promise.race([connectionEvent, timeout]);
             this._isConnected = true;
             return this;
         }
+        this._onConnected.map(i => i.cb(this, i.ctx));
+    }
+    /**
+     * get a notification when DB is connected; returns a unique id
+     * which can be used to remove the callback. You may, optionally,
+     * state a unique id of your own.
+     */
+    notifyWhenConnected(cb, id, ctx) {
+        if (!id) {
+            id = Math.random()
+                .toString(36)
+                .substr(2, 10);
+        }
+        else {
+            if (this._onConnected.map(i => i.id).includes(id)) {
+                throw new AbstractedError(`Request for onConnect() notifications was done with an explicit key [ ${id} ] which is already in use!`, `duplicate-listener`);
+            }
+        }
+        this._onConnected = this._onConnected.concat({ id, cb, ctx });
+        return id;
+    }
+    /**
+     * removes a callback notification previously registered
+     */
+    removeNotificationOnConnection(id) {
+        this._onConnected = this._onConnected.filter(i => i.id !== id);
+        return this;
     }
     /** set a "value" in the database at a given path */
     async set(path, value) {
@@ -453,6 +477,23 @@ export class RealTimeDB {
      */
     async exists(path) {
         return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
+    }
+    /**
+     * monitorConnection
+     *
+     * allows interested parties to hook into event messages when the
+     * DB connection either connects or disconnects
+     */
+    _monitorConnection(snap) {
+        this._isConnected = snap.val();
+        // call active listeners
+        if (this._isConnected) {
+            // this._eventManager.connection(this._isConnected);
+            this._onConnected.forEach(listener => listener.cb(this));
+        }
+        else {
+            this._onDisconnected.forEach(listener => listener.cb(this));
+        }
     }
     /**
      * **getFireMock**

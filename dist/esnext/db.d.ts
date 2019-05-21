@@ -1,7 +1,9 @@
+import { IDictionary } from "common-types";
 import { IMockConfigOptions } from "firemock";
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet } from "./types";
+import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
@@ -15,6 +17,7 @@ export declare abstract class RealTimeDB {
     /** Logs debugging information to the console */
     enableDatabaseLogging: (logger?: boolean | ((a: string) => any), persistent?: boolean) => any;
     protected abstract _eventManager: IEmitter;
+    protected abstract _clientType: "client" | "admin";
     protected _isConnected: boolean;
     protected _mockLoadingState: IMockLoadingState;
     protected _mock: Mock;
@@ -23,9 +26,14 @@ export declare abstract class RealTimeDB {
     protected _debugging: boolean;
     protected _mocking: boolean;
     protected _allowMocking: boolean;
+    protected _onConnected: IFirebaseListener[];
+    protected _onDisconnected: IFirebaseListener[];
     protected app: any;
     protected _database: FirebaseDatabase;
+    /** the config the db was started with */
+    protected _config: IFirebaseConfig;
     protected abstract _auth: any;
+    constructor(config: IFirebaseConfig);
     initialize(config?: IFirebaseConfig): void;
     /**
      * watch
@@ -51,6 +59,16 @@ export declare abstract class RealTimeDB {
      * established before resolving
      */
     waitForConnection(): Promise<this>;
+    /**
+     * get a notification when DB is connected; returns a unique id
+     * which can be used to remove the callback. You may, optionally,
+     * state a unique id of your own.
+     */
+    notifyWhenConnected(cb: IFirebaseConnectionCallback, id?: string, ctx?: IDictionary): string;
+    /**
+     * removes a callback notification previously registered
+     */
+    removeNotificationOnConnection(id: string): this;
     /** set a "value" in the database at a given path */
     set<T = any>(path: string, value: T): Promise<void>;
     /**
@@ -159,6 +177,13 @@ export declare abstract class RealTimeDB {
      * Validates the existance of a path in the database
      */
     exists(path: string): Promise<boolean>;
+    /**
+     * monitorConnection
+     *
+     * allows interested parties to hook into event messages when the
+     * DB connection either connects or disconnects
+     */
+    protected _monitorConnection(snap: DataSnapshot): void;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
     /**

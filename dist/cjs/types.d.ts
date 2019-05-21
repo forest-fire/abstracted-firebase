@@ -1,9 +1,16 @@
 import { DataSnapshot, OnDisconnect, Query, ThenableReference, EventType } from "@firebase/database-types";
 import { IDictionary } from "common-types";
 import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
+import { RealTimeDB } from "./db";
 export declare type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
+export interface IFirebaseListener {
+    id: string;
+    cb: IFirebaseConnectionCallback;
+    ctx?: IDictionary;
+}
+export declare type IFirebaseConnectionCallback = (db: RealTimeDB, ctx?: IDictionary) => void;
 export interface IEmitter {
     emit: (event: string | symbol, ...args: any[]) => boolean;
     on: (event: string, value: any) => void;
