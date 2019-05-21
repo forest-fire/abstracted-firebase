@@ -1,4 +1,4 @@
-import { IDictionary } from "firemock";
+import { IDictionary, IMockAuthConfig } from "firemock";
 
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
@@ -7,8 +7,8 @@ export { _getFirebaseType } from "./util";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export type IFirebaseClientConfig = IFirebaseClientConfigProps & IFirebaseConfigMocked;
-export type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
+export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
+export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
 
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
@@ -18,6 +18,7 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
   projectId: string;
   storageBucket?: string;
   messagingSenderId?: string;
+  mocking?: false;
 }
 
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
@@ -31,6 +32,7 @@ export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
    * in an environment variable
    */
   databaseUrl?: string;
+  mocking?: false | undefined;
 }
 
 export interface IAbstractedFirebaseConfig {
@@ -45,7 +47,21 @@ export interface IAbstractedFirebaseConfig {
 }
 
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
-  mocking?: true;
+  mocking: true;
   /** initialize the database to a known state */
   mockData?: IDictionary;
+  /** optionally configure mocking for Firebase Authentication */
+  mockAuth?: IMockAuthConfig;
+}
+
+export function isMockConfig(
+  config: IFirebaseConfig = {}
+): config is IFirebaseConfigMocked {
+  return (config as IFirebaseConfigMocked).mocking === true;
+}
+
+export function isRealDbConfig(
+  config: IFirebaseConfig
+): config is IFirebaseAdminConfigProps | IFirebaseClientConfigProps {
+  return config.mocking !== true;
 }

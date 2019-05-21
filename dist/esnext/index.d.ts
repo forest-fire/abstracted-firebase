@@ -1,12 +1,12 @@
-import { IDictionary } from "firemock";
+import { IDictionary, IMockAuthConfig } from "firemock";
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export declare type IFirebaseClientConfig = IFirebaseClientConfigProps & IFirebaseConfigMocked;
-export declare type IFirebaseAdminConfig = IFirebaseAdminConfigProps & IFirebaseConfigMocked;
+export declare type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
+export declare type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
     apiKey: string;
@@ -15,6 +15,7 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
     projectId: string;
     storageBucket?: string;
     messagingSenderId?: string;
+    mocking?: false;
 }
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
     /**
@@ -27,6 +28,7 @@ export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
      * in an environment variable
      */
     databaseUrl?: string;
+    mocking?: false | undefined;
 }
 export interface IAbstractedFirebaseConfig {
     /** set debugging override from logging config */
@@ -39,7 +41,11 @@ export interface IAbstractedFirebaseConfig {
     logging?: any;
 }
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
-    mocking?: true;
+    mocking: true;
     /** initialize the database to a known state */
     mockData?: IDictionary;
+    /** optionally configure mocking for Firebase Authentication */
+    mockAuth?: IMockAuthConfig;
 }
+export declare function isMockConfig(config?: IFirebaseConfig): config is IFirebaseConfigMocked;
+export declare function isRealDbConfig(config: IFirebaseConfig): config is IFirebaseAdminConfigProps | IFirebaseClientConfigProps;

@@ -7,11 +7,20 @@ import {
 } from "@firebase/database-types";
 import { IDictionary } from "common-types";
 import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
+import { RealTimeDB } from "./db";
 
 export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
+
+export interface IFirebaseListener {
+  id: string;
+  cb: IFirebaseConnectionCallback;
+  ctx?: IDictionary;
+}
+
+export type IFirebaseConnectionCallback = (db: RealTimeDB, ctx?: IDictionary) => void;
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;
