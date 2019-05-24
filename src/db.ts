@@ -11,7 +11,6 @@ import {
   FirebaseDatabase,
   DataSnapshot,
   EventType,
-  Query,
   Reference
 } from "@firebase/database-types";
 
