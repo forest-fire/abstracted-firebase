@@ -34,9 +34,9 @@
   integrity sha512-2piRYW7t+2s/P1NPpcI/3+8Y5l2WnJhm9KACoXW5zmoAPlya8R1aEaR2dNHLNePTMHdg04miEDD9fEz4xUqzZA==
 
 "@firebase/util@^0.2.15":
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.2.15.tgz#727799e7c018cc946f8809cd5cc53b0ea32b4ed7"
-  integrity sha512-XA6C4HkBOcUfDyvp/clq0MCFSuWSm3bPkolP689RCrGzjBs+bnCzC5a7by6Fq106zAQYeASwULJjTfVtZjKaaQ==
+  version "0.2.17"
+  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.2.17.tgz#d2ba0b921ce0ff6de5dce3f155f1f957426e0929"
+  integrity sha512-RvHkhQUkihI4JafJmB7S7Q8qVDFPD+kQdSmUyVTR2sEzxkk92MsIq4dBYnSjOMmnCe7L5lmB6hJdzkHa/TAP5A==
   dependencies:
     tslib "1.9.3"
 
@@ -75,9 +75,9 @@
   integrity sha512-SGGAhXLHDx+PK4YLNcNGa6goPf9XRWQNAUUbffkwVGGXIxmDKWyGGL4inzq2sPmExu431Ekb9aEMn9BkPqEYFA==
 
 "@types/lodash@^4.14.0":
-  version "4.14.130"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.130.tgz#04b3a690d5f4fc34579963c99adae067b8c8eb5a"
-  integrity sha512-H++wk0tbneBsRVfLkgAAd0IIpmpVr2Bj4T0HncoOsQf3/xrJexRYQK2Tqo0Ej3pFslM8GkMgdis9bu6xIb1ycw==
+  version "4.14.132"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.132.tgz#8ce45ca8745ff2e004fac0de0ab46f61e390ffa0"
+  integrity sha512-RNUU1rrh85NgUJcjOOr96YXr+RHwInGbaQCZmlitqOaCKXffj8bh+Zxwuq5rjDy5OgzFldDVoqk4pyLEDiwxIw==
 
 "@types/minimatch@*":
   version "3.0.3"
@@ -257,10 +257,10 @@ commander@^2.12.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-common-types@^1.10.20, common-types@^1.10.22, common-types@^1.9.7:
-  version "1.10.22"
-  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.10.22.tgz#3f28d8ef1ce492326a3c2f6b7d3b9062323aa269"
-  integrity sha512-UqHjHRru1NsL5jm5RWLz8LEvtnGoc8u7i8sP1KmxS8W9hG0L7XXd4J4eLDm8MVxnWvT9hjquCJhg64XZ1EnofQ==
+common-types@^1.10.22, common-types@^1.10.26, common-types@^1.9.7:
+  version "1.10.26"
+  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.10.26.tgz#737b64a632d416d50043b43e92800e90b5d0a7f8"
+  integrity sha512-aZSxEUxHeKTz3ISd1AiEe+Yh9TuIr3dkC7j4s/AFEr9TKbIv/E9vNHtqgNAWXbxAV5NCHh2CkAGxpgkULdSlDg==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -392,16 +392,16 @@ firebase-key@^2.0.2:
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
   integrity sha512-gH0u6apANQsqHUqcf+Yd49VaUQyKNCLxofwYx0gqUGcymeLs5HWg/3tXroGheYYH8+ynxbrnP/Z4F/FEqNy9Ow==
 
-firemock@^0.25.1:
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.25.1.tgz#901598c384d80a048eade0224a8ac4f59f8eb246"
-  integrity sha512-ahLb5GF8I7//udpeuKaiKh1+THwqgjeJZ92X96lO1WKLO2R5BK1+jsQCa/FDvNzl6aUU36ccrSCNiTfo7e97sw==
+firemock@^0.25.5:
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.25.5.tgz#eb032a2d275c57e9c56eb790c1704a43d34cd062"
+  integrity sha512-Q9SnzLm55vc3ihv7SxbZIr3WD8f6JkgxFJXLg55joGYObw+3AtTk/x+8Gc2BlrMNrWsNK9+iKRydywUCpdi5Hg==
   dependencies:
     "@firebase/app-types" "^0.4.0"
     "@firebase/auth-types" "^0.7.0"
     "@firebase/database-types" "^0.4.0"
     "@firebase/util" "^0.2.15"
-    common-types "^1.10.20"
+    common-types "^1.10.22"
     email-validator "^2.0.4"
     faker "^4.1.0"
     firebase-key "^2.0.2"
@@ -898,12 +898,12 @@ semver@^5.3.0, semver@^5.5.0, semver@^5.7.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.0.tgz#790a7cf6fea5459bac96110b29b60412dc8ff96b"
   integrity sha512-Ya52jSX2u7QKghxeoFGpLwCtGlt7j0oY9DYb5apt9nPlJ42ID+ulTXESnt/qAQcoSERyZ5sl3LDIOw0nAn/5DA==
 
-serialized-query@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/serialized-query/-/serialized-query-0.6.0.tgz#680ae0c3df6826329828e45f4e93b93d04667f8d"
-  integrity sha512-FMnpjA310Jnvfp0pLXDH9+8TErmnv4rzsHkFDqUB66UAT7o8bpohvzmieGjP1EUFLu9a0W+5Tb3hBS/2RgRx4w==
+serialized-query@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/serialized-query/-/serialized-query-0.7.1.tgz#c150602a73907011ec7f21b0ccbb472ba2c5040b"
+  integrity sha512-KFpC6YZ+Jy91iF5GUwT8MtgUo4/8aSHO2bYFn+YuDSsV2ltTnhM4IaIf3IXBZmIWWKEn2f4ex4OuwomHytYC1Q==
   dependencies:
-    common-types "^1.10.20"
+    common-types "^1.10.26"
 
 set-blocking@^2.0.0:
   version "2.0.0"

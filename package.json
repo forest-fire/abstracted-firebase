@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.26.2",
+  "version": "0.27.0",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -18,7 +18,7 @@
   "typings": "dist/esnext/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
-    "clean:nuclear": "rimraf lib node_modules && yarn cache clean && yarn && yarn upgrade",
+    "clean:nuclear": "rimraf lib node_modules && rm yarn.lock && yarn cache clean && yarn && yarn upgrade",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "build": "rm -rf dist && tsc -P tsconfig.esnext.json && tsc -P tsconfig.umd.json && tsc -P tsconfig.cjs.json",
     "test": "ts-node ./scripts/test.ts",
@@ -30,9 +30,9 @@
   "dependencies": {
     "@firebase/auth-types": "^0.7.0",
     "@firebase/database-types": "^0.4.0",
-    "common-types": "^1.10.22",
-    "firemock": "^0.25.1",
-    "serialized-query": "^0.6.0",
+    "common-types": "^1.10.26",
+    "firemock": "^0.25.5",
+    "serialized-query": "^0.7.1",
     "typed-conversions": "^0.10.1"
   },
   "devDependencies": {
