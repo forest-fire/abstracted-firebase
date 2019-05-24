@@ -7,13 +7,7 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-import {
-  FirebaseDatabase,
-  DataSnapshot,
-  EventType,
-  Query,
-  Reference
-} from "@firebase/database-types";
+import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "./index";
 
 import {
   IFirebaseConfig,

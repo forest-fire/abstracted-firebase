@@ -4,6 +4,13 @@ export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
+export {
+  FirebaseDatabase,
+  DataSnapshot,
+  EventType,
+  Query,
+  Reference
+} from "@firebase/database-types";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;

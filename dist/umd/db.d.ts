@@ -1,7 +1,7 @@
 import { IDictionary } from "common-types";
 import { IMockConfigOptions } from "firemock";
 import { SerializedQuery } from "serialized-query";
-import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
+import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "./index";
 import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet } from "./types";
 import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
