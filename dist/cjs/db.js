@@ -52,6 +52,12 @@ class RealTimeDB {
     get isConnected() {
         return this._isConnected;
     }
+    get config() {
+        return this._config;
+    }
+    /**
+     * called by `client` and `admin` at end of constructor
+     */
     initialize(config = {}) {
         this._mocking = config.mocking ? true : false;
         this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
@@ -142,21 +148,28 @@ class RealTimeDB {
             if (this._isConnected) {
                 return;
             }
-            const connectionEvent = async () => {
-                this._eventManager.once("connection", (state) => {
-                    if (state) {
-                        return;
-                    }
-                    else {
-                        throw new AbstractedError_1.AbstractedError(`While waiting for a connection received a disconnect message instead`, `no-connection`);
-                    }
-                });
+            const connectionEvent = () => {
+                try {
+                    return new Promise((resolve, reject) => {
+                        this._eventManager.once("connection", (state) => {
+                            if (state) {
+                                resolve();
+                            }
+                            else {
+                                reject(new AbstractedError_1.AbstractedError(`While waiting for a connection received a disconnect message instead`, `no-connection`));
+                            }
+                        });
+                    });
+                }
+                catch (e) {
+                    throw e;
+                }
             };
             const timeout = async () => {
                 await common_types_1.wait(this.CONNECTION_TIMEOUT);
                 throw new AbstractedError_1.AbstractedError(`The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`, "connection-timeout");
             };
-            await Promise.race([connectionEvent, timeout]);
+            await Promise.race([connectionEvent(), timeout()]);
             this._isConnected = true;
             return this;
         }
@@ -166,8 +179,18 @@ class RealTimeDB {
      * get a notification when DB is connected; returns a unique id
      * which can be used to remove the callback. You may, optionally,
      * state a unique id of your own.
+     *
+     * By default the callback will receive the database connection as it's
+     * `this`/context. This means that any locally defined variables will be
+     * dereferenced an unavailable. If you want to retain a connection to this
+     * state you should include the optional _context_ parameter and your
+     * callback will get a parameter passed back with this context available.
      */
-    notifyWhenConnected(cb, id, ctx) {
+    notifyWhenConnected(cb, id, 
+    /**
+     * additional context/pointers for your callback to use when activated
+     */
+    ctx) {
         if (!id) {
             id = Math.random()
                 .toString(36)
@@ -490,8 +513,10 @@ class RealTimeDB {
         this._isConnected = snap.val();
         // call active listeners
         if (this._isConnected) {
-            // this._eventManager.connection(this._isConnected);
-            this._onConnected.forEach(listener => listener.cb(this));
+            if (this._eventManager.connection) {
+                this._eventManager.connection(this._isConnected);
+            }
+            this._onConnected.forEach(listener => listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)());
         }
         else {
             this._onDisconnected.forEach(listener => listener.cb(this));

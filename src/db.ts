@@ -20,7 +20,9 @@ import {
   IMockLoadingState,
   IFirebaseWatchHandler,
   IPathSetter,
-  IMultiPathSet
+  IMultiPathSet,
+  IClientEmitter,
+  IAdminEmitter
 } from "./types";
 import { handleError } from "./handleError";
 import { PermissionDenied } from "./errors";
@@ -71,6 +73,10 @@ export abstract class RealTimeDB {
     return this._isConnected;
   }
 
+  public get config() {
+    return this._config;
+  }
+
   public static connect: (config: any) => Promise<any>;
   /** how many miliseconds before the attempt to connect to DB is timed out */
   public CONNECTION_TIMEOUT = 5000;
@@ -80,7 +86,7 @@ export abstract class RealTimeDB {
     persistent?: boolean
   ) => any;
 
-  protected abstract _eventManager: IEmitter;
+  protected abstract _eventManager: IClientEmitter | IAdminEmitter;
   protected abstract _clientType: "client" | "admin";
   protected _isConnected: boolean = false;
   protected _mockLoadingState: IMockLoadingState = "not-applicable";
@@ -103,6 +109,9 @@ export abstract class RealTimeDB {
     this._config = config;
   }
 
+  /**
+   * called by `client` and `admin` at end of constructor
+   */
   public initialize(config: IFirebaseConfig = {}) {
     this._mocking = config.mocking ? true : false;
     this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
@@ -200,17 +209,25 @@ export abstract class RealTimeDB {
         return;
       }
 
-      const connectionEvent = async () => {
-        this._eventManager.once("connection", (state: boolean) => {
-          if (state) {
-            return;
-          } else {
-            throw new AbstractedError(
-              `While waiting for a connection received a disconnect message instead`,
-              `no-connection`
-            );
-          }
-        });
+      const connectionEvent = () => {
+        try {
+          return new Promise((resolve, reject) => {
+            this._eventManager.once("connection", (state: boolean) => {
+              if (state) {
+                resolve();
+              } else {
+                reject(
+                  new AbstractedError(
+                    `While waiting for a connection received a disconnect message instead`,
+                    `no-connection`
+                  )
+                );
+              }
+            });
+          });
+        } catch (e) {
+          throw e;
+        }
       };
 
       const timeout = async () => {
@@ -223,7 +240,7 @@ export abstract class RealTimeDB {
         );
       };
 
-      await Promise.race([connectionEvent, timeout]);
+      await Promise.race([connectionEvent(), timeout()]);
       this._isConnected = true;
 
       return this;
@@ -236,10 +253,19 @@ export abstract class RealTimeDB {
    * get a notification when DB is connected; returns a unique id
    * which can be used to remove the callback. You may, optionally,
    * state a unique id of your own.
+   *
+   * By default the callback will receive the database connection as it's
+   * `this`/context. This means that any locally defined variables will be
+   * dereferenced an unavailable. If you want to retain a connection to this
+   * state you should include the optional _context_ parameter and your
+   * callback will get a parameter passed back with this context available.
    */
   public notifyWhenConnected(
     cb: IFirebaseConnectionCallback,
     id?: string,
+    /**
+     * additional context/pointers for your callback to use when activated
+     */
     ctx?: IDictionary
   ): string {
     if (!id) {
@@ -254,6 +280,7 @@ export abstract class RealTimeDB {
         );
       }
     }
+
     this._onConnected = this._onConnected.concat({ id, cb, ctx });
     return id;
   }
@@ -634,8 +661,12 @@ export abstract class RealTimeDB {
     this._isConnected = snap.val();
     // call active listeners
     if (this._isConnected) {
-      // this._eventManager.connection(this._isConnected);
-      this._onConnected.forEach(listener => listener.cb(this));
+      if (this._eventManager.connection) {
+        this._eventManager.connection(this._isConnected);
+      }
+      this._onConnected.forEach(listener =>
+        listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)()
+      );
     } else {
       this._onDisconnected.forEach(listener => listener.cb(this));
     }

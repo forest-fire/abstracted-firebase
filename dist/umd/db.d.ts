@@ -2,7 +2,7 @@ import { IDictionary } from "common-types";
 import { IMockConfigOptions } from "firemock";
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
-import { IFirebaseConfig, IEmitter, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet } from "./types";
+import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet, IClientEmitter, IAdminEmitter } from "./types";
 import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
 /** time by which the dynamically loaded mock library should be loaded */
@@ -11,12 +11,13 @@ export declare abstract class RealTimeDB {
     readonly isMockDb: boolean;
     readonly mock: Mock;
     readonly isConnected: boolean;
+    readonly config: IFirebaseConfig;
     static connect: (config: any) => Promise<any>;
     /** how many miliseconds before the attempt to connect to DB is timed out */
     CONNECTION_TIMEOUT: number;
     /** Logs debugging information to the console */
     enableDatabaseLogging: (logger?: boolean | ((a: string) => any), persistent?: boolean) => any;
-    protected abstract _eventManager: IEmitter;
+    protected abstract _eventManager: IClientEmitter | IAdminEmitter;
     protected abstract _clientType: "client" | "admin";
     protected _isConnected: boolean;
     protected _mockLoadingState: IMockLoadingState;
@@ -34,6 +35,9 @@ export declare abstract class RealTimeDB {
     protected _config: IFirebaseConfig;
     protected abstract _auth: any;
     constructor(config: IFirebaseConfig);
+    /**
+     * called by `client` and `admin` at end of constructor
+     */
     initialize(config?: IFirebaseConfig): void;
     /**
      * watch
@@ -63,8 +67,18 @@ export declare abstract class RealTimeDB {
      * get a notification when DB is connected; returns a unique id
      * which can be used to remove the callback. You may, optionally,
      * state a unique id of your own.
+     *
+     * By default the callback will receive the database connection as it's
+     * `this`/context. This means that any locally defined variables will be
+     * dereferenced an unavailable. If you want to retain a connection to this
+     * state you should include the optional _context_ parameter and your
+     * callback will get a parameter passed back with this context available.
      */
-    notifyWhenConnected(cb: IFirebaseConnectionCallback, id?: string, ctx?: IDictionary): string;
+    notifyWhenConnected(cb: IFirebaseConnectionCallback, id?: string, 
+    /**
+     * additional context/pointers for your callback to use when activated
+     */
+    ctx?: IDictionary): string;
     /**
      * removes a callback notification previously registered
      */

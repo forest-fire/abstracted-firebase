@@ -28,6 +28,14 @@ export interface IEmitter {
   once: (event: string, value: any) => void;
 }
 
+export interface IClientEmitter extends IEmitter {
+  connection: (state: boolean) => void;
+}
+
+export interface IAdminEmitter extends IEmitter {
+  connection: undefined;
+}
+
 export interface IPathSetter<T = any> {
   path: string;
   value: T;
