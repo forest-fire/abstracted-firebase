@@ -257,10 +257,10 @@ commander@^2.12.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-common-types@^1.10.22, common-types@^1.10.26, common-types@^1.9.7:
-  version "1.10.26"
-  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.10.26.tgz#737b64a632d416d50043b43e92800e90b5d0a7f8"
-  integrity sha512-aZSxEUxHeKTz3ISd1AiEe+Yh9TuIr3dkC7j4s/AFEr9TKbIv/E9vNHtqgNAWXbxAV5NCHh2CkAGxpgkULdSlDg==
+common-types@^1.10.26, common-types@^1.11.4, common-types@^1.9.7:
+  version "1.11.4"
+  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.11.4.tgz#61c7ec831fe688a17de9e520903d0fadc8e2001e"
+  integrity sha512-NE9C3NIspTg05BhnGxJaBEgGcgiX9CCyY5c+d9BakTwK6Ue2t3x5v/Xrhf177rV0QCfQU+nVpTHCQpL6fCJF+g==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -304,10 +304,15 @@ define-properties@^1.1.2:
   dependencies:
     object-keys "^1.0.12"
 
-diff@3.5.0, diff@^3.1.0, diff@^3.2.0:
+diff@3.5.0, diff@^3.2.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+
+diff@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.1.tgz#0c667cb467ebbb5cea7f14f135cc2dba7780a8ff"
+  integrity sha512-s2+XdvhPCOF01LRQBC8hf4vhbVmI2CGS5aZnxLJlT5FtdhPCDFq80q++zK2KlrVorVDdL5BOGZ/VfLrVtYNF+Q==
 
 email-validator@^2.0.4:
   version "2.0.4"
@@ -380,6 +385,16 @@ faker@^4.1.0:
   resolved "https://registry.yarnpkg.com/faker/-/faker-4.1.0.tgz#1e45bbbecc6774b3c195fad2835109c6d748cc3f"
   integrity sha1-HkW7vsxndLPBlfrSg1EJxtdIzD8=
 
+fast-copy@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/fast-copy/-/fast-copy-2.0.3.tgz#e9202d6944c9602b575f44d2857cef0f40dc6581"
+  integrity sha512-q0VzLSTRXwNOBzTG8dP+SkCxyTieVAhDEddSvw7X799+k3gb8I5T2IVPhBcwZzAY3Ac1P7/B6TSUvJDdO+8vcg==
+
+fast-equals@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fast-equals/-/fast-equals-2.0.0.tgz#bef2c423af3939f2c54310df54c57e64cd2adefc"
+  integrity sha512-u6RBd8cSiLLxAiC04wVsLV6GBFDOXcTCgWkd3wEoFXgidPSoAJENqC9m7Jb2vewSvjBIfXV6icKeh3GTKfIaXA==
+
 find-up@3.0.0, find-up@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-3.0.0.tgz#49169f1d7993430646da61ecc5ae355c21c97b73"
@@ -392,18 +407,20 @@ firebase-key@^2.0.2:
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
   integrity sha512-gH0u6apANQsqHUqcf+Yd49VaUQyKNCLxofwYx0gqUGcymeLs5HWg/3tXroGheYYH8+ynxbrnP/Z4F/FEqNy9Ow==
 
-firemock@^0.25.5:
-  version "0.25.5"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.25.5.tgz#eb032a2d275c57e9c56eb790c1704a43d34cd062"
-  integrity sha512-Q9SnzLm55vc3ihv7SxbZIr3WD8f6JkgxFJXLg55joGYObw+3AtTk/x+8Gc2BlrMNrWsNK9+iKRydywUCpdi5Hg==
+firemock@^0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.27.0.tgz#490d05b791f4e91268fe52041255b00606f07e84"
+  integrity sha512-SFcUxUMWjXla0pl+AfBV73zXJB/ZNY5lXpNapQv6rCoMZLlPCf+AartPGNG2QElYiakTgk/qyegqBL/flqufBw==
   dependencies:
     "@firebase/app-types" "^0.4.0"
     "@firebase/auth-types" "^0.7.0"
     "@firebase/database-types" "^0.4.0"
     "@firebase/util" "^0.2.15"
-    common-types "^1.10.22"
+    common-types "^1.11.4"
     email-validator "^2.0.4"
     faker "^4.1.0"
+    fast-copy "^2.0.3"
+    fast-equals "^2.0.0"
     firebase-key "^2.0.2"
     lodash.first "^3.0.0"
     lodash.get "^4.4.2"
@@ -1031,12 +1048,12 @@ test-console@^1.1.0:
   integrity sha512-pntCc+DnxNVZxNIul3NjThWaLvIrp9GNHRMrriyFWFtq10LpbHGsagu7riq7UIZn79f9aXnKI7YgyMvf8dcKsg==
 
 ts-node@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.1.0.tgz#8c4b37036abd448577db22a061fd7a67d47e658e"
-  integrity sha512-34jpuOrxDuf+O6iW1JpgTRDFynUZ1iEqtYruBqh35gICNjN8x+LpVcPAcwzLPi9VU6mdA3ym+x233nZmZp445A==
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.2.0.tgz#4a89754b00560bb24cd54526e1685fa38c45f240"
+  integrity sha512-m8XQwUurkbYqXrKqr3WHCW310utRNvV5OnRVeISeea7LoCWVcdfeB/Ntl8JYWFh+WRoUAdBgESrzKochQt7sMw==
   dependencies:
     arg "^4.1.0"
-    diff "^3.1.0"
+    diff "^4.0.1"
     make-error "^1.1.1"
     source-map-support "^0.5.6"
     yn "^3.0.0"

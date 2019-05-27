@@ -81,7 +81,6 @@ class RealTimeDB {
                     eventType: evt,
                     targetType: "path"
                 })(cb);
-                console.log("dispatch is:", dispatch);
                 if (typeof target === "string") {
                     this.ref(util_1.slashNotation(target)).on(evt, dispatch);
                 }
@@ -250,6 +249,8 @@ class RealTimeDB {
      * part of the Firebase datamodel. In particular, if you are using **FireModel**
      * then operations which effect a single "model" will leverage this **base**
      * property
+     *
+     * [Blog Post](https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html)
      */
     multiPathSet(base) {
         const mps = [];
@@ -339,6 +340,8 @@ class RealTimeDB {
      * a POJO/object then the properties sent in will be updated but if
      * properties that exist in the DB, but not in the value passed in,
      * then these properties will _not_ be changed.
+     *
+     * [API Docs](https://firebase.google.com/docs/reference/js/firebase.database.Reference#update)
      */
     async update(path, value) {
         try {
@@ -361,6 +364,8 @@ class RealTimeDB {
      * a `abstracted-firebase/remove` error. If you'd prefer for this
      * error to be ignored than you can pass in **true** to the `ignoreMissing`
      * parameter.
+     *
+     * [API  Docs](https://firebase.google.com/docs/reference/js/firebase.database.Reference#remove)
      */
     async remove(path, ignoreMissing = false) {
         const ref = this.ref(path);
