@@ -74,6 +74,11 @@
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-3.12.1.tgz#5c6f4a1eabca84792fbd916f0cb40847f123c656"
   integrity sha512-SGGAhXLHDx+PK4YLNcNGa6goPf9XRWQNAUUbffkwVGGXIxmDKWyGGL4inzq2sPmExu431Ekb9aEMn9BkPqEYFA==
 
+"@types/json-schema@^7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.3.tgz#bdfd69d61e464dcc81b25159c270d75a73c1a636"
+  integrity sha512-Il2DtDVRGDcqjDtE+rF8iqg1CArehSK84HZJCT7AMITlyXRBpuPhqGLDQMowraqqu1coEaimg4ZOqggt6L6L+A==
+
 "@types/lodash@^4.14.0":
   version "4.14.132"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.132.tgz#8ce45ca8745ff2e004fac0de0ab46f61e390ffa0"
@@ -90,9 +95,9 @@
   integrity sha512-1axi39YdtBI7z957vdqXI4Ac25e7YihYQtJa+Clnxg1zTJEaIRbndt71O3sP4GAMgiAm0pY26/b9BrY4MR/PMw==
 
 "@types/node@*":
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.2.tgz#3452a24edf9fea138b48fad4a0a028a683da1e40"
-  integrity sha512-5tabW/i+9mhrfEOUcLDu2xBPsHJ+X5Orqy9FKpale3SjDA17j5AEpYq5vfy3oAeAHGcvANRCO3NV3d2D6q3NiA==
+  version "12.0.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.3.tgz#5d8d24e0033fc6393efadc85cb59c1f638095c9a"
+  integrity sha512-zkOxCS/fA+3SsdA+9Yun0iANxzhQRiNwTvJSr6N95JhuJ/x27z9G2URx1Jpt3zYFfCGUXZGL5UDxt5eyLE7wgw==
 
 "@types/node@^8.0.0":
   version "8.10.48"
@@ -257,10 +262,12 @@ commander@^2.12.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-common-types@^1.10.26, common-types@^1.11.4, common-types@^1.9.7:
-  version "1.11.4"
-  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.11.4.tgz#61c7ec831fe688a17de9e520903d0fadc8e2001e"
-  integrity sha512-NE9C3NIspTg05BhnGxJaBEgGcgiX9CCyY5c+d9BakTwK6Ue2t3x5v/Xrhf177rV0QCfQU+nVpTHCQpL6fCJF+g==
+common-types@^1.10.26, common-types@^1.11.4, common-types@^1.11.9, common-types@^1.9.7:
+  version "1.11.9"
+  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.11.9.tgz#827502ed9b863dc34258baf29a125088b63ed7d4"
+  integrity sha512-U3QmHLB1U6vnofiyuPxUHKlaoScTPi23Wn5eHsZMgkSExPJNRcQ1aZUyPvL2aEyQVVrz6ThynM44YJjbLc+v6w==
+  dependencies:
+    "@types/json-schema" "^7.0.3"
 
 concat-map@0.0.1:
   version "0.0.1"
