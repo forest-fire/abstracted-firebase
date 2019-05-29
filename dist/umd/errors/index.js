@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./FileDepthExceeded", "./PermissionDenied", "./UndefinedAssignment"], factory);
+        define(["require", "exports", "./FileDepthExceeded", "./PermissionDenied", "./UndefinedAssignment", "./AbstractedError", "./AbstractedProxyError"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,4 +15,6 @@
     __export(require("./FileDepthExceeded"));
     __export(require("./PermissionDenied"));
     __export(require("./UndefinedAssignment"));
+    __export(require("./AbstractedError"));
+    __export(require("./AbstractedProxyError"));
 });

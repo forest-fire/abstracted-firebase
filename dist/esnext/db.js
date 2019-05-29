@@ -321,7 +321,7 @@ export class RealTimeDB {
                         callback(e, mps);
                     }
                     if (e.code === "PERMISSION_DENIED") {
-                        throw new AbstractedProxyError(e, "abstracted-firebase/permission-denied");
+                        throw new PermissionDenied(e, "Firebase Database - permission denied");
                     }
                     throw new AbstractedProxyError(e, "abstracted-firebase/mps-failure", `While executing a MPS there was a failure. The base path was ${api._basePath}.`);
                 }
