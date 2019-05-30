@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const errors_1 = require("./errors");
 function slashNotation(path) {
     return path.substr(0, 5) === ".info"
         ? path.substr(0, 5) + path.substring(5).replace(/\./g, "/")
@@ -7,15 +8,12 @@ function slashNotation(path) {
 }
 exports.slashNotation = slashNotation;
 function _getFirebaseType(context, kind) {
-    if (!this.app) {
-        const e = new Error(`You must first connect before using the ${kind}() API`);
-        e.name = "NotAllowed";
-        throw e;
+    if (!context.isConnected) {
+        throw new errors_1.AbstractedError(`You must first connect before using the ${kind}() API`, "not-ready");
     }
-    const property = `_${kind}`;
-    if (!context[property]) {
-        context[property] = this.app.storage();
+    if (!context.app[kind]) {
+        throw new errors_1.AbstractedError(`An attempt was made to load the "${kind}" API but that API does not appear to exist!`, "not-allowed");
     }
-    return context[property];
+    return context.app[kind]();
 }
 exports._getFirebaseType = _getFirebaseType;

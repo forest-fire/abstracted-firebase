@@ -1,5 +1,5 @@
 // tslint:disable:no-implicit-dependencies
-import { AbstractedProxyError, PermissionDenied } from "../src/errors";
+import { AbstractedProxyError, PermissionDenied, AbstractedError } from "../src/errors";
 import { expect } from "chai";
 
 describe("Errors => ", () => {
@@ -21,6 +21,13 @@ describe("Errors => ", () => {
     const e: Error & { code?: string } = new Error("");
     e.code = "PERMISSION_DENIED";
     const err = new PermissionDenied(e, "Firebase Database - permission denied");
-    console.log(err.code, err.name, err.message);
+    expect(err.name).to.equal("abstracted-firebase/permission-denied");
+    expect(err.code).to.equal("permission-denied");
+  });
+
+  it("AbstractedError", async () => {
+    const e = new AbstractedError("this is my message", "no-do");
+    expect(e.name).to.equal("abstracted-firebase/no-do");
+    expect(e.code).to.equal("no-do");
   });
 });

@@ -1,4 +1,5 @@
-import { IDictionary } from "common-types";
+import { AbstractedError } from "./errors";
+import { RealTimeDB } from "./db";
 
 export function slashNotation(path: string) {
   return path.substr(0, 5) === ".info"
@@ -6,15 +7,20 @@ export function slashNotation(path: string) {
     : path.replace(/\./g, "/");
 }
 
-export function _getFirebaseType(context: IDictionary, kind: string) {
-  if (!this.app) {
-    const e = new Error(`You must first connect before using the ${kind}() API`);
-    e.name = "NotAllowed";
-    throw e;
+export function _getFirebaseType<T extends RealTimeDB>(context: T, kind: string) {
+  if (!context.isConnected) {
+    throw new AbstractedError(
+      `You must first connect before using the ${kind}() API`,
+      "not-ready"
+    );
   }
-  const property = `_${kind}`;
-  if (!context[property]) {
-    context[property] = this.app.storage();
+
+  if (!(context as any).app[kind]) {
+    throw new AbstractedError(
+      `An attempt was made to load the "${kind}" API but that API does not appear to exist!`,
+      "not-allowed"
+    );
   }
-  return context[property];
+
+  return (context as any).app[kind]();
 }
