@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.27.4",
+  "version": "0.27.5",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -21,6 +21,7 @@
     "clean:nuclear": "rimraf lib node_modules && rm yarn.lock && yarn cache clean && yarn && yarn upgrade",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "build": "rm -rf dist && tsc -P tsconfig.esnext.json && tsc -P tsconfig.umd.json && tsc -P tsconfig.cjs.json",
+    "build:nuclear": "yarn clean:nuclear && yarn build",
     "test": "ts-node ./scripts/test.ts",
     "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive 'test/**/*.test.ts'",
     "watch": "npm run build -- --watch",
@@ -30,8 +31,7 @@
   "dependencies": {
     "@firebase/auth-types": "^0.7.0",
     "@firebase/database-types": "^0.4.0",
-    "common-types": "^1.11.9",
-    "firemock": "^0.27.0",
+    "common-types": "^1.11.10",
     "serialized-query": "^0.7.1",
     "typed-conversions": "^0.10.1"
   },
@@ -46,14 +46,15 @@
     "@types/rimraf": "^2.0.1",
     "async-shelljs": "^0.1.2",
     "chai": "^4.2.0",
+    "firemock": "^0.27.2",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.11",
     "mocha": "^6.1.4",
     "rimraf": "^2.6.3",
     "test-console": "^1.1.0",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.2.0",
     "tslint": "^5.16.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.1"
   },
   "engines": {
     "node": ">=8.0.0"

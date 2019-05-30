@@ -438,6 +438,7 @@ export abstract class RealTimeDB {
           if (e.code === "PERMISSION_DENIED") {
             throw new PermissionDenied(e, "Firebase Database - permission denied");
           }
+
           throw new AbstractedProxyError(
             e,
             "abstracted-firebase/mps-failure",

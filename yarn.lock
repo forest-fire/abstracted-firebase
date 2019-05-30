@@ -262,10 +262,10 @@ commander@^2.12.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
-common-types@^1.10.26, common-types@^1.11.4, common-types@^1.11.9, common-types@^1.9.7:
-  version "1.11.9"
-  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.11.9.tgz#827502ed9b863dc34258baf29a125088b63ed7d4"
-  integrity sha512-U3QmHLB1U6vnofiyuPxUHKlaoScTPi23Wn5eHsZMgkSExPJNRcQ1aZUyPvL2aEyQVVrz6ThynM44YJjbLc+v6w==
+common-types@^1.10.26, common-types@^1.11.10, common-types@^1.9.7:
+  version "1.11.10"
+  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.11.10.tgz#d9f4ef1dcba50232ddb76aa9254da8a5efc31fd8"
+  integrity sha512-CSD6GVggCQYZHnFteC2jy8xzwMxP4oMD4PjgLFMVWvmv5r66nWsXvYt9M9K6RigRgCAtUdR+dFbkEWPsWvWKIA==
   dependencies:
     "@types/json-schema" "^7.0.3"
 
@@ -414,16 +414,16 @@ firebase-key@^2.0.2:
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
   integrity sha512-gH0u6apANQsqHUqcf+Yd49VaUQyKNCLxofwYx0gqUGcymeLs5HWg/3tXroGheYYH8+ynxbrnP/Z4F/FEqNy9Ow==
 
-firemock@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.27.0.tgz#490d05b791f4e91268fe52041255b00606f07e84"
-  integrity sha512-SFcUxUMWjXla0pl+AfBV73zXJB/ZNY5lXpNapQv6rCoMZLlPCf+AartPGNG2QElYiakTgk/qyegqBL/flqufBw==
+firemock@^0.27.2:
+  version "0.27.2"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.27.2.tgz#ece1b7a2cead9de3ff5dac679a5c77dcaf38b669"
+  integrity sha512-rXasHkL/dUY7czV1bkgaOZ5Zn7GfvPwp0qVTwWn9yR4WQrONt1eWY8yrj6MnWNc4IGJ/2mcGeWbiuNoXAyj+wg==
   dependencies:
     "@firebase/app-types" "^0.4.0"
     "@firebase/auth-types" "^0.7.0"
     "@firebase/database-types" "^0.4.0"
     "@firebase/util" "^0.2.15"
-    common-types "^1.11.4"
+    common-types "^1.11.10"
     email-validator "^2.0.4"
     faker "^4.1.0"
     fast-copy "^2.0.3"
@@ -1054,7 +1054,7 @@ test-console@^1.1.0:
   resolved "https://registry.yarnpkg.com/test-console/-/test-console-1.1.0.tgz#34466d421f1b049e1be80d1734bdb5a512889c7f"
   integrity sha512-pntCc+DnxNVZxNIul3NjThWaLvIrp9GNHRMrriyFWFtq10LpbHGsagu7riq7UIZn79f9aXnKI7YgyMvf8dcKsg==
 
-ts-node@^8.1.0:
+ts-node@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.2.0.tgz#4a89754b00560bb24cd54526e1685fa38c45f240"
   integrity sha512-m8XQwUurkbYqXrKqr3WHCW310utRNvV5OnRVeISeea7LoCWVcdfeB/Ntl8JYWFh+WRoUAdBgESrzKochQt7sMw==
@@ -1109,10 +1109,10 @@ typed-conversions@^0.10.1:
     common-types "^1.9.7"
     get-value "^3.0.1"
 
-typescript@^3.4.5:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
+typescript@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.1.tgz#ba72a6a600b2158139c5dd8850f700e231464202"
+  integrity sha512-64HkdiRv1yYZsSe4xC1WVgamNigVYjlssIoaH2HcZF0+ijsk5YK2g0G34w9wJkze8+5ow4STd22AynfO6ZYYLw==
 
 which-module@^2.0.0:
   version "2.0.0"
