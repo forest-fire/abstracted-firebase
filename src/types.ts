@@ -131,7 +131,7 @@ export enum FirebaseBoolean {
   false = 0
 }
 
-export interface IReference<T = any> extends IQuery {
+export interface IReference<T = any> extends Query {
   readonly key: string | null;
   readonly parent: IReference | null;
   readonly root: IReference;
@@ -172,13 +172,4 @@ export interface ITransactionResult<T = any> {
   committed: boolean;
   snapshot: DataSnapshot;
   toJSON?: () => IDictionary;
-}
-
-export interface IQuery extends Query {
-  on(
-    eventType: EventType,
-    callback: (a: DataSnapshot | null, b?: string) => any,
-    cancelCallbackOrContext?: IDictionary | null,
-    context?: IDictionary | null
-  ): (a: DataSnapshot | null, b?: string) => any;
 }
