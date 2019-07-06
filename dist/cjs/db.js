@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// tslint:disable: member-ordering
 // tslint:disable:no-implicit-dependencies
 const common_types_1 = require("common-types");
 const convert = require("typed-conversions");
@@ -30,6 +31,19 @@ class RealTimeDB {
     }
     get isMockDb() {
         return this._mocking;
+    }
+    /**
+     * **getPushKey**
+     *
+     * Get's a push-key from the server at a given path. This ensures that multiple
+     * client's who are writing to the database will use the server's time rather than
+     * their own local time.
+     *
+     * @param path the path in the database where the push-key will be pushed to
+     */
+    async getPushKey(path) {
+        const key = await this.ref(path).push().key;
+        return key;
     }
     get mock() {
         if (!this._mocking && !this._allowMocking) {
@@ -115,7 +129,9 @@ class RealTimeDB {
             });
         }
         catch (e) {
-            e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+            e.name = e.code.includes("abstracted-firebase")
+                ? "AbstractedFirebase"
+                : e.code;
             e.code = "abstracted-firebase/unWatch";
             throw e;
         }
@@ -223,7 +239,8 @@ class RealTimeDB {
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                 throw new FileDepthExceeded_1.FileDepthExceeded(e);
             }
-            if (e.message.indexOf("First argument includes undefined in property") !== -1) {
+            if (e.message.indexOf("First argument includes undefined in property") !==
+                -1) {
                 e.name = "FirebaseUndefinedValueAssignment";
                 throw new UndefinedAssignment_1.UndefinedAssignment(e);
             }
@@ -521,7 +538,9 @@ class RealTimeDB {
             if (this._eventManager.connection) {
                 this._eventManager.connection(this._isConnected);
             }
-            this._onConnected.forEach(listener => listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)());
+            this._onConnected.forEach(listener => listener.ctx
+                ? listener.cb.bind(listener.ctx)(this)
+                : listener.cb.bind(this)());
         }
         else {
             this._onDisconnected.forEach(listener => listener.cb(this));
@@ -537,7 +556,8 @@ class RealTimeDB {
         try {
             this._mocking = true;
             this._mockLoadingState = "loading";
-            const FireMock = await Promise.resolve().then(() => require(/* webpackChunkName: "firemock" */ "firemock"));
+            const FireMock = await Promise.resolve().then(() => require(
+            /* webpackChunkName: "firemock" */ "firemock"));
             this._mockLoadingState = "loaded";
             this._mock = await FireMock.Mock.prepare(config);
             this._isConnected = true;
