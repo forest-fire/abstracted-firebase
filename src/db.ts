@@ -1,3 +1,4 @@
+// tslint:disable: member-ordering
 // tslint:disable:no-implicit-dependencies
 import { IDictionary, wait, createError, pathJoin } from "common-types";
 import { IMockConfigOptions } from "firemock";
@@ -16,7 +17,6 @@ import {
 
 import {
   IFirebaseConfig,
-  IEmitter,
   IMockLoadingState,
   IFirebaseWatchHandler,
   IPathSetter,
@@ -24,10 +24,13 @@ import {
   IClientEmitter,
   IAdminEmitter
 } from "./types";
-import { handleError } from "./handleError";
 import { PermissionDenied } from "./errors";
 import { AbstractedProxyError } from "./errors/AbstractedProxyError";
-import { isMockConfig, IFirebaseListener, IFirebaseConnectionCallback } from ".";
+import {
+  isMockConfig,
+  IFirebaseListener,
+  IFirebaseConnectionCallback
+} from ".";
 import { AbstractedError } from "./errors/AbstractedError";
 
 type Mock = import("firemock").Mock;
@@ -38,6 +41,20 @@ export const MOCK_LOADING_TIMEOUT = 2000;
 export abstract class RealTimeDB {
   public get isMockDb() {
     return this._mocking;
+  }
+
+  /**
+   * **getPushKey**
+   *
+   * Get's a push-key from the server at a given path. This ensures that multiple
+   * client's who are writing to the database will use the server's time rather than
+   * their own local time.
+   *
+   * @param path the path in the database where the push-key will be pushed to
+   */
+  public async getPushKey(path: string) {
+    const key = await this.ref(path).push().key;
+    return key;
   }
 
   public get mock(): Mock {
@@ -173,7 +190,9 @@ export abstract class RealTimeDB {
         }
       });
     } catch (e) {
-      e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
+      e.name = e.code.includes("abstracted-firebase")
+        ? "AbstractedFirebase"
+        : e.code;
       e.code = "abstracted-firebase/unWatch";
       throw e;
     }
@@ -313,12 +332,19 @@ export abstract class RealTimeDB {
         throw new FileDepthExceeded(e);
       }
 
-      if (e.message.indexOf("First argument includes undefined in property") !== -1) {
+      if (
+        e.message.indexOf("First argument includes undefined in property") !==
+        -1
+      ) {
         e.name = "FirebaseUndefinedValueAssignment";
         throw new UndefinedAssignment(e);
       }
 
-      throw new AbstractedProxyError(e, "unknown", JSON.stringify({ path, value }));
+      throw new AbstractedProxyError(
+        e,
+        "unknown",
+        JSON.stringify({ path, value })
+      );
     }
   }
 
@@ -389,7 +415,9 @@ export abstract class RealTimeDB {
       },
 
       get fullPaths() {
-        return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
+        return mps.map(i =>
+          [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
+        );
       },
 
       get payload() {
@@ -436,7 +464,10 @@ export abstract class RealTimeDB {
             callback(e, mps);
           }
           if (e.code === "PERMISSION_DENIED") {
-            throw new PermissionDenied(e, "Firebase Database - permission denied");
+            throw new PermissionDenied(
+              e,
+              "Firebase Database - permission denied"
+            );
           }
 
           throw new AbstractedProxyError(
@@ -521,7 +552,9 @@ export abstract class RealTimeDB {
    *
    * returns the Firebase snapshot at a given path in the database
    */
-  public async getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot> {
+  public async getSnapshot(
+    path: string | SerializedQuery
+  ): Promise<DataSnapshot> {
     try {
       const response =
         (await typeof path) === "string"
@@ -671,7 +704,9 @@ export abstract class RealTimeDB {
         this._eventManager.connection(this._isConnected);
       }
       this._onConnected.forEach(listener =>
-        listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)()
+        listener.ctx
+          ? listener.cb.bind(listener.ctx)(this)
+          : listener.cb.bind(this)()
       );
     } else {
       this._onDisconnected.forEach(listener => listener.cb(this));
@@ -691,7 +726,9 @@ export abstract class RealTimeDB {
     try {
       this._mocking = true;
       this._mockLoadingState = "loading";
-      const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
+      const FireMock = await import(
+        /* webpackChunkName: "firemock" */ "firemock"
+      );
       this._mockLoadingState = "loaded";
       this._mock = await FireMock.Mock.prepare(config);
       this._isConnected = true;

@@ -9,6 +9,16 @@ declare type Mock = import("firemock").Mock;
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB {
     readonly isMockDb: boolean;
+    /**
+     * **getPushKey**
+     *
+     * Get's a push-key from the server at a given path. This ensures that multiple
+     * client's who are writing to the database will use the server's time rather than
+     * their own local time.
+     *
+     * @param path the path in the database where the push-key will be pushed to
+     */
+    getPushKey(path: string): Promise<string>;
     readonly mock: Mock;
     readonly isConnected: boolean;
     readonly config: IFirebaseConfig;
