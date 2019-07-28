@@ -144,7 +144,7 @@ export abstract class RealTimeDB {
    * @param cb the callback function to call when event triggered
    */
   public watch(
-    target: string | SerializedQuery,
+    target: string | SerializedQuery<any>,
     events: EventType | EventType[],
     cb: IFirebaseWatchHandler
   ) {
