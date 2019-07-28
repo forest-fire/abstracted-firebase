@@ -1,4 +1,4 @@
-import { IDictionary, IMockAuthConfig } from "firemock";
+import { IDictionary } from "common-types";
 
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
@@ -7,8 +7,12 @@ export { _getFirebaseType } from "./util";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
-export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
+export type IFirebaseClientConfig =
+  | IFirebaseClientConfigProps
+  | IFirebaseConfigMocked;
+export type IFirebaseAdminConfig =
+  | IFirebaseAdminConfigProps
+  | IFirebaseConfigMocked;
 
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
@@ -51,7 +55,8 @@ export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
   /** initialize the database to a known state */
   mockData?: IDictionary;
   /** optionally configure mocking for Firebase Authentication */
-  mockAuth?: IMockAuthConfig;
+  // tslint:disable-next-line: no-implicit-dependencies
+  mockAuth?: import("firemock").IMockAuthConfig;
 }
 
 export function isMockConfig(

@@ -203,7 +203,7 @@ export abstract class RealTimeDB {
    *
    * @param path path for query
    */
-  public query<T = any>(path: string) {
+  public query<T extends object = any>(path: string) {
     return SerializedQuery.path<T>(path);
   }
 
@@ -552,14 +552,14 @@ export abstract class RealTimeDB {
    *
    * returns the Firebase snapshot at a given path in the database
    */
-  public async getSnapshot(
-    path: string | SerializedQuery
+  public async getSnapshot<T extends object = any>(
+    path: string | SerializedQuery<T>
   ): Promise<DataSnapshot> {
     try {
       const response =
         (await typeof path) === "string"
           ? this.ref(slashNotation(path as string)).once("value")
-          : (path as SerializedQuery).setDB(this).execute();
+          : (path as SerializedQuery<T>).setDB(this).execute();
       return response;
     } catch (e) {
       throw new AbstractedProxyError(e);
@@ -589,12 +589,12 @@ export abstract class RealTimeDB {
    * and converts it to a JS object where the snapshot's key
    * is included as part of the record (as `id` by default)
    */
-  public async getRecord<T = any>(
+  public async getRecord<T extends object = any>(
     path: string | SerializedQuery<T>,
     idProp = "id"
   ): Promise<T> {
     try {
-      const snap = await this.getSnapshot(path);
+      const snap = await this.getSnapshot<T>(path);
       let object = snap.val();
       if (typeof object !== "object") {
         object = { value: snap.val() };
@@ -616,12 +616,12 @@ export abstract class RealTimeDB {
    * @param path the path in the database to
    * @param idProp
    */
-  public async getList<T = any>(
+  public async getList<T extends object = any>(
     path: string | SerializedQuery<T>,
     idProp = "id"
   ): Promise<T[]> {
     try {
-      const snap = await this.getSnapshot(path);
+      const snap = await this.getSnapshot<T>(path);
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
     } catch (e) {
       throw new AbstractedProxyError(e);
