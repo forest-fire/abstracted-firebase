@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.27.11",
+  "version": "0.27.12",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
