@@ -1,4 +1,4 @@
-import { IDictionary, IMockAuthConfig } from "firemock";
+import { IDictionary } from "common-types";
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
@@ -45,7 +45,7 @@ export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
     /** initialize the database to a known state */
     mockData?: IDictionary;
     /** optionally configure mocking for Firebase Authentication */
-    mockAuth?: IMockAuthConfig;
+    mockAuth?: import("firemock").IMockAuthConfig;
 }
 export declare function isMockConfig(config?: IFirebaseConfig): config is IFirebaseConfigMocked;
 export declare function isRealDbConfig(config: IFirebaseConfig): config is IFirebaseAdminConfigProps | IFirebaseClientConfigProps;
