@@ -65,7 +65,7 @@ export declare abstract class RealTimeDB {
      *
      * @param path path for query
      */
-    query<T = any>(path: string): SerializedQuery<T>;
+    query<T extends object = any>(path: string): SerializedQuery<T>;
     /** Get a DB reference for a given path in Firebase */
     ref(path?: string): Reference;
     /**
@@ -147,7 +147,7 @@ export declare abstract class RealTimeDB {
      *
      * returns the Firebase snapshot at a given path in the database
      */
-    getSnapshot(path: string | SerializedQuery): Promise<DataSnapshot>;
+    getSnapshot<T extends object = any>(path: string | SerializedQuery<T>): Promise<DataSnapshot>;
     /**
      * **getValue**
      *
@@ -163,7 +163,7 @@ export declare abstract class RealTimeDB {
      * and converts it to a JS object where the snapshot's key
      * is included as part of the record (as `id` by default)
      */
-    getRecord<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
+    getRecord<T extends object = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T>;
     /**
      * **getList**
      *
@@ -174,7 +174,7 @@ export declare abstract class RealTimeDB {
      * @param path the path in the database to
      * @param idProp
      */
-    getList<T = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
+    getList<T extends object = any>(path: string | SerializedQuery<T>, idProp?: string): Promise<T[]>;
     /**
      * **getSortedList**
      *
