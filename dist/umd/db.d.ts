@@ -58,7 +58,7 @@ export declare abstract class RealTimeDB {
      * @param events an event type or an array of event types (e.g., "value", "child_added")
      * @param cb the callback function to call when event triggered
      */
-    watch(target: string | SerializedQuery, events: EventType | EventType[], cb: IFirebaseWatchHandler): void;
+    watch(target: string | SerializedQuery<any>, events: EventType | EventType[], cb: IFirebaseWatchHandler): void;
     unWatch(events?: EventType | EventType[], cb?: any): void;
     /**
      * Get a Firebase SerializedQuery reference
