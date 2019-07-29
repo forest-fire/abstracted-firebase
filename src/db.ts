@@ -38,7 +38,7 @@ type IMockAuthConfig = import("firemock").IMockAuthConfig;
 
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
-export abstract class RealTimeDB {
+export abstract class RealTimeDB<A = any> {
   public get isMockDb() {
     return this._mocking;
   }
@@ -133,6 +133,8 @@ export abstract class RealTimeDB {
     this._mocking = config.mocking ? true : false;
     this.connectToFirebase(config).then(() => this.listenForConnectionStatus());
   }
+
+  public abstract async auth(): Promise<A>;
 
   /**
    * watch
