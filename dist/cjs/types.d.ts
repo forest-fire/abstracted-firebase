@@ -81,6 +81,7 @@ export declare type IFirebaseWatchEvent = IValueBasedWatchEvent | IPathBasedWatc
 export interface IFirebaseWatchContext {
     eventType: EventType;
     targetType: any;
+    kind?: "server-event";
 }
 /** A standard watch event coming from the Firebase DB */
 export interface IValueBasedWatchEvent extends IFirebaseWatchContext {
