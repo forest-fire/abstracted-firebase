@@ -7,7 +7,7 @@ import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
-export declare abstract class RealTimeDB {
+export declare abstract class RealTimeDB<A = any> {
     readonly isMockDb: boolean;
     /**
      * **getPushKey**
@@ -49,6 +49,7 @@ export declare abstract class RealTimeDB {
      * called by `client` and `admin` at end of constructor
      */
     initialize(config?: IFirebaseConfig): void;
+    abstract auth(): Promise<A>;
     /**
      * watch
      *

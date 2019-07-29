@@ -9,9 +9,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function isValueBasedEvent(evt, context) {
-        return context.targetType === "query";
-    }
     exports.WatcherEventWrapper = (context) => (handler) => {
         return (snapshot, previousChildKey) => {
             const value = snapshot.val();

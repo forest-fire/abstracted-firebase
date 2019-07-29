@@ -81,6 +81,11 @@ export declare type IFirebaseWatchEvent = IValueBasedWatchEvent | IPathBasedWatc
 export interface IFirebaseWatchContext {
     eventType: EventType;
     targetType: any;
+    /**
+     * this tagging has been added as optional to not break prior API but all
+     * server events will set this variable so that when it is received by **Firemodel**
+     * it can distiguish local versus server triggered events.
+     */
     kind?: "server-event";
 }
 /** A standard watch event coming from the Firebase DB */
