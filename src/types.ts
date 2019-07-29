@@ -9,7 +9,11 @@ import { IDictionary } from "common-types";
 import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
 import { RealTimeDB } from "./db";
 
-export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
+export type IMockLoadingState =
+  | "not-applicable"
+  | "loaded"
+  | "loading"
+  | "timed-out";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
@@ -20,7 +24,10 @@ export interface IFirebaseListener {
   ctx?: IDictionary;
 }
 
-export type IFirebaseConnectionCallback = (db: RealTimeDB, ctx?: IDictionary) => void;
+export type IFirebaseConnectionCallback = (
+  db: RealTimeDB,
+  ctx?: IDictionary
+) => void;
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;
@@ -98,6 +105,12 @@ export type IFirebaseWatchEvent = IValueBasedWatchEvent | IPathBasedWatchEvent;
 export interface IFirebaseWatchContext {
   eventType: EventType;
   targetType: any;
+  /**
+   * this tagging has been added as optional to not break prior API but all
+   * server events will set this variable so that when it is received by **Firemodel**
+   * it can distiguish local versus server triggered events.
+   */
+  kind?: "server-event";
 }
 
 /** A standard watch event coming from the Firebase DB */

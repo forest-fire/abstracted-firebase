@@ -16,7 +16,11 @@
         return (snapshot, previousChildKey) => {
             const value = snapshot.val();
             const key = snapshot.key;
-            const fullEvent = Object.assign({}, context, { value, key, previousChildKey });
+            const kind = "server-event";
+            const fullEvent = Object.assign({}, context, { value,
+                key,
+                kind,
+                previousChildKey });
             return handler(fullEvent);
         };
     };
