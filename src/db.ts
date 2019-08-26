@@ -1,7 +1,6 @@
 // tslint:disable: member-ordering
 // tslint:disable:no-implicit-dependencies
-import { IDictionary, wait, createError, pathJoin } from "common-types";
-import { IMockConfigOptions } from "firemock";
+import { IDictionary, wait } from "common-types";
 import * as convert from "typed-conversions";
 import { SerializedQuery } from "serialized-query";
 import { slashNotation } from "./util";
@@ -35,6 +34,7 @@ import { AbstractedError } from "./errors/AbstractedError";
 
 type Mock = import("firemock").Mock;
 type IMockAuthConfig = import("firemock").IMockAuthConfig;
+type IMockConfigOptions = import("firemock").IMockConfigOptions;
 
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
@@ -75,9 +75,7 @@ export abstract class RealTimeDB<A = any> {
 
     if (!this._mock) {
       const e = new Error(
-        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${
-          this._mocking
-        } ]!`
+        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`
       );
       e.name = "AbstractedFirebase::NotAllowed";
       throw e;
@@ -253,9 +251,7 @@ export abstract class RealTimeDB<A = any> {
       const timeout = async () => {
         await wait(this.CONNECTION_TIMEOUT);
         throw new AbstractedError(
-          `The database didn't connect after the allocated period of ${
-            this.CONNECTION_TIMEOUT
-          }ms`,
+          `The database didn't connect after the allocated period of ${this.CONNECTION_TIMEOUT}ms`,
           "connection-timeout"
         );
       };
@@ -475,9 +471,7 @@ export abstract class RealTimeDB<A = any> {
           throw new AbstractedProxyError(
             e,
             "abstracted-firebase/mps-failure",
-            `While executing a MPS there was a failure. The base path was ${
-              api._basePath
-            }.`
+            `While executing a MPS there was a failure. The base path was ${api._basePath}.`
           );
         }
         // });
