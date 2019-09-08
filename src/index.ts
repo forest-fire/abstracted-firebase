@@ -28,12 +28,13 @@ export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
 export interface IFirebaseAdminConfigProps extends IAbstractedFirebaseConfig {
   /**
    * The service account must be provided but if not passed in it can be found
-   * in environment variable
+   * in the `FIREBASE_SERVICE_ACCOUNT` environment variable. In both cases the
+   * string value is expected to be encoded in base64.
    */
   serviceAccount?: string;
   /**
    * The databaseURL is required but if not passed in as a parameter it can be found
-   * in an environment variable
+   * in the `FIREBASE_DATA_ROOT_URL` environment variable
    */
   databaseUrl?: string;
   mocking?: false | undefined;
