@@ -334,7 +334,7 @@
                 },
                 async execute() {
                     const updateHash = {};
-                    const fullyQualifiedPaths = mps.map(i => (Object.assign({}, i, { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
+                    const fullyQualifiedPaths = mps.map(i => (Object.assign(Object.assign({}, i), { path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/") })));
                     fullyQualifiedPaths.map(item => {
                         updateHash[item.path] = item.value;
                     });
@@ -455,7 +455,7 @@
                 if (typeof object !== "object") {
                     object = { value: snap.val() };
                 }
-                return Object.assign({}, object, { [idProp]: snap.key });
+                return Object.assign(Object.assign({}, object), { [idProp]: snap.key });
             }
             catch (e) {
                 throw new AbstractedProxyError_1.AbstractedProxyError(e);
