@@ -23,19 +23,19 @@
   resolved "https://registry.yarnpkg.com/@firebase/app-types/-/app-types-0.4.4.tgz#6423e9b284018109d3658a6ecf7f82ca0e288bbb"
   integrity sha512-s3rKk6aGnzNTx6bzdtOdJpg2XXMiadLk/hv/PjiFEI/m+8MEKz+wkl+eGwvzxFyOd6BD5GVy637boGFqRt20FQ==
 
-"@firebase/auth-types@^0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@firebase/auth-types/-/auth-types-0.7.2.tgz#6343639d422ea84feddf619e22d8db7f63b0eb62"
-  integrity sha512-xm3evp6671LoI+6M8Om3OhikabLf88Ivz1e7aR8uZjVBYptEYbF3seDIyHn/3wWdVYbp20WK4aWixKlRnHl+6Q==
+"@firebase/auth-types@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@firebase/auth-types/-/auth-types-0.8.0.tgz#10c0657847f6c311ef42e8a550bdbbb678ec86e4"
+  integrity sha512-foQHhvyB0RR+mb/+wmHXd/VOU+D8fruFEW1k79Q9wzyTPpovMBa1Mcns5fwEWBhUfi8bmoEtaGB8RSAHnTFzTg==
 
-"@firebase/database-types@^0.4.3", "@firebase/database-types@^0.4.4":
+"@firebase/database-types@^0.4.4":
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/@firebase/database-types/-/database-types-0.4.4.tgz#d2337413a5d88b326c199cb3008a5fccc9626001"
   integrity sha512-n+CKrqfxKII6VMl44HFCPIB8xS78isRiA2V6SYJe4Mo6vauKggRBm8Tdt1SKmBco5zHhhYkhaYzU7bfPYm54Ag==
   dependencies:
     "@firebase/app-types" "0.4.4"
 
-"@firebase/util@^0.2.25":
+"@firebase/util@^0.2.28":
   version "0.2.28"
   resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.2.28.tgz#9a17198b6ea416f1fb9edaea9f353d9a1f517f51"
   integrity sha512-ZQMAWtXj8y5kvB6izs0aTM/jG+WO8HpqhXA/EwD6LckJ+1P5LnAhaLZt1zR4HpuCE+jeP5I32Id5RJ/aifFs6A==
@@ -254,7 +254,7 @@ commander@^2.12.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.1.tgz#3863ce3ca92d0831dcf2a102f5fb4b5926afd0f9"
   integrity sha512-cCuLsMhJeWQ/ZpsFTbE765kvVfoeSddc4nU3up4fV+fDBcfUXnbITJ+JzhkdjzOqhURjZgujxaioam4RM9yGUg==
 
-common-types@^1.11.14, common-types@^1.12.1, common-types@^1.12.7, common-types@^1.9.7:
+common-types@^1.11.14, common-types@^1.12.7, common-types@^1.9.7:
   version "1.12.7"
   resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.12.7.tgz#c57a70010e98a3131b5c293bd101747f386fe31c"
   integrity sha512-jN2bDjaEbdvljnDjEU8EO7evs8ZsRF8f7sLCOHkd08Arauh1Nkz71hMPdlIVDImKDr1H4Xhigp1vgcF3i2iprQ==
@@ -384,15 +384,15 @@ firebase-key@^2.0.2:
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
   integrity sha512-gH0u6apANQsqHUqcf+Yd49VaUQyKNCLxofwYx0gqUGcymeLs5HWg/3tXroGheYYH8+ynxbrnP/Z4F/FEqNy9Ow==
 
-firemock@^0.30.2:
-  version "0.30.2"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.30.2.tgz#f23192d0d75ff43d01d445f59820b08de984f613"
-  integrity sha512-Q6Hs81R1yFQGlnkf7OVdCbEYoyKKOGUU7NwXUn4ZQG+Y6BV1+9szySN1HinVATJDm/mtOS9dEsVR/tWGKrDL1g==
+firemock@^0.31.0:
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.31.0.tgz#7c4d9a00d8b9fc3ee8048ff37f5c30bc2ce4c4ff"
+  integrity sha512-P9IutairVUXUr1Yz7jPR53uUFtwSY2yUbk+QMbn1Q3DqPWRi0L8zKLWg4kjMQQCckHdn29K7gwT1vS7qE9vRIQ==
   dependencies:
     "@firebase/app-types" "^0.4.4"
-    "@firebase/auth-types" "^0.7.2"
+    "@firebase/auth-types" "^0.8.0"
     "@firebase/database-types" "^0.4.4"
-    "@firebase/util" "^0.2.25"
+    "@firebase/util" "^0.2.28"
     "@types/faker" "^4.1.5"
     common-types "^1.12.7"
     deepmerge "^4.0.0"
@@ -914,7 +914,7 @@ tslib@1.10.0, tslib@^1.8.0, tslib@^1.8.1:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
-tslint@^5.19.0:
+tslint@^5.20.0:
   version "5.20.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.20.0.tgz#fac93bfa79568a5a24e7be9cdde5e02b02d00ec1"
   integrity sha512-2vqIvkMHbnx8acMogAERQ/IuINOq6DFqgF8/VDvhEkBqQh/x6SP0Y+OHnKth9/ZcHQSroOZwUQSN18v8KKF0/g==
@@ -953,7 +953,7 @@ typed-conversions@^0.10.1:
     common-types "^1.9.7"
     get-value "^3.0.1"
 
-typescript@^3.6.2:
+typescript@^3.6.3:
   version "3.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
   integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
