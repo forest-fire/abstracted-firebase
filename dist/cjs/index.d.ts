@@ -41,10 +41,18 @@ export interface IAbstractedFirebaseConfig {
     /** TBD  */
     logging?: any;
 }
+/** an _async_ mock function which returns a dictionary data structure */
+export declare type AsyncMockData = () => Promise<IDictionary>;
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
     mocking: true;
-    /** initialize the database to a known state */
-    mockData?: IDictionary;
+    /**
+     * Initializes the database to a known state.
+     *
+     * You can either put in a dictionary if it's available synchronously
+     * or you can pass in an async function which resolves to the dictionary
+     * asynchronously
+     */
+    mockData?: IDictionary | AsyncMockData;
     /** optionally configure mocking for Firebase Authentication */
     mockAuth?: import("firemock").IMockAuthConfig;
 }
