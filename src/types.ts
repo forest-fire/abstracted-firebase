@@ -31,8 +31,8 @@ export type IFirebaseConnectionCallback = (
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;
-  on: (event: string, value: any) => void;
-  once: (event: string, value: any) => void;
+  on: (event: string, value: any) => any;
+  once: (event: string, value: any) => any;
 }
 
 export interface IClientEmitter extends IEmitter {
