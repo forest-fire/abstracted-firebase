@@ -81,7 +81,7 @@ export abstract class RealTimeDB<A = any> {
       throw e;
     }
 
-    return this._mock as Mock;
+    return this._mock;
   }
 
   public get isConnected() {
@@ -169,6 +169,11 @@ export abstract class RealTimeDB<A = any> {
         }
       });
     } catch (e) {
+      console.warn(
+        `abstracted-firebase: failure trying to watch event ${JSON.stringify(
+          events
+        )}`
+      );
       throw new AbstractedProxyError(e);
     }
   }

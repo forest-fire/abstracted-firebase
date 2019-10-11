@@ -14,7 +14,8 @@
         constructor(e, typeSubtype = null, context) {
             super("");
             this.stack = e.stack;
-            const parts = typeSubtype.split("/");
+            const parts = (typeSubtype ||
+                `abstracted-firebase/${e.name || e.code || e.type || "unknown"}`).split("/");
             const [type, subType] = parts.length === 2 ? parts : ["abstracted-firemodel", parts[0]];
             this.name = `${type}/${subType}`;
             this.code = `${subType}`;
