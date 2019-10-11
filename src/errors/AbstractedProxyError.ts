@@ -3,10 +3,17 @@ export class AbstractedProxyError extends Error {
   public code: string;
   public stackFrames: IStackFrame[];
 
-  constructor(e: Error, typeSubtype: string = null, context?: string) {
+  constructor(
+    e: Error & { code?: string; type?: string },
+    typeSubtype: string = null,
+    context?: string
+  ) {
     super("");
     this.stack = e.stack;
-    const parts: string[] = typeSubtype.split("/");
+    const parts: string[] = (
+      typeSubtype ||
+      `abstracted-firebase/${e.name || e.code || e.type || "unknown"}`
+    ).split("/");
     const [type, subType] =
       parts.length === 2 ? parts : ["abstracted-firemodel", parts[0]];
     this.name = `${type}/${subType}`;

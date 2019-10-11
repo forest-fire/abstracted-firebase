@@ -2,5 +2,8 @@ import { IStackFrame } from "common-types";
 export declare class AbstractedProxyError extends Error {
     code: string;
     stackFrames: IStackFrame[];
-    constructor(e: Error, typeSubtype?: string, context?: string);
+    constructor(e: Error & {
+        code?: string;
+        type?: string;
+    }, typeSubtype?: string, context?: string);
 }

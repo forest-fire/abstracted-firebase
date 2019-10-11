@@ -105,6 +105,7 @@ export class RealTimeDB {
             });
         }
         catch (e) {
+            console.warn(`abstracted-firebase: failure trying to watch event ${JSON.stringify(events)}`);
             throw new AbstractedProxyError(e);
         }
     }
