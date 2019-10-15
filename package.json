@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.32.5",
+  "version": "0.33.0",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -29,16 +29,15 @@
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
-    "@firebase/auth-types": "^0.8.0",
-    "@firebase/database-types": "^0.4.4",
+    "@firebase/auth-types": "^0.8.1",
+    "@firebase/database-types": "^0.4.5",
     "common-types": "^1.12.9",
-    "serialized-query": "^0.8.1",
+    "serialized-query": "^0.9.1",
     "typed-conversions": "^0.10.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
-    "@types/chance": "^0.7.34",
-    "@types/faker": "^4.1.5",
+    "@types/faker": "^4.1.6",
     "@types/js-yaml": "^3.9.0",
     "@types/lodash": "^4.14.0",
     "@types/mocha": "^5.2.1",
@@ -46,7 +45,7 @@
     "@types/rimraf": "^2.0.1",
     "async-shelljs": "^0.1.2",
     "chai": "^4.2.0",
-    "firemock": "^0.32.10",
+    "firemock": "^0.33.1",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.11",
     "mocha": "^6.1.4",
