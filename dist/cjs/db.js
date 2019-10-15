@@ -79,7 +79,7 @@ class RealTimeDB {
     /**
      * watch
      *
-     * Watch for firebase events based on a DB path or Query
+     * Watch for firebase events based on a DB path or `SerializedQuery` (path plus query elements)
      *
      * @param target a database path or a SerializedQuery
      * @param events an event type or an array of event types (e.g., "value", "child_added")
