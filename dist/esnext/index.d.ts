@@ -40,6 +40,8 @@ export interface IAbstractedFirebaseConfig {
     name?: string;
     /** TBD  */
     logging?: any;
+    /** override the default timeout of 5 seconds */
+    timeout?: number;
 }
 /** an _async_ mock function which returns a dictionary data structure */
 export declare type AsyncMockData = () => Promise<IDictionary>;

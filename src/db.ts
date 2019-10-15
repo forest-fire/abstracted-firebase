@@ -122,6 +122,9 @@ export abstract class RealTimeDB<A = any> {
 
   public constructor(config: IFirebaseConfig) {
     this._config = config;
+    if (config.timeout) {
+      this.CONNECTION_TIMEOUT = config.timeout;
+    }
   }
 
   /**

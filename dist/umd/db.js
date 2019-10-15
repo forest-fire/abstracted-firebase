@@ -38,6 +38,9 @@
             this._onConnected = [];
             this._onDisconnected = [];
             this._config = config;
+            if (config.timeout) {
+                this.CONNECTION_TIMEOUT = config.timeout;
+            }
         }
         get isMockDb() {
             return this._mocking;
