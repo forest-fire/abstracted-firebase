@@ -14,7 +14,7 @@ import { AbstractedError } from "./errors/AbstractedError";
 /** time by which the dynamically loaded mock library should be loaded */
 export const MOCK_LOADING_TIMEOUT = 2000;
 export class RealTimeDB {
-    constructor(config) {
+    constructor(config = {}) {
         /** how many miliseconds before the attempt to connect to DB is timed out */
         this.CONNECTION_TIMEOUT = 5000;
         this._isConnected = false;

@@ -120,7 +120,7 @@ export abstract class RealTimeDB<A = any> {
   protected _config: IFirebaseConfig;
   protected abstract _auth: any;
 
-  public constructor(config: IFirebaseConfig) {
+  public constructor(config: IFirebaseConfig = {}) {
     this._config = config;
     if (config.timeout) {
       this.CONNECTION_TIMEOUT = config.timeout;
