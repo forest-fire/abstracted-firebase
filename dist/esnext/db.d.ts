@@ -44,7 +44,7 @@ export declare abstract class RealTimeDB<A = any> {
     /** the config the db was started with */
     protected _config: IFirebaseConfig;
     protected abstract _auth: any;
-    constructor(config: IFirebaseConfig);
+    constructor(config?: IFirebaseConfig);
     /**
      * called by `client` and `admin` at end of constructor
      */
