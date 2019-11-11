@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.34.0",
+  "version": "0.34.1",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -45,7 +45,7 @@
     "@types/rimraf": "^2.0.3",
     "async-shelljs": "^0.1.4",
     "chai": "^4.2.0",
-    "firemock": "^0.33.7",
+    "firemock": "^0.34.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15",
     "mocha": "^6.2.2",
@@ -53,7 +53,7 @@
     "test-console": "^1.1.0",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.2"
   },
   "engines": {
     "node": ">=8.13.0"

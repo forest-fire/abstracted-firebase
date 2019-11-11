@@ -563,7 +563,12 @@ class RealTimeDB {
             const FireMock = await Promise.resolve().then(() => require(
             /* webpackChunkName: "firemock" */ "firemock"));
             this._mockLoadingState = "loaded";
-            this._mock = await FireMock.Mock.prepare(config);
+            try {
+                this._mock = await FireMock.Mock.prepare(config);
+            }
+            catch (e) {
+                console.info("There was an error trying to produce a mock object but because this requires the Faker library there are reasonable use cases where this may have been intentionally blocked\n\n", e.message);
+            }
             this._isConnected = true;
         }
         catch (e) {
