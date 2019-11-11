@@ -8,7 +8,7 @@ declare type IMockConfigOptions = import("firemock").IMockConfigOptions;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB<A = any> {
-    readonly isMockDb: boolean;
+    get isMockDb(): boolean;
     /**
      * **getPushKey**
      *
@@ -19,9 +19,9 @@ export declare abstract class RealTimeDB<A = any> {
      * @param path the path in the database where the push-key will be pushed to
      */
     getPushKey(path: string): Promise<string>;
-    readonly mock: Mock;
-    readonly isConnected: boolean;
-    readonly config: IFirebaseConfig;
+    get mock(): Mock;
+    get isConnected(): boolean;
+    get config(): IFirebaseConfig;
     static connect: (config: any) => Promise<any>;
     /** how many miliseconds before the attempt to connect to DB is timed out */
     CONNECTION_TIMEOUT: number;
