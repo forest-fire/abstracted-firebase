@@ -548,6 +548,11 @@ export class RealTimeDB {
             this._onDisconnected.forEach(listener => listener.cb(this));
         }
     }
+    /**
+     * When using the **Firebase** Authentication solution, the primary API
+     * resides off the `db.auth()` call but each _provider_ also has an API
+     * that can be useful and this has links to various providers.
+     */
     get authProviders() {
         throw new Error(`The authProviders getter is intended to provide access to various auth providers but it is NOT implemented in the connection library you are using!`);
     }
