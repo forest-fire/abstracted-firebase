@@ -1,6 +1,7 @@
 import { IDictionary } from "common-types";
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
+export declare type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
 import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet, IClientEmitter, IAdminEmitter } from "./types";
 import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
@@ -217,7 +218,12 @@ export declare abstract class RealTimeDB<A = any> {
     protected _monitorConnection(snap: DataSnapshot): void;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
-    get authProviders(): void;
+    /**
+     * When using the **Firebase** Authentication solution, the primary API
+     * resides off the `db.auth()` call but each _provider_ also has an API
+     * that can be useful and this has links to various providers.
+     */
+    get authProviders(): FirebaseNamespace["auth"];
     /**
      * **getFireMock**
      *

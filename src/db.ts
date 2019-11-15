@@ -14,6 +14,8 @@ import {
   Reference
 } from "@firebase/database-types";
 
+export type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
+
 import {
   IFirebaseConfig,
   IMockLoadingState,
@@ -720,7 +722,12 @@ export abstract class RealTimeDB<A = any> {
   protected abstract connectToFirebase(config: any): Promise<void>;
   protected abstract listenForConnectionStatus(): void;
 
-  public get authProviders() {
+  /**
+   * When using the **Firebase** Authentication solution, the primary API
+   * resides off the `db.auth()` call but each _provider_ also has an API
+   * that can be useful and this has links to various providers.
+   */
+  public get authProviders(): FirebaseNamespace["auth"] {
     throw new Error(
       `The authProviders getter is intended to provide access to various auth providers but it is NOT implemented in the connection library you are using!`
     );
