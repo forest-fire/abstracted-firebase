@@ -548,6 +548,9 @@ export class RealTimeDB {
             this._onDisconnected.forEach(listener => listener.cb(this));
         }
     }
+    get authProviders() {
+        throw new Error(`The authProviders getter is intended to provide access to various auth providers but it is NOT implemented in the connection library you are using!`);
+    }
     /**
      * **getFireMock**
      *

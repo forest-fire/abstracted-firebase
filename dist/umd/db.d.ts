@@ -217,6 +217,7 @@ export declare abstract class RealTimeDB<A = any> {
     protected _monitorConnection(snap: DataSnapshot): void;
     protected abstract connectToFirebase(config: any): Promise<void>;
     protected abstract listenForConnectionStatus(): void;
+    get authProviders(): void;
     /**
      * **getFireMock**
      *
