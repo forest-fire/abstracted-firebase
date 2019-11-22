@@ -568,6 +568,11 @@ export abstract class RealTimeDB<A = any> {
           : (path as SerializedQuery<T>).setDB(this).execute();
       return response;
     } catch (e) {
+      console.warn(
+        `There was a problem trying to get a snapshot from the database:`,
+        e.message
+      );
+
       throw new AbstractedProxyError(e);
     }
   }
