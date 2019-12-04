@@ -426,7 +426,7 @@
                 return response;
             }
             catch (e) {
-                console.warn(`There was a problem trying to get a snapshot from the database:`, e.message);
+                console.warn(`There was a problem trying to get a snapshot from the database [ path parameter was of type "${typeof path}", fn: "getSnapshot()" ]:`, e.message);
                 throw new AbstractedProxyError_1.AbstractedProxyError(e);
             }
         }

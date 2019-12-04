@@ -569,7 +569,7 @@ export abstract class RealTimeDB<A = any> {
       return response;
     } catch (e) {
       console.warn(
-        `There was a problem trying to get a snapshot from the database:`,
+        `There was a problem trying to get a snapshot from the database [ path parameter was of type "${typeof path}", fn: "getSnapshot()" ]:`,
         e.message
       );
 
