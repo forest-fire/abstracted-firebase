@@ -11,10 +11,6 @@ var UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
 exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
 var util_1 = require("./util");
 exports._getFirebaseType = util_1._getFirebaseType;
-const database_types_1 = require("@firebase/database-types");
-exports.FirebaseDatabase = database_types_1.FirebaseDatabase;
-const auth_types_1 = require("@firebase/auth-types");
-exports.FirebaseAuth = auth_types_1.FirebaseAuth;
 __export(require("./types"));
 function isMockConfig(config = {}) {
     return config.mocking === true;

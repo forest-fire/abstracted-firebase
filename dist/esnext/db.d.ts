@@ -1,6 +1,6 @@
 import { IDictionary } from "common-types";
 import { SerializedQuery } from "serialized-query";
-import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "./index";
+import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 export declare type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
 import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet, IClientEmitter, IAdminEmitter } from "./types";
 import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
