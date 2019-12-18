@@ -4,9 +4,6 @@ export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
 export { _getFirebaseType } from "./util";
-import { FirebaseDatabase } from "@firebase/database-types";
-import { FirebaseAuth } from "@firebase/auth-types";
-export { FirebaseDatabase, FirebaseAuth };
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
