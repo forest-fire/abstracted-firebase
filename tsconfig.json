@@ -6,6 +6,7 @@
     "target": "es2017",
     "noImplicitAny": true,
     "outDir": "./lib",
+    "noEmit": true,
     "preserveConstEnums": true,
     "removeComments": false,
     "typeRoots": ["./node_modules/@types"]
