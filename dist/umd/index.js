@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util", "./types"], factory);
+        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util", "@firebase/database-types", "@firebase/auth-types", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -20,6 +20,10 @@
     exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
     var util_1 = require("./util");
     exports._getFirebaseType = util_1._getFirebaseType;
+    var database_types_1 = require("@firebase/database-types");
+    exports.FirebaseDatabase = database_types_1.FirebaseDatabase;
+    var auth_types_1 = require("@firebase/auth-types");
+    exports.FirebaseAuth = auth_types_1.FirebaseAuth;
     __export(require("./types"));
     function isMockConfig(config = {}) {
         return config.mocking === true;
