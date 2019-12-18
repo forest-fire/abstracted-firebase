@@ -16,23 +16,27 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@firebase/app-types@0.4.8", "@firebase/app-types@^0.4.7", "@firebase/app-types@^0.4.8":
-  version "0.4.8"
-  resolved "https://registry.yarnpkg.com/@firebase/app-types/-/app-types-0.4.8.tgz#be69cbf3a7550c900d7af943adb2a3d1dcce6631"
+"@firebase/app-types@0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@firebase/app-types/-/app-types-0.4.9.tgz#953e9da55d061343339f20f37ac54ef4d6324774"
+  integrity sha512-RoUkYVd5X106sFGX+rHVDGrtfZBRugMtT9Cx8YiXtLSqouhi0S+Sx1TVuK6Gkt7lJ27I8qlz/nBvNa0yjg3N7w==
 
-"@firebase/auth-types@^0.9.0", "@firebase/auth-types@^0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@firebase/auth-types/-/auth-types-0.9.1.tgz#988cc0b5807ec20d56eaa6262f5fa317f9138a35"
+"@firebase/auth-types@0.9.3":
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/@firebase/auth-types/-/auth-types-0.9.3.tgz#c2e719a9911486177c31fb0c25a857e82c455e0d"
+  integrity sha512-eS9BEuZ1XxBQReUhG6lbus9ScOgHwqYPT7a645PKa/tBb1BWsgivwRFzH0BATPGLP+JTtRvy5JqEsQ25S7J4ig==
 
-"@firebase/database-types@^0.4.7", "@firebase/database-types@^0.4.8":
-  version "0.4.8"
-  resolved "https://registry.yarnpkg.com/@firebase/database-types/-/database-types-0.4.8.tgz#ec225ac9e37a31cb0aa827b86d0073dfdc5289f1"
+"@firebase/database-types@0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@firebase/database-types/-/database-types-0.4.9.tgz#32a49e72084493dcd1a6120b51f3b93b501cd654"
+  integrity sha512-VIATPku6NuLvDEIt5gkTx6xbtIFfQhATnySL4uoJ5udcVK6hH2KV0po58UPH72vQMtgrQ/clLGr6kkPgWRZw4Q==
   dependencies:
-    "@firebase/app-types" "0.4.8"
+    "@firebase/app-types" "0.4.9"
 
-"@firebase/util@^0.2.33":
-  version "0.2.34"
-  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.2.34.tgz#a84fc09a68e82012b650964944e8ffc956ec4912"
+"@firebase/util@0.2.36":
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.2.36.tgz#0c4edb3573f567f407b76dd767691fe72819acf2"
+  integrity sha512-AqrXca+8rMbPyp7zMO9BoZrdbb8wsT5kmqwge9QW4ZBxTTSQrvBs7VylGx5Ede4VbhqRJvkmo7G73/dp2L+wbA==
   dependencies:
     tslib "1.10.0"
 
@@ -44,7 +48,7 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
 
-"@types/faker@^4.1.7":
+"@types/faker@^4.1.7", "@types/faker@^4.1.8":
   version "4.1.8"
   resolved "https://registry.yarnpkg.com/@types/faker/-/faker-4.1.8.tgz#95240361f1379addae0a005ced7c5c77b0b1e1d8"
 
@@ -209,9 +213,16 @@ commander@^2.12.1:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
 
-common-types@^1.12.12, common-types@^1.12.13, common-types@^1.12.9, common-types@^1.9.7:
+common-types@^1.12.13, common-types@^1.12.9, common-types@^1.9.7:
   version "1.12.13"
   resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.12.13.tgz#d0f871b28f76b45d90d942bfd650342ada3bac99"
+  dependencies:
+    "@types/json-schema" "^7.0.3"
+
+common-types@^1.12.15:
+  version "1.12.15"
+  resolved "https://registry.yarnpkg.com/common-types/-/common-types-1.12.15.tgz#28cf2b087c1c3e6cc47d14c92afec40a2901853a"
+  integrity sha512-5ZiPqSc3iNBaRtSbFDEeodpXIsjyGNyJBAHuh36IqKB+/DY9RjZYTAAjrS1I2LaiJrJADmn4HawoPssvR6jFPA==
   dependencies:
     "@types/json-schema" "^7.0.3"
 
@@ -318,16 +329,17 @@ firebase-key@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/firebase-key/-/firebase-key-2.0.2.tgz#44ffdc460faeb774ef95e04a43027042974cfe5c"
 
-firemock@^0.35.6:
-  version "0.35.6"
-  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.35.6.tgz#a78da7ed754ca21b0c27dee108d2d37635aee74c"
+firemock@^0.35.9:
+  version "0.35.10"
+  resolved "https://registry.yarnpkg.com/firemock/-/firemock-0.35.10.tgz#ffd400225a8f5566fa9a2ebb2f314bfef77a6837"
+  integrity sha512-yhsAXivXUQbZjfHde5GXLdlPuz4aWh6jWN2cv+u7uu5WtQ/gr2tCm3HplesNz1UZ2/1o83m7mJf/XVl9wJGWNw==
   dependencies:
-    "@firebase/app-types" "^0.4.7"
-    "@firebase/auth-types" "^0.9.0"
-    "@firebase/database-types" "^0.4.7"
-    "@firebase/util" "^0.2.33"
-    "@types/faker" "^4.1.7"
-    common-types "^1.12.12"
+    "@firebase/app-types" "0.4.9"
+    "@firebase/auth-types" "0.9.3"
+    "@firebase/database-types" "0.4.9"
+    "@firebase/util" "0.2.36"
+    "@types/faker" "^4.1.8"
+    common-types "^1.12.15"
     deepmerge "^4.2.2"
     email-validator "^2.0.4"
     faker "^4.1.0"
@@ -663,11 +675,18 @@ semver@^5.3.0, semver@^5.7.0:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
 
-serialized-query@^0.9.1, serialized-query@^0.9.3:
+serialized-query@^0.9.1:
   version "0.9.3"
   resolved "https://registry.yarnpkg.com/serialized-query/-/serialized-query-0.9.3.tgz#6fb1e1d5ba01e5db525d158780d7d2f276a6260f"
   dependencies:
     common-types "^1.12.9"
+
+serialized-query@^0.9.7:
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/serialized-query/-/serialized-query-0.9.7.tgz#ff3b8e3cd1ab5c77dd644533605cc3483f213466"
+  integrity sha512-dGOgV5CDK5I1weSE958iaR3LfQMzbe3plQdLC1qKVd2vN7qWOXUuPNtVpXWQSlRKzT305gro/yL1ocaNy90VeA==
+  dependencies:
+    common-types "^1.12.13"
 
 set-blocking@^2.0.0:
   version "2.0.0"
