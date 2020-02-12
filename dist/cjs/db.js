@@ -17,6 +17,7 @@ const AbstractedError_1 = require("./errors/AbstractedError");
 exports.MOCK_LOADING_TIMEOUT = 2000;
 class RealTimeDB {
     constructor(config = {}) {
+        this._isAdminApi = false;
         /** how many miliseconds before the attempt to connect to DB is timed out */
         this.CONNECTION_TIMEOUT = 5000;
         this._isConnected = false;
@@ -34,6 +35,9 @@ class RealTimeDB {
     }
     get isMockDb() {
         return this._mocking;
+    }
+    get isAdminApi() {
+        return this._isAdminApi;
     }
     /**
      * **getPushKey**

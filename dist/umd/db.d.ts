@@ -9,7 +9,9 @@ declare type IMockConfigOptions = import("firemock").IMockConfigOptions;
 /** time by which the dynamically loaded mock library should be loaded */
 export declare const MOCK_LOADING_TIMEOUT = 2000;
 export declare abstract class RealTimeDB<A = any> {
+    protected _isAdminApi: boolean;
     get isMockDb(): boolean;
+    get isAdminApi(): boolean;
     /**
      * **getPushKey**
      *
