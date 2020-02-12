@@ -175,7 +175,7 @@ export abstract class RealTimeDB<A = any> {
         } else {
           target
             .setDB(this)
-            .deserialize()
+            .deserialize(this)
             .on(evt, dispatch);
         }
       });

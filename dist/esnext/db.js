@@ -106,7 +106,7 @@ export class RealTimeDB {
                 else {
                     target
                         .setDB(this)
-                        .deserialize()
+                        .deserialize(this)
                         .on(evt, dispatch);
                 }
             });
