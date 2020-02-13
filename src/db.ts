@@ -568,10 +568,9 @@ export abstract class RealTimeDB<A = any> {
     path: string | SerializedQuery<T>
   ): Promise<DataSnapshot> {
     try {
-      const response =
-        (await typeof path) === "string"
-          ? this.ref(slashNotation(path as string)).once("value")
-          : (path as SerializedQuery<T>).setDB(this).execute();
+      const response = await (typeof path === "string"
+        ? this.ref(slashNotation(path as string)).once("value")
+        : (path as SerializedQuery<T>).setDB(this).execute());
       return response;
     } catch (e) {
       console.warn(
