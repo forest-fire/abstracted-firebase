@@ -414,9 +414,9 @@ class RealTimeDB {
      */
     async getSnapshot(path) {
         try {
-            const response = (await typeof path) === "string"
+            const response = await (typeof path === "string"
                 ? this.ref(util_1.slashNotation(path)).once("value")
-                : path.setDB(this).execute();
+                : path.setDB(this).execute());
             return response;
         }
         catch (e) {
