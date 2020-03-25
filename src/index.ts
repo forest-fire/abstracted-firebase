@@ -1,4 +1,5 @@
 import { IDictionary } from "common-types";
+import type { AsyncMockData } from "firemock";
 
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
@@ -7,12 +8,8 @@ export { _getFirebaseType } from "./util";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-export type IFirebaseClientConfig =
-  | IFirebaseClientConfigProps
-  | IFirebaseConfigMocked;
-export type IFirebaseAdminConfig =
-  | IFirebaseAdminConfigProps
-  | IFirebaseConfigMocked;
+export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
+export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
 
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
@@ -53,9 +50,6 @@ export interface IAbstractedFirebaseConfig {
   timeout?: number;
 }
 
-/** an _async_ mock function which returns a dictionary data structure */
-export type AsyncMockData = () => Promise<IDictionary>;
-
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
   mocking: true;
   /**
@@ -71,9 +65,7 @@ export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
   mockAuth?: import("firemock").IMockAuthConfig;
 }
 
-export function isMockConfig(
-  config: IFirebaseConfig = {}
-): config is IFirebaseConfigMocked {
+export function isMockConfig(config: IFirebaseConfig = {}): config is IFirebaseConfigMocked {
   return (config as IFirebaseConfigMocked).mocking === true;
 }
 

@@ -225,7 +225,7 @@ export declare abstract class RealTimeDB<A = any> {
      * resides off the `db.auth()` call but each _provider_ also has an API
      * that can be useful and this has links to various providers.
      */
-    get authProviders(): FirebaseNamespace["auth"];
+    get authProviders(): any;
     /**
      * **getFireMock**
      *
