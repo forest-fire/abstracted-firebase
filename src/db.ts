@@ -7,12 +7,7 @@ import { slashNotation } from "./util";
 import { FileDepthExceeded } from "./errors/FileDepthExceeded";
 import { UndefinedAssignment } from "./errors/UndefinedAssignment";
 import { WatcherEventWrapper } from "./WatcherEventWrapper";
-import {
-  FirebaseDatabase,
-  DataSnapshot,
-  EventType,
-  Reference
-} from "@firebase/database-types";
+import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 
 export type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
 
@@ -27,11 +22,7 @@ import {
 } from "./types";
 import { PermissionDenied } from "./errors";
 import { AbstractedProxyError } from "./errors/AbstractedProxyError";
-import {
-  isMockConfig,
-  IFirebaseListener,
-  IFirebaseConnectionCallback
-} from ".";
+import { isMockConfig, IFirebaseListener, IFirebaseConnectionCallback } from ".";
 import { AbstractedError } from "./errors/AbstractedError";
 
 type Mock = import("firemock").Mock;
@@ -67,9 +58,7 @@ export abstract class RealTimeDB<A = any> {
 
   public get mock(): Mock {
     if (!this._mocking && !this._allowMocking) {
-      const e = new Error(
-        "You can not mock the database without setting mocking in the constructor"
-      );
+      const e = new Error("You can not mock the database without setting mocking in the constructor");
       e.name = "AbstractedFirebase::NotAllowed";
       throw e;
     }
@@ -82,9 +71,7 @@ export abstract class RealTimeDB<A = any> {
     }
 
     if (!this._mock) {
-      const e = new Error(
-        `Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`
-      );
+      const e = new Error(`Attempting to reference mock() on DB but _mock is not set [ mocking: ${this._mocking} ]!`);
       e.name = "AbstractedFirebase::NotAllowed";
       throw e;
     }
@@ -104,10 +91,7 @@ export abstract class RealTimeDB<A = any> {
   /** how many miliseconds before the attempt to connect to DB is timed out */
   public CONNECTION_TIMEOUT = 5000;
   /** Logs debugging information to the console */
-  public enableDatabaseLogging: (
-    logger?: boolean | ((a: string) => any),
-    persistent?: boolean
-  ) => any;
+  public enableDatabaseLogging: (logger?: boolean | ((a: string) => any), persistent?: boolean) => any;
 
   protected abstract _eventManager: IClientEmitter | IAdminEmitter;
   protected abstract _clientType: "client" | "admin";
@@ -154,11 +138,7 @@ export abstract class RealTimeDB<A = any> {
    * @param events an event type or an array of event types (e.g., "value", "child_added")
    * @param cb the callback function to call when event triggered
    */
-  public watch(
-    target: string | SerializedQuery<any>,
-    events: EventType | EventType[],
-    cb: IFirebaseWatchHandler
-  ) {
+  public watch(target: string | SerializedQuery<any>, events: EventType | EventType[], cb: IFirebaseWatchHandler) {
     if (!Array.isArray(events)) {
       events = [events];
     }
@@ -180,11 +160,7 @@ export abstract class RealTimeDB<A = any> {
         }
       });
     } catch (e) {
-      console.warn(
-        `abstracted-firebase: failure trying to watch event ${JSON.stringify(
-          events
-        )}`
-      );
+      console.warn(`abstracted-firebase: failure trying to watch event ${JSON.stringify(events)}`);
       throw new AbstractedProxyError(e);
     }
   }
@@ -206,9 +182,7 @@ export abstract class RealTimeDB<A = any> {
         }
       });
     } catch (e) {
-      e.name = e.code.includes("abstracted-firebase")
-        ? "AbstractedFirebase"
-        : e.code;
+      e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
       e.code = "abstracted-firebase/unWatch";
       throw e;
     }
@@ -338,27 +312,16 @@ export abstract class RealTimeDB<A = any> {
           `The attempt to set a value at path "${path}" failed due to incorrect permissions.`
         );
       }
-      if (
-        e.message.indexOf(
-          "path specified exceeds the maximum depth that can be written"
-        ) !== -1
-      ) {
+      if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
         throw new FileDepthExceeded(e);
       }
 
-      if (
-        e.message.indexOf("First argument includes undefined in property") !==
-        -1
-      ) {
+      if (e.message.indexOf("First argument includes undefined in property") !== -1) {
         e.name = "FirebaseUndefinedValueAssignment";
         throw new UndefinedAssignment(e);
       }
 
-      throw new AbstractedProxyError(
-        e,
-        "unknown",
-        JSON.stringify({ path, value })
-      );
+      throw new AbstractedProxyError(e, "unknown", JSON.stringify({ path, value }));
     }
   }
 
@@ -410,11 +373,7 @@ export abstract class RealTimeDB<A = any> {
             pathValue.path
           }" twice to a MultiPathSet operation [ value: ${
             pathValue.value
-          } ]. For context the payload in the multi-path-set was already: ${JSON.stringify(
-            api.payload,
-            null,
-            2
-          )}`;
+          } ]. For context the payload in the multi-path-set was already: ${JSON.stringify(api.payload, null, 2)}`;
           const e: any = new Error(message);
           e.name = "DuplicatePath";
           throw e;
@@ -429,9 +388,7 @@ export abstract class RealTimeDB<A = any> {
       },
 
       get fullPaths() {
-        return mps.map(i =>
-          [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
-        );
+        return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
       },
 
       get payload() {
@@ -478,10 +435,7 @@ export abstract class RealTimeDB<A = any> {
             callback(e, mps);
           }
           if (e.code === "PERMISSION_DENIED") {
-            throw new PermissionDenied(
-              e,
-              "Firebase Database - permission denied"
-            );
+            throw new PermissionDenied(e, "Firebase Database - permission denied");
           }
 
           throw new AbstractedProxyError(
@@ -518,11 +472,7 @@ export abstract class RealTimeDB<A = any> {
           `The attempt to update a value at path "${path}" failed due to incorrect permissions.`
         );
       } else {
-        throw new AbstractedProxyError(
-          e,
-          undefined,
-          `While updating the path "${path}", an error occurred`
-        );
+        throw new AbstractedProxyError(e, undefined, `While updating the path "${path}", an error occurred`);
       }
     }
   }
@@ -550,11 +500,7 @@ export abstract class RealTimeDB<A = any> {
           `The attempt to remove a value at path "${path}" failed due to incorrect permissions.`
         );
       } else {
-        throw new AbstractedProxyError(
-          e,
-          undefined,
-          `While removing the path "${path}", an error occurred`
-        );
+        throw new AbstractedProxyError(e, undefined, `While removing the path "${path}", an error occurred`);
       }
     }
   }
@@ -564,9 +510,7 @@ export abstract class RealTimeDB<A = any> {
    *
    * returns the Firebase snapshot at a given path in the database
    */
-  public async getSnapshot<T extends object = any>(
-    path: string | SerializedQuery<T>
-  ): Promise<DataSnapshot> {
+  public async getSnapshot<T extends object = any>(path: string | SerializedQuery<T>): Promise<DataSnapshot> {
     try {
       const response = await (typeof path === "string"
         ? this.ref(slashNotation(path as string)).once("value")
@@ -605,10 +549,7 @@ export abstract class RealTimeDB<A = any> {
    * and converts it to a JS object where the snapshot's key
    * is included as part of the record (as `id` by default)
    */
-  public async getRecord<T extends object = any>(
-    path: string | SerializedQuery<T>,
-    idProp = "id"
-  ): Promise<T> {
+  public async getRecord<T extends object = any>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T> {
     try {
       const snap = await this.getSnapshot<T>(path);
       let object = snap.val();
@@ -632,10 +573,7 @@ export abstract class RealTimeDB<A = any> {
    * @param path the path in the database to
    * @param idProp
    */
-  public async getList<T extends object = any>(
-    path: string | SerializedQuery<T>,
-    idProp = "id"
-  ): Promise<T[]> {
+  public async getList<T extends object = any>(path: string | SerializedQuery<T>, idProp = "id"): Promise<T[]> {
     try {
       const snap = await this.getSnapshot<T>(path);
       return snap.val() ? convert.snapshotToArray<T>(snap, idProp) : [];
@@ -688,11 +626,7 @@ export abstract class RealTimeDB<A = any> {
           `The attempt to push a value to path "${path}" failed due to incorrect permissions.`
         );
       } else {
-        throw new AbstractedProxyError(
-          e,
-          undefined,
-          `While pushing to the path "${path}", an error occurred`
-        );
+        throw new AbstractedProxyError(e, undefined, `While pushing to the path "${path}", an error occurred`);
       }
     }
   }
@@ -720,9 +654,7 @@ export abstract class RealTimeDB<A = any> {
         this._eventManager.connection(this._isConnected);
       }
       this._onConnected.forEach(listener =>
-        listener.ctx
-          ? listener.cb.bind(listener.ctx)(this)
-          : listener.cb.bind(this)()
+        listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)()
       );
     } else {
       this._onDisconnected.forEach(listener => listener.cb(this));
@@ -737,7 +669,7 @@ export abstract class RealTimeDB<A = any> {
    * resides off the `db.auth()` call but each _provider_ also has an API
    * that can be useful and this has links to various providers.
    */
-  public get authProviders(): FirebaseNamespace["auth"] {
+  public get authProviders(): any {
     throw new Error(
       `The authProviders getter is intended to provide access to various auth providers but it is NOT implemented in the connection library you are using!`
     );
@@ -753,9 +685,7 @@ export abstract class RealTimeDB<A = any> {
     try {
       this._mocking = true;
       this._mockLoadingState = "loading";
-      const FireMock = await import(
-        /* webpackChunkName: "firemock" */ "firemock"
-      );
+      const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
       this._mockLoadingState = "loaded";
       try {
         this._mock = await FireMock.Mock.prepare(config);

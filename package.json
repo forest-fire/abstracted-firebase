@@ -1,6 +1,6 @@
 {
   "name": "abstracted-firebase",
-  "version": "0.37.3",
+  "version": "0.37.5",
   "description": "Core functional library supporting 'abstracted-admin' and 'abstracted-client'",
   "license": "MIT",
   "repository": "https://github.com/forest-fire/abstracted-firebase",
@@ -29,11 +29,12 @@
     "watch:test": "npm run test -- --watch"
   },
   "dependencies": {
-    "@firebase/app-types": "^0.5.1",
-    "@firebase/auth-types": "^0.9.5",
-    "@firebase/database-types": "^0.4.11",
-    "@firebase/util": "^0.2.40",
-    "common-types": "^1.12.18",
+    "@firebase/app-types": "^0.6.0",
+    "@firebase/auth-types": "^0.10.0",
+    "@firebase/database-types": "^0.4.14",
+    "@firebase/logger": "^0.2.0",
+    "common-types": "^1.13.1",
+    "firemock": "^0.37.3",
     "serialized-query": "^0.11.0",
     "typed-conversions": "^0.10.1"
   },
@@ -47,15 +48,14 @@
     "@types/rimraf": "^2.0.3",
     "async-shelljs": "^0.1.4",
     "chai": "^4.2.0",
-    "firemock": "^0.37.1",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15",
-    "mocha": "^6.2.2",
-    "rimraf": "^2.6.3",
+    "mocha": "^7.1.1",
+    "rimraf": "^3.0.2",
     "test-console": "^1.1.0",
-    "ts-node": "^8.5.4",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.5"
+    "ts-node": "^8.8.1",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">=8.13.0"

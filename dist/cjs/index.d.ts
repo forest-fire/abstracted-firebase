@@ -1,4 +1,5 @@
 import { IDictionary } from "common-types";
+import type { AsyncMockData } from "firemock";
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
 export { UndefinedAssignment } from "./errors/UndefinedAssignment";
@@ -43,8 +44,6 @@ export interface IAbstractedFirebaseConfig {
     /** override the default timeout of 5 seconds */
     timeout?: number;
 }
-/** an _async_ mock function which returns a dictionary data structure */
-export declare type AsyncMockData = () => Promise<IDictionary>;
 export interface IFirebaseConfigMocked extends IAbstractedFirebaseConfig {
     mocking: true;
     /**

@@ -135,9 +135,7 @@ export class RealTimeDB {
             });
         }
         catch (e) {
-            e.name = e.code.includes("abstracted-firebase")
-                ? "AbstractedFirebase"
-                : e.code;
+            e.name = e.code.includes("abstracted-firebase") ? "AbstractedFirebase" : e.code;
             e.code = "abstracted-firebase/unWatch";
             throw e;
         }
@@ -245,8 +243,7 @@ export class RealTimeDB {
             if (e.message.indexOf("path specified exceeds the maximum depth that can be written") !== -1) {
                 throw new FileDepthExceeded(e);
             }
-            if (e.message.indexOf("First argument includes undefined in property") !==
-                -1) {
+            if (e.message.indexOf("First argument includes undefined in property") !== -1) {
                 e.name = "FirebaseUndefinedValueAssignment";
                 throw new UndefinedAssignment(e);
             }
@@ -545,9 +542,7 @@ export class RealTimeDB {
             if (this._eventManager.connection) {
                 this._eventManager.connection(this._isConnected);
             }
-            this._onConnected.forEach(listener => listener.ctx
-                ? listener.cb.bind(listener.ctx)(this)
-                : listener.cb.bind(this)());
+            this._onConnected.forEach(listener => listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)());
         }
         else {
             this._onDisconnected.forEach(listener => listener.cb(this));
@@ -571,8 +566,7 @@ export class RealTimeDB {
         try {
             this._mocking = true;
             this._mockLoadingState = "loading";
-            const FireMock = await import(
-            /* webpackChunkName: "firemock" */ "firemock");
+            const FireMock = await import(/* webpackChunkName: "firemock" */ "firemock");
             this._mockLoadingState = "loaded";
             try {
                 this._mock = await FireMock.Mock.prepare(config);
