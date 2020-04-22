@@ -1,5 +1,4 @@
 import { IDictionary } from "common-types";
-import type { AsyncMockData } from "firemock";
 
 export { RealTimeDB } from "./db";
 export { FileDepthExceeded } from "./errors/FileDepthExceeded";
@@ -10,6 +9,7 @@ export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
 export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfigMocked;
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
+export type AsyncMockData = import("firemock").AsyncMockData;
 
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
