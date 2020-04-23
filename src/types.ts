@@ -1,22 +1,16 @@
-import {
-  DataSnapshot,
-  OnDisconnect,
-  Query,
-  ThenableReference,
-  EventType
-} from "@firebase/database-types";
+import { DataSnapshot, OnDisconnect, Query, ThenableReference, EventType } from "@firebase/database-types";
 import { IDictionary } from "common-types";
 import { IFirebaseClientConfig, IFirebaseAdminConfig } from ".";
 import { RealTimeDB } from "./db";
 
-export type IMockLoadingState =
-  | "not-applicable"
-  | "loaded"
-  | "loading"
-  | "timed-out";
+export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
+/** The `Mock` classes typing from **Firemock** */
+export type FireMock = import("firemock").Mock;
+/** the `MockHelper` typing from **Firemock** */
+export type MockHelper = import("firemock").MockHelper;
 
 export interface IFirebaseListener {
   id: string;
@@ -24,10 +18,7 @@ export interface IFirebaseListener {
   ctx?: IDictionary;
 }
 
-export type IFirebaseConnectionCallback = (
-  db: RealTimeDB,
-  ctx?: IDictionary
-) => void;
+export type IFirebaseConnectionCallback = (db: RealTimeDB, ctx?: IDictionary) => void;
 
 export interface IEmitter {
   emit: (event: string | symbol, ...args: any[]) => boolean;
@@ -141,7 +132,7 @@ export type IFirebaseWatchHandler = (event: IFirebaseWatchEvent) => any;
 
 export enum FirebaseBoolean {
   true = 1,
-  false = 0
+  false = 0,
 }
 
 export interface IReference<T = any> extends Query {
@@ -152,16 +143,9 @@ export interface IReference<T = any> extends Query {
   /** Writes data to a Database location */
   set(newVal: T, onComplete?: (a: Error | null) => void): Promise<void>;
   /** Write/update 1:M values to the Database, if you need to update multiple paths in DB then the keys must be deep paths notated by slash-notation */
-  update(
-    objectToMerge: Partial<T> | IDictionary<Partial<T>>,
-    onComplete?: (a: Error | null) => void
-  ): Promise<void>;
+  update(objectToMerge: Partial<T> | IDictionary<Partial<T>>, onComplete?: (a: Error | null) => void): Promise<void>;
   /** Like set() but also specifies the priority for that data */
-  setWithPriority(
-    newVal: T,
-    newPriority: string | number | null,
-    onComplete?: (a: Error | null) => void
-  ): Promise<any>;
+  setWithPriority(newVal: T, newPriority: string | number | null, onComplete?: (a: Error | null) => void): Promise<any>;
   /** Removes the data at this Database location. Any data at child locations will also be deleted. */
   remove(onComplete?: (a: Error | null) => void): Promise<void>;
   /** Atomically modifies the data at this location */
@@ -171,10 +155,7 @@ export interface IReference<T = any> extends Query {
     applyLocally?: boolean
   ): Promise<ITransactionResult<T>>;
   /** Sets a priority for the data at this Database location. */
-  setPriority(
-    priority: string | number | null,
-    onComplete?: (a: Error | null) => void
-  ): Promise<void>;
+  setPriority(priority: string | number | null, onComplete?: (a: Error | null) => void): Promise<void>;
   /** Generates a new child location using a unique key and returns a Reference. */
   push(value?: any, onComplete?: (a: Error | null) => void): ThenableReference;
   /** Returns an OnDisconnect object - see Enabling Offline Capabilities in JavaScript for more information on how to use it. */
