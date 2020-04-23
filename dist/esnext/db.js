@@ -277,7 +277,8 @@ export class RealTimeDB {
      */
     async multiPathSet(updates) {
         const fixed = Object.keys(updates).reduce((acc, path) => {
-            acc[path.replace(/\./g, "/")] = updates[path];
+            const slashPath = path.replace(/\./g, "/").slice(1) === "/" ? path.replace(/\./g, "/") : "/" + path.replace(/\./g, "/");
+            acc[slashPath] = updates[path];
             return acc;
         }, {});
         await this.ref("/").update(fixed);
@@ -295,7 +296,7 @@ export class RealTimeDB {
      */
     async update(path, value) {
         try {
-            const result = await this.ref(path).update(value);
+            await this.ref(path).update(value);
         }
         catch (e) {
             if (e.code === "PERMISSION_DENIED") {
