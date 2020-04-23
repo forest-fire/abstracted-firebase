@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util", "./types"], factory);
+        define(["require", "exports", "./db", "./errors/FileDepthExceeded", "./errors/UndefinedAssignment", "./util", "./mockingSymbols", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -20,6 +20,7 @@
     exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
     var util_1 = require("./util");
     exports._getFirebaseType = util_1._getFirebaseType;
+    __export(require("./mockingSymbols"));
     __export(require("./types"));
     function isMockConfig(config = {}) {
         return config.mocking === true;
