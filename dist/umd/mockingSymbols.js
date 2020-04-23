@@ -12,5 +12,5 @@
     var firemock_1 = require("firemock");
     exports.getMockHelper = firemock_1.getMockHelper;
     exports.MockHelper = firemock_1.MockHelper;
-    exports.Mock = firemock_1.Mock;
+    exports.FireMock = firemock_1.Mock;
 });
