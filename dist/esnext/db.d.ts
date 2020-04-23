@@ -2,7 +2,7 @@ import { IDictionary } from "common-types";
 import { SerializedQuery } from "serialized-query";
 import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/database-types";
 export declare type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
-import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IMultiPathSet, IClientEmitter, IAdminEmitter } from "./types";
+import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IClientEmitter, IAdminEmitter } from "./types";
 import { IFirebaseListener, IFirebaseConnectionCallback } from ".";
 declare type Mock = import("firemock").Mock;
 declare type IMockConfigOptions = import("firemock").IMockConfigOptions;
@@ -103,25 +103,33 @@ export declare abstract class RealTimeDB<A = any> {
      * **multiPathSet**
      *
      * Equivalent to Firebase's traditional "multi-path updates" which are
-     * in behaviour are really "multi-path SETs". Calling this function provides
-     * access to simplified API for adding and executing this operation.
+     * in behaviour are really "multi-path SETs". The basic idea is that
+     * all the _keys_ are database paths and the _values_ are **destructive** values.
      *
-     * What's important to understand is that the structure of this request
-     * is an array of name/values where the _name_ is a path in the database
-     * and the _value_ is what is to be **set** there. By grouping these together
-     * you not only receive performance benefits but also they are treated as
-     * a "transaction" where either _all_ or _none_ of the updates will take
-     * place.
+     * An example of
+     * what you might might look like:
      *
-     * @param base you can state a _base_ path which all subsequent paths will be
-     * based off of. This is often useful when making a series of changes to a
-     * part of the Firebase datamodel. In particular, if you are using **FireModel**
-     * then operations which effect a single "model" will leverage this **base**
-     * property
+     * ```json
+     * {
+     *  "path/to/my/data": "my destructive data",
+     *  "another/path/to/write/to": "everyone loves monkeys"
+     * }
+     * ```
      *
-     * [Blog Post](https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html)
+     * When we say "destructive" we mean that whatever value you put at the give path will
+     * _overwrite_ the data that was there rather than "update" it. This not hard to
+     * understand because we've given this function a name with "SET" in the name but
+     * in the real-time database this actual translates into an alternative use of the
+     * "update" command which is described here:
+     * [Introducing Multi-Location Updates.](https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html)
+     *
+     * This functionality, in the end, is SUPER useful as it provides a means to achieve
+     * transactional functionality (aka, either all paths are written to or none are).
+     *
+     * **Note:** because _dot notation_ for paths is not uncommon you can notate
+     * the paths with `.` instead of `/`
      */
-    multiPathSet(base?: string): IMultiPathSet;
+    multiPathSet(updates: IDictionary): Promise<void>;
     /**
      * **update**
      *
