@@ -1,1 +1,1 @@
-export { getMockHelper, MockHelper, Mock } from "firemock";
+export { getMockHelper, MockHelper, Mock as FireMock } from "firemock";
