@@ -277,7 +277,7 @@ export class RealTimeDB {
      */
     async multiPathSet(updates) {
         const fixed = Object.keys(updates).reduce((acc, path) => {
-            const slashPath = path.replace(/\./g, "/").slice(1) === "/" ? path.replace(/\./g, "/") : "/" + path.replace(/\./g, "/");
+            const slashPath = path.replace(/\./g, "/").slice(0, 1) === "/" ? path.replace(/\./g, "/") : "/" + path.replace(/\./g, "/");
             acc[slashPath] = updates[path];
             return acc;
         }, {});
