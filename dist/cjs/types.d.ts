@@ -5,10 +5,6 @@ import { RealTimeDB } from "./db";
 export declare type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed-out";
 export declare type DebuggingCallback = (message: string) => void;
 export declare type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-/** The `Mock` classes typing from **Firemock** */
-export declare type FireMock = import("firemock").Mock;
-/** the `MockHelper` typing from **Firemock** */
-export declare type MockHelper = import("firemock").MockHelper;
 export interface IFirebaseListener {
     id: string;
     cb: IFirebaseConnectionCallback;

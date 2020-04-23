@@ -11,6 +11,7 @@ var UndefinedAssignment_1 = require("./errors/UndefinedAssignment");
 exports.UndefinedAssignment = UndefinedAssignment_1.UndefinedAssignment;
 var util_1 = require("./util");
 exports._getFirebaseType = util_1._getFirebaseType;
+__export(require("./mockingSymbols"));
 __export(require("./types"));
 function isMockConfig(config = {}) {
     return config.mocking === true;

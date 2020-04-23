@@ -7,10 +7,6 @@ export type IMockLoadingState = "not-applicable" | "loaded" | "loading" | "timed
 
 export type DebuggingCallback = (message: string) => void;
 export type IFirebaseConfig = IFirebaseClientConfig | IFirebaseAdminConfig;
-/** The `Mock` classes typing from **Firemock** */
-export type FireMock = import("firemock").Mock;
-/** the `MockHelper` typing from **Firemock** */
-export type MockHelper = import("firemock").MockHelper;
 
 export interface IFirebaseListener {
   id: string;

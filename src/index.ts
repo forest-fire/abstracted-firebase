@@ -11,6 +11,8 @@ export type IFirebaseClientConfig = IFirebaseClientConfigProps | IFirebaseConfig
 export type IFirebaseAdminConfig = IFirebaseAdminConfigProps | IFirebaseConfigMocked;
 export type AsyncMockData = import("firemock").AsyncMockData;
 
+export * from "./mockingSymbols";
+
 export * from "./types";
 export interface IFirebaseClientConfigProps extends IAbstractedFirebaseConfig {
   apiKey: string;
