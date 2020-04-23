@@ -11,15 +11,7 @@ import { FirebaseDatabase, DataSnapshot, EventType, Reference } from "@firebase/
 
 export type FirebaseNamespace = import("@firebase/app-types").FirebaseNamespace;
 
-import {
-  IFirebaseConfig,
-  IMockLoadingState,
-  IFirebaseWatchHandler,
-  IPathSetter,
-  IMultiPathSet,
-  IClientEmitter,
-  IAdminEmitter
-} from "./types";
+import { IFirebaseConfig, IMockLoadingState, IFirebaseWatchHandler, IClientEmitter, IAdminEmitter } from "./types";
 import { PermissionDenied } from "./errors";
 import { AbstractedProxyError } from "./errors/AbstractedProxyError";
 import { isMockConfig, IFirebaseListener, IFirebaseConnectionCallback } from ".";
@@ -144,19 +136,16 @@ export abstract class RealTimeDB<A = any> {
     }
 
     try {
-      events.map(evt => {
+      events.map((evt) => {
         const dispatch = WatcherEventWrapper({
           eventType: evt,
-          targetType: "path"
+          targetType: "path",
         })(cb);
 
         if (typeof target === "string") {
           this.ref(slashNotation(target)).on(evt, dispatch);
         } else {
-          target
-            .setDB(this)
-            .deserialize(this)
-            .on(evt, dispatch);
+          target.setDB(this).deserialize(this).on(evt, dispatch);
         }
       });
     } catch (e) {
@@ -174,7 +163,7 @@ export abstract class RealTimeDB<A = any> {
         this.ref().off();
         return;
       }
-      events.map(evt => {
+      events.map((evt) => {
         if (cb) {
           this.ref().off(evt, cb);
         } else {
@@ -252,7 +241,7 @@ export abstract class RealTimeDB<A = any> {
       return this;
     }
 
-    this._onConnected.map(i => i.cb(this, i.ctx));
+    this._onConnected.map((i) => i.cb(this, i.ctx));
   }
 
   /**
@@ -275,11 +264,9 @@ export abstract class RealTimeDB<A = any> {
     ctx?: IDictionary
   ): string {
     if (!id) {
-      id = Math.random()
-        .toString(36)
-        .substr(2, 10);
+      id = Math.random().toString(36).substr(2, 10);
     } else {
-      if (this._onConnected.map(i => i.id).includes(id)) {
+      if (this._onConnected.map((i) => i.id).includes(id)) {
         throw new AbstractedError(
           `Request for onConnect() notifications was done with an explicit key [ ${id} ] which is already in use!`,
           `duplicate-listener`
@@ -295,7 +282,7 @@ export abstract class RealTimeDB<A = any> {
    * removes a callback notification previously registered
    */
   public removeNotificationOnConnection(id: string) {
-    this._onConnected = this._onConnected.filter(i => i.id !== id);
+    this._onConnected = this._onConnected.filter((i) => i.id !== id);
 
     return this;
   }
@@ -329,126 +316,38 @@ export abstract class RealTimeDB<A = any> {
    * **multiPathSet**
    *
    * Equivalent to Firebase's traditional "multi-path updates" which are
-   * in behaviour are really "multi-path SETs". Calling this function provides
-   * access to simplified API for adding and executing this operation.
+   * in behaviour are really "multi-path SETs". The basic idea is that
+   * all the _keys_ are database paths and the _values_ are **destructive** values.
    *
-   * What's important to understand is that the structure of this request
-   * is an array of name/values where the _name_ is a path in the database
-   * and the _value_ is what is to be **set** there. By grouping these together
-   * you not only receive performance benefits but also they are treated as
-   * a "transaction" where either _all_ or _none_ of the updates will take
-   * place.
+   * An example of
+   * what you might might look like:
    *
-   * @param base you can state a _base_ path which all subsequent paths will be
-   * based off of. This is often useful when making a series of changes to a
-   * part of the Firebase datamodel. In particular, if you are using **FireModel**
-   * then operations which effect a single "model" will leverage this **base**
-   * property
+   * ```json
+   * {
+   *  "path/to/my/data": "my destructive data",
+   *  "another/path/to/write/to": "everyone loves monkeys"
+   * }
+   * ```
    *
-   * [Blog Post](https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html)
+   * When we say "destructive" we mean that whatever value you put at the give path will
+   * _overwrite_ the data that was there rather than "update" it. This not hard to
+   * understand because we've given this function a name with "SET" in the name but
+   * in the real-time database this actual translates into an alternative use of the
+   * "update" command which is described here:
+   * [Introducing Multi-Location Updates.](https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html)
+   *
+   * This functionality, in the end, is SUPER useful as it provides a means to achieve
+   * transactional functionality (aka, either all paths are written to or none are).
+   *
+   * **Note:** because _dot notation_ for paths is not uncommon you can notate
+   * the paths with `.` instead of `/`
    */
-  public multiPathSet(base?: string) {
-    const mps: IPathSetter[] = [];
-    const ref = this.ref.bind(this);
-    let callback: (err: any, pathSetters: IPathSetter[]) => void;
-    const makeFullPath = (path: string, basePath: string) => {
-      return [basePath, path].join("/").replace(/[\/]{2,3}/g, "/");
-    };
-    const api: IMultiPathSet = {
-      /** The base reference path which all paths will be relative to */
-      _basePath: base || "/",
-      // a fluent API setter/getter for _basePath
-      basePath(path?: string) {
-        if (path === undefined) {
-          return api._basePath;
-        }
-
-        api._basePath = path;
-        return api;
-      },
-
-      add<X = any>(pathValue: IPathSetter<X>) {
-        if (api.paths.includes(pathValue.path)) {
-          const message = `You have attempted to add the path "${
-            pathValue.path
-          }" twice to a MultiPathSet operation [ value: ${
-            pathValue.value
-          } ]. For context the payload in the multi-path-set was already: ${JSON.stringify(api.payload, null, 2)}`;
-          const e: any = new Error(message);
-          e.name = "DuplicatePath";
-          throw e;
-        }
-
-        mps.push(pathValue);
-        return api;
-      },
-
-      get paths() {
-        return mps.map(i => i.path);
-      },
-
-      get fullPaths() {
-        return mps.map(i => [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/"));
-      },
-
-      get payload() {
-        return mps.map(i => {
-          i.path = [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/");
-          return i;
-        });
-      },
-      findPathItem(path: string) {
-        let result = "unknown";
-
-        api.payload.map(i => {
-          if (i.path === path) {
-            result = i.value;
-          }
-        });
-
-        return result;
-      },
-
-      callback(cb: (err: any, pathSetters: IPathSetter[]) => void) {
-        callback = cb;
-        return api;
-      },
-
-      async execute() {
-        const updateHash: IDictionary = {};
-        const fullyQualifiedPaths = mps.map(i => ({
-          ...i,
-          path: [api._basePath, i.path].join("/").replace(/[\/]{2,3}/g, "/")
-        }));
-        fullyQualifiedPaths.map(item => {
-          updateHash[item.path] = item.value;
-        });
-
-        try {
-          await ref().update(updateHash);
-          if (callback) {
-            callback(null, mps);
-          }
-          // resolve();
-        } catch (e) {
-          if (callback) {
-            callback(e, mps);
-          }
-          if (e.code === "PERMISSION_DENIED") {
-            throw new PermissionDenied(e, "Firebase Database - permission denied");
-          }
-
-          throw new AbstractedProxyError(
-            e,
-            "abstracted-firebase/mps-failure",
-            `While executing a MPS there was a failure. The base path was ${api._basePath}.`
-          );
-        }
-        // });
-      }
-    };
-
-    return api;
+  public async multiPathSet(updates: IDictionary) {
+    const fixed: IDictionary = Object.keys(updates).reduce((acc, path) => {
+      acc[path.replace(/\./g, "/")] = updates[path];
+      return acc;
+    }, {} as IDictionary);
+    await this.ref("/").update(fixed);
   }
 
   /**
@@ -595,7 +494,7 @@ export abstract class RealTimeDB<A = any> {
    */
   public async getSortedList<T = any>(query: any, idProp = "id"): Promise<T[]> {
     try {
-      return this.getSnapshot(query).then(snap => {
+      return this.getSnapshot(query).then((snap) => {
         return convert.snapshotToArray<T>(snap, idProp);
       });
     } catch (e) {
@@ -637,7 +536,7 @@ export abstract class RealTimeDB<A = any> {
    * Validates the existance of a path in the database
    */
   public async exists(path: string): Promise<boolean> {
-    return this.getSnapshot(path).then(snap => (snap.val() ? true : false));
+    return this.getSnapshot(path).then((snap) => (snap.val() ? true : false));
   }
 
   /**
@@ -653,11 +552,11 @@ export abstract class RealTimeDB<A = any> {
       if (this._eventManager.connection) {
         this._eventManager.connection(this._isConnected);
       }
-      this._onConnected.forEach(listener =>
+      this._onConnected.forEach((listener) =>
         listener.ctx ? listener.cb.bind(listener.ctx)(this) : listener.cb.bind(this)()
       );
     } else {
-      this._onDisconnected.forEach(listener => listener.cb(this));
+      this._onDisconnected.forEach((listener) => listener.cb(this));
     }
   }
 
